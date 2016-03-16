@@ -16,3 +16,8 @@ Cada uma dessas operações devem estar associadas a um movimento de toque na te
 * Embaralhar - Swipe;
 * Distribuir - Dedo deslisa do centro da tela até a borda na direção do jogador que receberá a carta;
 * Esconder e Mostrar - Duplo toque
+
+
+# Make Project
+Após ter feito o clone do projeto, no android studio, é necessário fazer make project. Para fazer
+isso, na barra de ferramentas, vá em build > make project.
