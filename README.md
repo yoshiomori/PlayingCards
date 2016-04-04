@@ -21,3 +21,7 @@ Cada uma dessas operações devem estar associadas a um movimento de toque na te
 # Make Project
 Após ter feito o clone do projeto, no android studio, é necessário fazer make project. Para fazer
 isso, na barra de ferramentas, vá em build > make project.
+
+# Estrutura do Aplicativo
+O aplicativo será orientado a cliente-servidor.
+O mesmo aplicativo pode ser tanto cliente quanto servidor.

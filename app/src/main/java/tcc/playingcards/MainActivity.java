@@ -8,6 +8,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import playingcards.Hand;
+import playingcards.PlayingCards;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,13 +23,37 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        if (fab != null) {
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            });
+        }
+
+        TextView textView = (TextView) findViewById(R.id.textView);
+
+        PlayingCards deck = new PlayingCards();
+        Hand hand = new Hand();
+
+        if (textView != null) {
+            textView.setText("Embaralhando\n");
+            deck.Shuffle();
+
+            textView.append("Pegando uma carta do baralho\n");
+            hand.Draw(deck.Draw());
+            textView.append(hand.Show().toString() + "\n");
+
+            textView.append("Pegando outra carta do baralho\n");
+            hand.Draw(deck.Draw());
+            textView.append(hand.Show().toString() + "\n");
+
+            textView.append("Descartando a primeira carta da mão\n");
+            hand.Discard(hand.Show().get(0));
+            textView.append(hand.Show().toString());
+        }
     }
 
     @Override
