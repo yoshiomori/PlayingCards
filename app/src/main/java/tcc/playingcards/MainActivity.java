@@ -1,5 +1,6 @@
 package tcc.playingcards;
 
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,10 +11,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import playingcards.Hand;
-import playingcards.PlayingCards;
+import tcc.model.Hand;
+import tcc.model.PlayingCards;
+import tcc.control.MyGLSurfaceView;
 
 public class MainActivity extends AppCompatActivity {
+
+    private GLSurfaceView mGLView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +58,11 @@ public class MainActivity extends AppCompatActivity {
             hand.Discard(hand.Show().get(0));
             textView.append(hand.Show().toString());
         }
+
+        // Create a GLSurfaceView instance and set it
+        // as the ContentView for this Activity
+        mGLView = new MyGLSurfaceView(this);
+        setContentView(mGLView);
     }
 
     @Override
@@ -76,5 +85,24 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // The following call pauses the rendering thread.
+        // If your OpenGL application is memory intensive,
+        // you should consider de-allocating objects that
+        // consume significant memory here.
+        mGLView.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // The following call resumes a paused rendering thread.
+        // If you de-allocated graphic objects for onPause()
+        // this is a good place to re-allocate them.
+        mGLView.onResume();
     }
 }
