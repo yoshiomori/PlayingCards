@@ -18,10 +18,12 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
+import java.util.HashMap;
 
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.opengl.Matrix;
 
 /**
  * A two-dimensional square for use as a drawn object in OpenGL ES 2.0.
@@ -478,6 +480,8 @@ public class Carta {
 
     final int textureHandle;
 
+    HashMap<String, float[]> imagemCarta = new HashMap<>();
+
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
      */
@@ -502,8 +506,12 @@ public class Carta {
 
         // prepare shaders and OpenGL program
         String vertexShaderCode = "uniform mat4 uMVPMatrix;" +
+                "uniform mat4 verTexTrasf;" +
+                "uniform mat4 u_tctMatrix;" +
                 "attribute vec4 vPosition;" +
+                "varying vec2 vTexCoord;" +
                 "void main() {" +
+                "  vTexCoord = (u_tctMatrix * verTexTrasf * vPosition).xy;" +
                 // The matrix must be included as a modifier of gl_Position.
                 // Note that the uMVPMatrix factor *must be first* in order
                 // for the matrix multiplication product to be correct.
@@ -514,8 +522,10 @@ public class Carta {
                 vertexShaderCode);
         String fragmentShaderCode = "precision mediump float;" +
                 "uniform vec4 vColor;" +
+                "uniform sampler2D u_texture;" +
+                "varying vec2 vTexCoord;" +
                 "void main() {" +
-                "  gl_FragColor = vColor;" +
+                "  gl_FragColor = texture2D(u_texture, vTexCoord);" +
                 "}";
         int fragmentShader = MyGLRenderer.loadShader(
                 GLES20.GL_FRAGMENT_SHADER,
@@ -551,6 +561,62 @@ public class Carta {
             throw new RuntimeException("Error loading texture.");
         }
         textureHandle = memTextureHandle[0];
+
+        imagemCarta.put("Joker Black", new float[] {0f, 0f});
+        imagemCarta.put("As", new float[] {1f, 0f});
+        imagemCarta.put("Ah", new float[] {2f, 0f});
+        imagemCarta.put("Ad", new float[] {3f, 0f});
+        imagemCarta.put("Ac", new float[] {4f, 0f});
+        imagemCarta.put("Joker Red", new float[] {0f, 1f});
+        imagemCarta.put("2s", new float[] {1f, 1f});
+        imagemCarta.put("2h", new float[] {2f, 1f});
+        imagemCarta.put("2d", new float[] {3f, 1f});
+        imagemCarta.put("2c", new float[] {4f, 1f});
+        imagemCarta.put("Back", new float[] {0f, 2f});
+        imagemCarta.put("3s", new float[] {1f, 2f});
+        imagemCarta.put("3h", new float[] {2f, 2f});
+        imagemCarta.put("3d", new float[] {3f, 2f});
+        imagemCarta.put("3c", new float[] {4f, 2f});
+        imagemCarta.put("4s", new float[] {1f, 3f});
+        imagemCarta.put("4h", new float[] {2f, 3f});
+        imagemCarta.put("4d", new float[] {3f, 3f});
+        imagemCarta.put("4c", new float[] {4f, 3f});
+        imagemCarta.put("5s", new float[] {1f, 4f});
+        imagemCarta.put("5h", new float[] {2f, 4f});
+        imagemCarta.put("5d", new float[] {3f, 4f});
+        imagemCarta.put("5c", new float[] {4f, 4f});
+        imagemCarta.put("6s", new float[] {1f, 5f});
+        imagemCarta.put("6h", new float[] {2f, 5f});
+        imagemCarta.put("6d", new float[] {3f, 5f});
+        imagemCarta.put("6c", new float[] {4f, 5f});
+        imagemCarta.put("7s", new float[] {1f, 6f});
+        imagemCarta.put("7h", new float[] {2f, 6f});
+        imagemCarta.put("7d", new float[] {3f, 6f});
+        imagemCarta.put("7c", new float[] {4f, 6f});
+        imagemCarta.put("8s", new float[] {1f, 7f});
+        imagemCarta.put("8h", new float[] {2f, 7f});
+        imagemCarta.put("8d", new float[] {3f, 7f});
+        imagemCarta.put("8c", new float[] {4f, 7f});
+        imagemCarta.put("9s", new float[] {1f, 8f});
+        imagemCarta.put("9h", new float[] {2f, 8f});
+        imagemCarta.put("9d", new float[] {3f, 8f});
+        imagemCarta.put("9c", new float[] {4f, 8f});
+        imagemCarta.put("Ts", new float[] {1f, 9f});
+        imagemCarta.put("Th", new float[] {2f, 9f});
+        imagemCarta.put("Td", new float[] {3f, 9f});
+        imagemCarta.put("Tc", new float[] {4f, 9f});
+        imagemCarta.put("Js", new float[] {1f, 10f});
+        imagemCarta.put("Jh", new float[] {2f, 10f});
+        imagemCarta.put("Jd", new float[] {3f, 10f});
+        imagemCarta.put("Jc", new float[] {4f, 10f});
+        imagemCarta.put("Qs", new float[] {1f, 11f});
+        imagemCarta.put("Qh", new float[] {2f, 11f});
+        imagemCarta.put("Qd", new float[] {3f, 11f});
+        imagemCarta.put("Qc", new float[] {4f, 11f});
+        imagemCarta.put("Ks", new float[] {1f, 12f});
+        imagemCarta.put("Kh", new float[] {2f, 12f});
+        imagemCarta.put("Kd", new float[] {3f, 12f});
+        imagemCarta.put("Kc", new float[] {4f, 12f});
     }
 
     /**
@@ -559,7 +625,7 @@ public class Carta {
      * @param mvpMatrix - The Model View Project matrix in which to draw
      * this shape.
      */
-    public void draw(float[] mvpMatrix) {
+    public void draw(float[] mvpMatrix, String card) {
         // Add program to OpenGL environment
         GLES20.glUseProgram(mProgram);
 
@@ -592,11 +658,62 @@ public class Carta {
 
         // Set the active texture unit to texture unit 0.
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        MyGLRenderer.checkGlError("glActiveTexture");
 
         // Bind the texture to this unit.
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
+        MyGLRenderer.checkGlError("glBindTexture");
 
-        // TODO associar a textura à uniform sampler2D do fragment shader
+        int u_texture = GLES20.glGetUniformLocation(mProgram, "u_texture");
+        MyGLRenderer.checkGlError("glGetUniformLocation");
+
+        GLES20.glUniform1i(u_texture, 0);
+        MyGLRenderer.checkGlError("glUniform1i");
+
+        // Calcular a matriz que transforma a coordenada de um vértice em coordenada de textura
+        // Pegando a maior e a menor coordenada no eixo x do modelo da carta
+        float xMax = Float.NEGATIVE_INFINITY;
+        float xMin = Float.POSITIVE_INFINITY;
+        for (int x = 0; x < squareCoords.length; x += 3) {
+            if (xMax < squareCoords[x])
+                xMax = squareCoords[x];
+            if (xMin > squareCoords[x])
+                xMin = squareCoords[x];
+        }
+        // Pegando a maior e a menor coordenada no eixo y do modelo da carta
+        float yMax = Float.NEGATIVE_INFINITY;
+        float yMin = Float.POSITIVE_INFINITY;
+        for (int y = 1; y < squareCoords.length; y += 3) {
+            if (yMax < squareCoords[y])
+                yMax = squareCoords[y];
+            if (yMin > squareCoords[y])
+                yMin = squareCoords[y];
+        }
+
+        float[] vttMatrix = new float[16];
+        Matrix.setIdentityM(vttMatrix, 0);
+        Matrix.scaleM(vttMatrix, 0, vttMatrix, 0, 1f / (xMax - xMin), 1f / (yMax - yMin), 1f);
+        Matrix.translateM(vttMatrix, 0, vttMatrix, 0, -xMin, -yMin, 0f);
+
+        int verTexTrasf = GLES20.glGetUniformLocation(mProgram, "verTexTrasf");
+        MyGLRenderer.checkGlError("glGetUniformLocation");
+
+        // Aplicando a transformação da coordenadas de um vértice para as coordenadas de textura
+        GLES20.glUniformMatrix4fv(verTexTrasf, 1, false, vttMatrix, 0);
+        MyGLRenderer.checkGlError("glUniformMatrix4fv");
+
+        // Transformando a coordenada de textura para a coordenada de uma carta
+        float[] tctMatrix = new float[16];
+        Matrix.setIdentityM(tctMatrix, 0);
+        Matrix.scaleM(tctMatrix, 0, tctMatrix, 0, 0.1998355263f, 0.0769158494f, 1f);
+        Matrix.translateM(tctMatrix, 0, tctMatrix, 0, imagemCarta.get(card)[0], imagemCarta.get(card)[1], 0f);
+
+        int u_tctMatrix = GLES20.glGetUniformLocation(mProgram, "u_tctMatrix");
+        MyGLRenderer.checkGlError("glGetUniformLocation");
+
+        // Aplicando a transformação da coordenadas de um vértice para as coordenadas de textura
+        GLES20.glUniformMatrix4fv(u_tctMatrix, 1, false, tctMatrix, 0);
+        MyGLRenderer.checkGlError("glUniformMatrix4fv");
 
         // Draw the square
         GLES20.glDrawElements(

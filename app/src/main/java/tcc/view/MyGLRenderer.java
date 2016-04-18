@@ -51,7 +51,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         options.inScaled = false;	// No pre-scaling
 
         // Read in the resource
-        final Bitmap bitmap = BitmapFactory.decodeResource(mActivityContext.getResources(), R.drawable.playing_cards_small, options);
+        final Bitmap bitmap = BitmapFactory.decodeResource(mActivityContext.getResources(), R.drawable.playing_cards, options);
 
         mCarta = new Carta(bitmap);
     }
@@ -97,7 +97,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
 
         // Draw square
-        mCarta.draw(scratch);
+        mCarta.draw(scratch, "Joker Black");
     }
 
     /**
@@ -137,6 +137,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
      */
     public static void checkGlError(String glOperation) {
         int error;
+        //noinspection LoopStatementThatDoesntLoop
         while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
             Log.e(TAG, glOperation + ": glError " + error);
             throw new RuntimeException(glOperation + ": glError " + error);
