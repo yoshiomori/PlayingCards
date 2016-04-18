@@ -8,6 +8,8 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import java.util.HashMap;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -34,10 +36,68 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private final float[] mViewMatrix = new float[16];
     private final float[] mRotationMatrix = new float[16];
 
+    HashMap<String, float[]> imagemCarta = new HashMap<>();
+
     private float mAngle;
 
     public MyGLRenderer(Context activityContext) {
         mActivityContext = activityContext;
+
+        imagemCarta.put("Joker Black", new float[] {0f, 0f});
+        imagemCarta.put("As", new float[] {1f, 0f});
+        imagemCarta.put("Ah", new float[] {2f, 0f});
+        imagemCarta.put("Ad", new float[] {3f, 0f});
+        imagemCarta.put("Ac", new float[] {4f, 0f});
+        imagemCarta.put("Joker Red", new float[] {0f, 1f});
+        imagemCarta.put("2s", new float[] {1f, 1f});
+        imagemCarta.put("2h", new float[] {2f, 1f});
+        imagemCarta.put("2d", new float[] {3f, 1f});
+        imagemCarta.put("2c", new float[] {4f, 1f});
+        imagemCarta.put("Back", new float[] {0f, 2f});
+        imagemCarta.put("3s", new float[] {1f, 2f});
+        imagemCarta.put("3h", new float[] {2f, 2f});
+        imagemCarta.put("3d", new float[] {3f, 2f});
+        imagemCarta.put("3c", new float[] {4f, 2f});
+        imagemCarta.put("4s", new float[] {1f, 3f});
+        imagemCarta.put("4h", new float[] {2f, 3f});
+        imagemCarta.put("4d", new float[] {3f, 3f});
+        imagemCarta.put("4c", new float[] {4f, 3f});
+        imagemCarta.put("5s", new float[] {1f, 4f});
+        imagemCarta.put("5h", new float[] {2f, 4f});
+        imagemCarta.put("5d", new float[] {3f, 4f});
+        imagemCarta.put("5c", new float[] {4f, 4f});
+        imagemCarta.put("6s", new float[] {1f, 5f});
+        imagemCarta.put("6h", new float[] {2f, 5f});
+        imagemCarta.put("6d", new float[] {3f, 5f});
+        imagemCarta.put("6c", new float[] {4f, 5f});
+        imagemCarta.put("7s", new float[] {1f, 6f});
+        imagemCarta.put("7h", new float[] {2f, 6f});
+        imagemCarta.put("7d", new float[] {3f, 6f});
+        imagemCarta.put("7c", new float[] {4f, 6f});
+        imagemCarta.put("8s", new float[] {1f, 7f});
+        imagemCarta.put("8h", new float[] {2f, 7f});
+        imagemCarta.put("8d", new float[] {3f, 7f});
+        imagemCarta.put("8c", new float[] {4f, 7f});
+        imagemCarta.put("9s", new float[] {1f, 8f});
+        imagemCarta.put("9h", new float[] {2f, 8f});
+        imagemCarta.put("9d", new float[] {3f, 8f});
+        imagemCarta.put("9c", new float[] {4f, 8f});
+        imagemCarta.put("Ts", new float[] {1f, 9f});
+        imagemCarta.put("Th", new float[] {2f, 9f});
+        imagemCarta.put("Td", new float[] {3f, 9f});
+        imagemCarta.put("Tc", new float[] {4f, 9f});
+        imagemCarta.put("Js", new float[] {1f, 10f});
+        imagemCarta.put("Jh", new float[] {2f, 10f});
+        imagemCarta.put("Jd", new float[] {3f, 10f});
+        imagemCarta.put("Jc", new float[] {4f, 10f});
+        imagemCarta.put("Qs", new float[] {1f, 11f});
+        imagemCarta.put("Qh", new float[] {2f, 11f});
+        imagemCarta.put("Qd", new float[] {3f, 11f});
+        imagemCarta.put("Qc", new float[] {4f, 11f});
+        imagemCarta.put("Ks", new float[] {1f, 12f});
+        imagemCarta.put("Kh", new float[] {2f, 12f});
+        imagemCarta.put("Kd", new float[] {3f, 12f});
+        imagemCarta.put("Kc", new float[] {4f, 12f});
     }
 
     @Override

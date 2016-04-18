@@ -480,7 +480,11 @@ public class Carta {
 
     final int textureHandle;
 
-    HashMap<String, float[]> imagemCarta = new HashMap<>();
+    private HashMap<String, float[]> imagemCarta = new HashMap<>();
+
+    private float[] vttMatrix = new float[16];
+
+    private float[] tctMatrix = new float[16];
 
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
@@ -617,6 +621,15 @@ public class Carta {
         imagemCarta.put("Kh", new float[] {2f, 12f});
         imagemCarta.put("Kd", new float[] {3f, 12f});
         imagemCarta.put("Kc", new float[] {4f, 12f});
+
+        // Dos vértices tenho que:
+        //   O maior valor para x é 0.890552 e o menor é -0.890552;
+        //   O maior valor para y é 0.634646 e o menor é -0.634646.
+        // 1f / (xMax - xMin) = 0.561449
+        // 1f / (yMax - yMin) = 0.787840
+        Matrix.setIdentityM(vttMatrix, 0);
+        Matrix.scaleM(vttMatrix, 0, 0.561449f, 0.787840f, 1f);
+        Matrix.translateM(vttMatrix, 0, 0.890552f, 0.634646f, 0f);
     }
 
     /**
@@ -670,31 +683,6 @@ public class Carta {
         GLES20.glUniform1i(u_texture, 0);
         MyGLRenderer.checkGlError("glUniform1i");
 
-        // Calcular a matriz que transforma a coordenada de um vértice em coordenada de textura
-        // Pegando a maior e a menor coordenada no eixo x do modelo da carta
-        float xMax = Float.NEGATIVE_INFINITY;
-        float xMin = Float.POSITIVE_INFINITY;
-        for (int x = 0; x < squareCoords.length; x += 3) {
-            if (xMax < squareCoords[x])
-                xMax = squareCoords[x];
-            if (xMin > squareCoords[x])
-                xMin = squareCoords[x];
-        }
-        // Pegando a maior e a menor coordenada no eixo y do modelo da carta
-        float yMax = Float.NEGATIVE_INFINITY;
-        float yMin = Float.POSITIVE_INFINITY;
-        for (int y = 1; y < squareCoords.length; y += 3) {
-            if (yMax < squareCoords[y])
-                yMax = squareCoords[y];
-            if (yMin > squareCoords[y])
-                yMin = squareCoords[y];
-        }
-
-        float[] vttMatrix = new float[16];
-        Matrix.setIdentityM(vttMatrix, 0);
-        Matrix.scaleM(vttMatrix, 0, vttMatrix, 0, 1f / (xMax - xMin), 1f / (yMax - yMin), 1f);
-        Matrix.translateM(vttMatrix, 0, vttMatrix, 0, -xMin, -yMin, 0f);
-
         int verTexTrasf = GLES20.glGetUniformLocation(mProgram, "verTexTrasf");
         MyGLRenderer.checkGlError("glGetUniformLocation");
 
@@ -703,10 +691,9 @@ public class Carta {
         MyGLRenderer.checkGlError("glUniformMatrix4fv");
 
         // Transformando a coordenada de textura para a coordenada de uma carta
-        float[] tctMatrix = new float[16];
         Matrix.setIdentityM(tctMatrix, 0);
-        Matrix.scaleM(tctMatrix, 0, tctMatrix, 0, 0.1998355263f, 0.0769158494f, 1f);
-        Matrix.translateM(tctMatrix, 0, tctMatrix, 0, imagemCarta.get(card)[0], imagemCarta.get(card)[1], 0f);
+        Matrix.scaleM(tctMatrix, 0, 0.1998355263f, 0.0769158494f, 1f);
+        Matrix.translateM(tctMatrix, 0, imagemCarta.get(card)[0], imagemCarta.get(card)[1], 0f);
 
         int u_tctMatrix = GLES20.glGetUniformLocation(mProgram, "u_tctMatrix");
         MyGLRenderer.checkGlError("glGetUniformLocation");
