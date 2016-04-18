@@ -1,4 +1,4 @@
-package playingcards;
+package tcc.model;
 
 import android.os.SystemClock;
 
