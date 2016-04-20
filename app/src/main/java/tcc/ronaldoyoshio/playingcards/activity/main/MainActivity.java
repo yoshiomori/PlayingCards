@@ -1,4 +1,4 @@
-package tcc.playingcards;
+package tcc.ronaldoyoshio.playingcards.activity.main;
 
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -11,9 +11,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import tcc.model.Hand;
-import tcc.model.PlayingCards;
-import tcc.control.MyGLSurfaceView;
+import tcc.ronaldoyoshio.playingcards.model.Hand;
+import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
+import tcc.ronaldoyoshio.playingcards.control.MyGLSurfaceView;
+import tcc.ronaldoyoshio.playingcards.R;
 
 public class MainActivity extends AppCompatActivity {
 

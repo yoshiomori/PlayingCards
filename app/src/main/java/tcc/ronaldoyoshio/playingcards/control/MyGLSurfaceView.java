@@ -1,10 +1,10 @@
-package tcc.control;
+package tcc.ronaldoyoshio.playingcards.control;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
 
-import tcc.view.MyGLRenderer;
+import tcc.ronaldoyoshio.playingcards.view.MyGLRenderer;
 
 public class MyGLSurfaceView extends GLSurfaceView {
 

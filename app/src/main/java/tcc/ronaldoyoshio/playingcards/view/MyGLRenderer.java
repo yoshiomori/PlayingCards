@@ -1,4 +1,4 @@
-package tcc.view;
+package tcc.ronaldoyoshio.playingcards.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import tcc.playingcards.R;
+import tcc.ronaldoyoshio.playingcards.R;
 
 /**
  * Provides drawing instructions for a GLSurfaceView object. This class

@@ -1,4 +1,4 @@
-package tcc.model;
+package tcc.ronaldoyoshio.playingcards.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
