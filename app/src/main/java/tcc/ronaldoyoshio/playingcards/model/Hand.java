@@ -1,23 +1,26 @@
 package tcc.ronaldoyoshio.playingcards.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Classe Hand manipula as cartas recebidas do servidor
  */
 public class Hand {
-    private ArrayList<String> hand = new ArrayList<>();
+    private ArrayList<Card> hand = new ArrayList<>();
 
-    public ArrayList<String> Show(){
+    public ArrayList<Card> show(){
         return hand;
     }
 
-    public boolean Discard(String card){
+    public boolean Discard(Card card){
         return hand.remove(card);
     }
 
-    public void Draw(String card){
+    public void Draw(Card card){
         hand.add(card);
+    }
+
+    public int size() {
+        return hand.size();
     }
 }

@@ -4,11 +4,12 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
 
-import tcc.ronaldoyoshio.playingcards.view.MyGLRenderer;
+import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
+import tcc.ronaldoyoshio.playingcards.view.HandGLRenderer;
 
 public class MyGLSurfaceView extends GLSurfaceView {
 
-    private final MyGLRenderer mRenderer;
+    private final HandGLRenderer mRenderer;
 
     public MyGLSurfaceView(Context context) {
         super(context);
@@ -17,8 +18,13 @@ public class MyGLSurfaceView extends GLSurfaceView {
         setEGLContextClientVersion(2);
 
         // Set the Renderer for drawing on the GLSurfaceView
-        mRenderer = new MyGLRenderer(context);
+        mRenderer = new HandGLRenderer(context);
         setRenderer(mRenderer);
+
+        PlayingCards deck = new PlayingCards();
+        deck.Shuffle();
+        while (!deck.isEmpty())
+            mRenderer.addCard(deck.Draw());
 
         // Render the view only when there is a change in the drawing data
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
@@ -33,30 +39,24 @@ public class MyGLSurfaceView extends GLSurfaceView {
         // and other input controls. In this case, you are only
         // interested in events where the touch position changed.
 
-        float x = e.getX();
-        float y = e.getY();
+        float x = (2 * e.getX() - getWidth()) / getWidth();
+        float y = (getHeight() - 2 * e.getY()) / getHeight();
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
-
                 float dx = x - mPreviousX;
                 float dy = y - mPreviousY;
-
-                // reverse direction of rotation above the mid-line
-                if (y > getHeight() / 2) {
-                    dx = dx * -1 ;
-                }
-
-                // reverse direction of rotation to left of the mid-line
-                if (x < getWidth() / 2) {
-                    dy = dy * -1 ;
-                }
-
-                float TOUCH_SCALE_FACTOR = 180.0f / 320;
-                mRenderer.setAngle(
-                        mRenderer.getAngle() +
-                                ((dx + dy) * TOUCH_SCALE_FACTOR));  // = 180.0f / 320
+                mRenderer.setPosition(dx, dy, x, y);
                 requestRender();
+                break;
+            case MotionEvent.ACTION_DOWN:
+                System.out.println("Dedo na tela!");
+                mRenderer.activateCard(x, y);
+                break;
+            case MotionEvent.ACTION_UP:
+                System.out.println("Dedo saiu da tela!");
+                mRenderer.deactivateCards();
+                break;
         }
 
         mPreviousX = x;

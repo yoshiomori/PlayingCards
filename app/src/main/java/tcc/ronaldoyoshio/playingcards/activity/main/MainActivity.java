@@ -38,28 +38,6 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        TextView textView = (TextView) findViewById(R.id.textView);
-
-        PlayingCards deck = new PlayingCards();
-        Hand hand = new Hand();
-
-        if (textView != null) {
-            textView.setText("Embaralhando\n");
-            deck.Shuffle();
-
-            textView.append("Pegando uma carta do baralho\n");
-            hand.Draw(deck.Draw());
-            textView.append(hand.Show().toString() + "\n");
-
-            textView.append("Pegando outra carta do baralho\n");
-            hand.Draw(deck.Draw());
-            textView.append(hand.Show().toString() + "\n");
-
-            textView.append("Descartando a primeira carta da mão\n");
-            hand.Discard(hand.Show().get(0));
-            textView.append(hand.Show().toString());
-        }
-
         // Create a GLSurfaceView instance and set it
         // as the ContentView for this Activity
         mGLView = new MyGLSurfaceView(this);

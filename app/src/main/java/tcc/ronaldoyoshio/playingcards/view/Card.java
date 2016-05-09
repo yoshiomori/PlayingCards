@@ -28,7 +28,7 @@ import android.opengl.Matrix;
 /**
  * A two-dimensional square for use as a drawn object in OpenGL ES 2.0.
  */
-public class Carta {
+public class Card {
 
     private final FloatBuffer vertexBuffer;
     private final ShortBuffer drawListBuffer;
@@ -489,7 +489,7 @@ public class Carta {
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
      */
-    public Carta(Bitmap bitmap) {
+    public Card(Bitmap bitmap) {
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(
                 // (# of coordinate values * 4 bytes per float)
@@ -521,7 +521,7 @@ public class Carta {
                 // for the matrix multiplication product to be correct.
                 "  gl_Position = uMVPMatrix * vPosition;" +
                 "}";
-        int vertexShader = MyGLRenderer.loadShader(
+        int vertexShader = HandGLRenderer.loadShader(
                 GLES20.GL_VERTEX_SHADER,
                 vertexShaderCode);
         String fragmentShaderCode = "precision mediump float;" +
@@ -531,7 +531,7 @@ public class Carta {
                 "void main() {" +
                 "  gl_FragColor = texture2D(u_texture, vTexCoord);" +
                 "}";
-        int fragmentShader = MyGLRenderer.loadShader(
+        int fragmentShader = HandGLRenderer.loadShader(
                 GLES20.GL_FRAGMENT_SHADER,
                 fragmentShaderCode);
 
@@ -663,32 +663,32 @@ public class Carta {
 
         // get handle to shape's transformation matrix
         int mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
-        MyGLRenderer.checkGlError("glGetUniformLocation");
+        HandGLRenderer.checkGlError("glGetUniformLocation");
 
         // Apply the projection and view transformation
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        MyGLRenderer.checkGlError("glUniformMatrix4fv");
+        HandGLRenderer.checkGlError("glUniformMatrix4fv");
 
         // Set the active texture unit to texture unit 0.
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        MyGLRenderer.checkGlError("glActiveTexture");
+        HandGLRenderer.checkGlError("glActiveTexture");
 
         // Bind the texture to this unit.
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle);
-        MyGLRenderer.checkGlError("glBindTexture");
+        HandGLRenderer.checkGlError("glBindTexture");
 
         int u_texture = GLES20.glGetUniformLocation(mProgram, "u_texture");
-        MyGLRenderer.checkGlError("glGetUniformLocation");
+        HandGLRenderer.checkGlError("glGetUniformLocation");
 
         GLES20.glUniform1i(u_texture, 0);
-        MyGLRenderer.checkGlError("glUniform1i");
+        HandGLRenderer.checkGlError("glUniform1i");
 
         int verTexTrasf = GLES20.glGetUniformLocation(mProgram, "verTexTrasf");
-        MyGLRenderer.checkGlError("glGetUniformLocation");
+        HandGLRenderer.checkGlError("glGetUniformLocation");
 
         // Aplicando a transformação da coordenadas de um vértice para as coordenadas de textura
         GLES20.glUniformMatrix4fv(verTexTrasf, 1, false, vttMatrix, 0);
-        MyGLRenderer.checkGlError("glUniformMatrix4fv");
+        HandGLRenderer.checkGlError("glUniformMatrix4fv");
 
         // Transformando a coordenada de textura para a coordenada de uma carta
         Matrix.setIdentityM(tctMatrix, 0);
@@ -696,11 +696,11 @@ public class Carta {
         Matrix.translateM(tctMatrix, 0, imagemCarta.get(card)[0], imagemCarta.get(card)[1], 0f);
 
         int u_tctMatrix = GLES20.glGetUniformLocation(mProgram, "u_tctMatrix");
-        MyGLRenderer.checkGlError("glGetUniformLocation");
+        HandGLRenderer.checkGlError("glGetUniformLocation");
 
         // Aplicando a transformação da coordenadas de um vértice para as coordenadas de textura
         GLES20.glUniformMatrix4fv(u_tctMatrix, 1, false, tctMatrix, 0);
-        MyGLRenderer.checkGlError("glUniformMatrix4fv");
+        HandGLRenderer.checkGlError("glUniformMatrix4fv");
 
         // Draw the square
         GLES20.glDrawElements(

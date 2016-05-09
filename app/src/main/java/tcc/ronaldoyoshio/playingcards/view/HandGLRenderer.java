@@ -8,10 +8,14 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import tcc.ronaldoyoshio.playingcards.R;
+import tcc.ronaldoyoshio.playingcards.model.GameEngine;
+import tcc.ronaldoyoshio.playingcards.model.Hand;
 
 /**
  * Provides drawing instructions for a GLSurfaceView object. This class
@@ -22,21 +26,21 @@ import tcc.ronaldoyoshio.playingcards.R;
  *   <li>{@link android.opengl.GLSurfaceView.Renderer#onSurfaceChanged}</li>
  * </ul>
  */
-public class MyGLRenderer implements GLSurfaceView.Renderer {
+public class HandGLRenderer implements GLSurfaceView.Renderer {
 
-    private static final String TAG = "MyGLRenderer";
+    private static final String TAG = "HandGLRenderer";
     private final Context mActivityContext;
-    private Carta mCarta;
+    private Card mCarta;
+    private Hand hand = new Hand();
+    private ArrayList<tcc.ronaldoyoshio.playingcards.model.Card> activeCards = new ArrayList<>();
 
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
     private final float[] mMVPMatrix = new float[16];
     private final float[] mProjectionMatrix = new float[16];
     private final float[] mViewMatrix = new float[16];
-    private final float[] mRotationMatrix = new float[16];
+    float[] invMMVPMatrix = new float[16];
 
-    private float mAngle;
-
-    public MyGLRenderer(Context activityContext) {mActivityContext = activityContext;}
+    public HandGLRenderer(Context activityContext) {mActivityContext = activityContext;}
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -51,7 +55,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Read in the resource
         final Bitmap bitmap = BitmapFactory.decodeResource(mActivityContext.getResources(), R.drawable.playing_cards, options);
 
-        mCarta = new Carta(bitmap);
+        mCarta = new Card(bitmap);
     }
 
     @Override
@@ -79,6 +83,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+        Matrix.invertM(invMMVPMatrix, 0 , mMVPMatrix, 0);
 
         // Create a rotation for the triangle
 
@@ -86,16 +91,18 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Leave this code out when using TouchEvents.
         // long time = SystemClock.uptimeMillis() % 4000L;
         // float angle = 0.090f * ((int) time);
+        for (tcc.ronaldoyoshio.playingcards.model.Card card: hand.show()) {
+            // Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0, 0, 1.0f);
+            Matrix.translateM(scratch, 0, mMVPMatrix, 0, card.x, card.y, card.z);
 
-        Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0, 0, 1.0f);
+            // Combine the rotation matrix with the projection and camera view
+            // Note that the mMVPMatrix factor *must be first* in order
+            // for the matrix multiplication product to be correct.
+            // Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
 
-        // Combine the rotation matrix with the projection and camera view
-        // Note that the mMVPMatrix factor *must be first* in order
-        // for the matrix multiplication product to be correct.
-        Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
-
-        // Draw square
-        mCarta.draw(scratch, "Joker Black");
+            // Draw square
+            mCarta.draw(scratch, card.type);
+        }
     }
 
     /**
@@ -127,7 +134,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
      *
      * <pre>
      * mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
-     * MyGLRenderer.checkGlError("glGetUniformLocation");</pre>
+     * HandGLRenderer.checkGlError("glGetUniformLocation");</pre>
      *
      * If the operation is not successful, the check throws an error.
      *
@@ -142,20 +149,29 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         }
     }
 
-    /**
-     * Returns the rotation angle of the triangle shape (mTriangle).
-     *
-     * @return - A float representing the rotation angle.
-     */
-    public float getAngle() {
-        return mAngle;
+    public void addCard(tcc.ronaldoyoshio.playingcards.model.Card card){
+        hand.Draw(card);
     }
 
-    /**
-     * Sets the rotation angle of the triangle shape (mTriangle).
-     */
-    public void setAngle(float angle) {
-        mAngle = angle;
+    public void setPosition(float dx, float dy, float x, float y) {
+        float[] d = new float[4];
+        Matrix.multiplyMV(d, 0, invMMVPMatrix, 0, new float[]{dx, dy, 0, 0}, 0);
+        for(tcc.ronaldoyoshio.playingcards.model.Card card: activeCards){
+            card.x += d[0] * 6f;
+            card.y += d[1] * 6f;
+        }
     }
 
+    public void activateCard(float x, float y) {
+        float[] v = new float[4];
+        Matrix.multiplyMV(v, 0, invMMVPMatrix, 0, new float[]{x, y, 0, 0}, 0);
+        Matrix.multiplyMV(v, 0, invMMVPMatrix, 0, new float[]{x, y, 0, 0}, 0);
+        ArrayList<tcc.ronaldoyoshio.playingcards.model.Card> cards = GameEngine.collision(hand.show(), v[0] * 6f, v[1] * 6f);
+        if(!cards.isEmpty())
+            activeCards.add(cards.get(cards.size() - 1));
+    }
+
+    public void deactivateCards() {
+        activeCards.clear();
+    }
 }
