@@ -1,4 +1,4 @@
-package tcc.playingcards;
+package tcc.ronaldoyoshio.playingcards;
 
 import org.junit.Test;
 
