@@ -368,7 +368,9 @@ public abstract class GLImage {
     }
 
     public void loadDatas() {
-        this.bitmap = bitmapId < 0 ? null : BitmapFactory.decodeResource(resources, bitmapId);
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;	// No pre-scaling
+        this.bitmap = bitmapId < 0 ? null : BitmapFactory.decodeResource(resources, bitmapId, options);
     }
 
     public int getBitmapId() {

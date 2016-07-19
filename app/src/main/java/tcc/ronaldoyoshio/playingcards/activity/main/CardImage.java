@@ -46,9 +46,6 @@ public class CardImage extends GLImage {
                         "   float D = 2.0 * (far * near * r_depth);" +
                         "   return mat4(x, 0, 0, 0, 0, y, 0, 0, A, B, C, -1, 0, 0, D, 0);" +
                         "}" +
-                        "mat4 translate(float x, float y, float z) {" +
-                        "   return mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1);" +
-                        "}" +
                         "mat4 look_at() {" +
                         "   vec3 f, s, u;" +
                         "" +
@@ -61,20 +58,16 @@ public class CardImage extends GLImage {
                         "               s.y, u.y, -f.y, 0," +
                         "               s.z, u.z, -f.z, 0," +
                         "               0, 0, 0, 1)" +
-                        "       * translate(-eye.x, -eye.y, -eye.z);" +
-                        "}" +
-                        "mat4 scale(float x, float y, float z) {" +
-                        "   return mat4(x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1);" +
+                        "       * mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -eye, 1);" +
                         "}" +
                         "void main() {" +
-                        "   vec4 vertex = vec4(vertex, 1);" +
-                        "   texture_coord = (scale(0.1998355263, 0.0769158494, 1) " +
-                        "                   * translate(card_coord.x, card_coord.y, 0) " +
-                        "                   * scale(0.561449, 0.787840, 1) " +
-                        "                   * translate(0.890552, 0.634646, 0) " +
-                        "                   * vertex).xy;" +
-                        "   gl_Position = frustum() * look_at()" +
-                        "               * translate(position.x, position.y, 0) * vertex;" +
+                        "   vec4 v = vec4(vertex, 1);" +
+                        "   v = mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0.890552, 0.634646, 0, 1) * v;" +
+                        "   v = mat4(0.561449, 0, 0, 0, 0, 0.787840, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) * v;" +
+                        "   v = mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, card_coord, 0, 1) * v;" +
+                        "   v = mat4(0.1998355, 0, 0, 0, 0, 0.0769158, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) * v;" +
+                        "   texture_coord = v.xy;" +
+                        "   gl_Position = frustum() * look_at() * mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, position, 0, 1) * vec4(vertex, 1);" +
                         "}",
                 "/* Fragment Shader */" +
                         "precision mediump float;" +
