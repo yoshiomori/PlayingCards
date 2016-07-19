@@ -42,6 +42,12 @@ public abstract class GLImage {
     private float right = -1f;
     private float top = -1f;
     private float bottom = -1f;
+    private float ratio;
+    private String ratioName = "";
+
+    public void useRatio(String uniformName) {
+        ratioName = uniformName;
+    }
 
     protected ArrayList<GLObject> getObjects() {
         return objects;
@@ -351,6 +357,10 @@ public abstract class GLImage {
     }
 
     public void setScreen(float ratio) {
+        this.ratio = ratio;
+        if (!ratioName.isEmpty()) {
+            setUniform(ratioName, ratio);
+        }
         if (screen) {
             left = ratio <= 1f ? -ratio : -1f;
             setUniform(leftName, left);
@@ -398,6 +408,14 @@ public abstract class GLImage {
     public abstract void onDown(float x, float y);
 
     public abstract void onUp();
+
+    public float getRatio() {
+        return ratio;
+    }
+
+    public void setRatio(float ratio) {
+        this.ratio = ratio;
+    }
 
     protected class GLObject {
         private float[] position = new float[3];

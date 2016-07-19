@@ -7,6 +7,7 @@ import tcc.ronaldoyoshio.playingcards.GL.GLScreen;
 import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
 
 public class MainActivity extends Activity {
+    GLScreen screen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -14,11 +15,13 @@ public class MainActivity extends Activity {
 
         CardImage cardImage = new CardImage();
 
-        GLScreen screen = new GLScreen(this);
+        screen = new GLScreen(this);
         screen.setImages(
+                new BackGround(),
                 cardImage
         );
         setContentView(screen);
+        screen.setSaveEnabled(true);
 
         PlayingCards cards = new PlayingCards();
         cardImage.print(cards);
