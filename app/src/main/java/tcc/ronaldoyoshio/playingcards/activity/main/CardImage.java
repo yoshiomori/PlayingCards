@@ -67,7 +67,7 @@ public class CardImage extends GLImage {
                         "   v = mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, card_coord, 0, 1) * v;" +
                         "   v = mat4(0.1998355, 0, 0, 0, 0, 0.0769158, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) * v;" +
                         "   texture_coord = v.xy;" +
-                        "   gl_Position = frustum() * look_at() * mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, position, 0, 1) * vec4(vertex, 1);" +
+                        "   gl_Position = frustum() * look_at() * mat4(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1) * mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, position, 0, 1) * vec4(vertex, 1);" +
                         "}",
                 "/* Fragment Shader */" +
                         "precision mediump float;" +
@@ -84,7 +84,7 @@ public class CardImage extends GLImage {
         setUniform("near", 3f);
         setUniform("far", 7f);
 
-        setUniform("eye", 0f, 0f, -6f);
+        setUniform("eye", 0f, 0f, 6f);
         setUniform("center", 0f, 0f, 0f);
         setUniform("up", 0f, 1f, 0f);
 
@@ -105,20 +105,7 @@ public class CardImage extends GLImage {
 
     @Override
     public void onMove(float dx, float dy) {
-        if (left != getLeft() || right != getRight() || bottom != getBottom() || top != getTop()) {
-            left = getLeft();
-            right = getRight();
-            bottom = getBottom();
-            top = getTop();
-            invMMVPMatrix = new float[16];
-            float[] mProjectionMatrix = new float[16];
-            Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, 3, 7);
-            float[] mViewMatrix = new float[16];
-            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -6, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
-            float[] mMVPMatrix = new float[16];
-            Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
-            Matrix.invertM(invMMVPMatrix, 0, mMVPMatrix, 0);
-        }
+        transformCoordinates();
         float[] d = new float[4];
         Matrix.multiplyMV(d, 0, invMMVPMatrix, 0, new float[]{dx, dy, 0, 0}, 0);
         for (GLObject card : selectCards) {
@@ -127,8 +114,7 @@ public class CardImage extends GLImage {
         }
     }
 
-    @Override
-    public void onDown(float x, float y) {
+    private void transformCoordinates() {
         if (left != getLeft() || right != getRight() || bottom != getBottom() || top != getTop()) {
             left = getLeft();
             right = getRight();
@@ -138,11 +124,17 @@ public class CardImage extends GLImage {
             float[] mProjectionMatrix = new float[16];
             Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, 3, 7);
             float[] mViewMatrix = new float[16];
-            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -6, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 6, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
             float[] mMVPMatrix = new float[16];
             Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+            Matrix.rotateM(mMVPMatrix, 0, -90f, 0f, 0f, 1f);
             Matrix.invertM(invMMVPMatrix, 0, mMVPMatrix, 0);
         }
+    }
+
+    @Override
+    public void onDown(float x, float y) {
+        transformCoordinates();
         float[] v = new float[4];
         Matrix.multiplyMV(v, 0, invMMVPMatrix, 0, new float[]{x, y, 0, 1}, 0);
         ArrayList<GLObject> cards = getObjects();
