@@ -34,7 +34,7 @@ public class BackGround extends GLImage {
                         "}",
                 GL.GL_TRIANGLES, 0, 6
         );
-        useRatio("ratio");
+        setRatioName("ratio");
         setAttribute("vertex", false, 0, 0);
         setTexture("texture", R.drawable.mesa);
     }

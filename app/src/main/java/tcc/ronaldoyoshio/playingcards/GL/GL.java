@@ -248,4 +248,9 @@ public class GL{
         GLES20.glGetIntegerv(pname, params, offset);
         checkGlError("glGetIntegerv");
     }
+
+    public static void glViewport(int x, int y, int width, int height) {
+        GLES20.glViewport(x, y, width, height);
+        checkGlError("glViewport");
+    }
 }

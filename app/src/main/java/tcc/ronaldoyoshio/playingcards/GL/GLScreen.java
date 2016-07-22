@@ -33,7 +33,7 @@ public class GLScreen extends GLSurfaceView {
     public boolean onTouchEvent(MotionEvent event) {
 
         float x = (2 * event.getX() - getWidth()) / getWidth();
-        float y = (2 * event.getY() - getHeight()) / getHeight();
+        float y = (getHeight() - 2 * event.getY()) / getHeight();
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:

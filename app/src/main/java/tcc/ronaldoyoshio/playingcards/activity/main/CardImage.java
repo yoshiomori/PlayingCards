@@ -95,11 +95,14 @@ public class CardImage extends GLImage {
     }
 
     protected void print(PlayingCards cards) {
-        ArrayList<GLObject> thisCards = getObjects();
-        thisCards.clear();
+        clear();
+        GLObject object;
         for (String card :
                 cards) {
-            addObject(new float[] {0, 0}, cardData.getCardCoord(card));
+            object = new GLObject();
+            object.setPosition(0, 0);
+            object.setColor(cardData.getCardCoord(card));
+            add(object);
         }
     }
 
@@ -137,13 +140,12 @@ public class CardImage extends GLImage {
         transformCoordinates();
         float[] v = new float[4];
         Matrix.multiplyMV(v, 0, invMMVPMatrix, 0, new float[]{x, y, 0, 1}, 0);
-        ArrayList<GLObject> cards = getObjects();
-        for(int index = cards.size() - 1; index >= 0; index--) {
-            if (!selectCards.contains(cards.get(index))) {
-                float[] position = cards.get(index).getPosition();
+        for(int index = size() - 1; index >= 0; index--) {
+            if (!selectCards.contains(get(index))) {
+                float[] position = get(index).getPosition();
                 if (Math.abs(position[0] - v[0] * 6f) <= 0.890552f
                         && Math.abs(position[1] - v[1] * 6f ) <= 0.634646f) {
-                    selectCards.add(cards.get(index));
+                    selectCards.add(get(index));
                     break;
                 }
             }

@@ -12,7 +12,7 @@ import java.util.HashMap;
  * Abstração de dados usados para renderizar com a biblioteca gráfica.
  * Created by mori on 09/07/16.
  */
-public abstract class GLImage {
+public abstract class GLImage extends ArrayList<GLImage.GLObject> {
 
     private int arrayIndex = -1;
     private int elementArrayIndex = -1;
@@ -31,7 +31,6 @@ public abstract class GLImage {
     private Resources resources;
     private int bitmapId = -1;
     private String positionName = "";
-    private ArrayList<GLObject> objects = new ArrayList<>();
     private String colorName = "";
     private String leftName = "";
     private String rightName = "";
@@ -44,13 +43,11 @@ public abstract class GLImage {
     private float bottom = -1f;
     private float ratio;
     private String ratioName = "";
+    private String scaleName = "";
+    private String orientationName = "";
 
-    public void useRatio(String uniformName) {
+    public void setRatioName(String uniformName) {
         ratioName = uniformName;
-    }
-
-    protected ArrayList<GLObject> getObjects() {
-        return objects;
     }
 
     public void setTexture(String name, int id) {
@@ -299,7 +296,7 @@ public abstract class GLImage {
         defineAttributes();
         defineUniforms();
         for (GLObject object :
-                objects) {
+                this) {
             GLUniform uniform;
             if (!positionName.isEmpty()) {
                 uniform = uniforms.get(positionName);
@@ -311,9 +308,20 @@ public abstract class GLImage {
                 uniform.setValue(object.getColor());
                 uniform.define();
             }
+            if (!scaleName.isEmpty()) {
+                uniform = uniforms.get(scaleName);
+                uniform.setValue(object.getScale());
+                uniform.define();
+            }
+            if (!orientationName.isEmpty()) {
+                uniform = uniforms.get(orientationName);
+                uniform.setValue(object.getOrientation());
+                uniform.define();
+            }
             draw();
         }
-        if (objects.isEmpty() & positionName.isEmpty() & colorName.isEmpty()) {
+        if (this.isEmpty() & positionName.isEmpty() & colorName.isEmpty() & scaleName.isEmpty()
+                & orientationName.isEmpty()) {
             draw();
         }
     }
@@ -338,7 +346,8 @@ public abstract class GLImage {
     private void defineUniforms() {
         for (String uniformName :
                 uniforms.keySet()) {
-            if (!uniformName.equals(positionName) & !uniformName.equals(colorName)) {
+            if (!uniformName.equals(positionName) & !uniformName.equals(colorName)
+                    & !uniformName.equals(scaleName) & !uniformName.equals(orientationName)) {
                 uniforms.get(uniformName).define();
             }
         }
@@ -387,7 +396,7 @@ public abstract class GLImage {
         return bitmapId;
     }
 
-    public abstract void onMove(float x, float y);
+    public abstract void onMove(float dx, float dy);
 
     protected float getLeft() {
         return left;
@@ -417,9 +426,11 @@ public abstract class GLImage {
         this.ratio = ratio;
     }
 
-    protected class GLObject {
-        private float[] position = new float[3];
-        private float[] color = new float[3];
+    public class GLObject {
+        private float[] position = new float[] {0f, 0f, 0f};
+        private float[] color = new float[] {0f, 0f, 0f, 1f};
+        private float[] scale = new float[] {1f, 1f, 1f};
+        private float[] orientation = new float[] {0f, 0f, 0f};
 
         public float[] getPosition() {
             return position;
@@ -433,22 +444,25 @@ public abstract class GLImage {
             System.arraycopy(position, 0, this.position, 0, position.length);
         }
 
-        public void setColor(float[] color) {
+        public void setColor(float... color) {
             System.arraycopy(color, 0, this.color, 0, color.length);
         }
-    }
 
-    protected void addObject(float[] position) {
-        GLObject object = new GLObject();
-        object.setPosition(position);
-        objects.add(object);
-    }
+        public void setScale(float... scale) {
+            System.arraycopy(scale, 0, this.scale, 0, scale.length);
+        }
 
-    protected void addObject(float[] position, float[] color) {
-        GLObject object = new GLObject();
-        object.setPosition(position);
-        object.setColor(color);
-        objects.add(object);
+        public float[] getScale() {
+            return scale;
+        }
+
+        public float[] getOrientation() {
+            return orientation;
+        }
+
+        public void setOrientation(float... orientation) {
+            System.arraycopy(orientation, 0, this.orientation, 0, orientation.length);
+        }
     }
 
     protected void setPositionName(String uniformName) {
@@ -461,6 +475,14 @@ public abstract class GLImage {
 
     protected void setColorName(String uniformName) {
         colorName = uniformName;
+        if (uniforms.containsKey(uniformName)) {
+            throw new RuntimeException("Uniform " + uniformName + " em uso!");
+        }
+        uniforms.put(uniformName, new GLUniform());
+    }
+
+    protected void setScaleName(String uniformName) {
+        scaleName = uniformName;
         if (uniforms.containsKey(uniformName)) {
             throw new RuntimeException("Uniform " + uniformName + " em uso!");
         }
