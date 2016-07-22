@@ -32,15 +32,6 @@ public abstract class GLImage extends ArrayList<GLImage.GLObject> {
     private int bitmapId = -1;
     private String positionName = "";
     private String colorName = "";
-    private String leftName = "";
-    private String rightName = "";
-    private String topName = "";
-    private String bottomName = "";
-    private boolean screen = false;
-    private float left = -1f;
-    private float right = -1f;
-    private float top = -1f;
-    private float bottom = -1f;
     private float ratio;
     private String ratioName = "";
     private String scaleName = "";
@@ -53,15 +44,6 @@ public abstract class GLImage extends ArrayList<GLImage.GLObject> {
     public void setTexture(String name, int id) {
         setUniform(name, 0);
         bitmapId = id;
-    }
-
-    public void setScreen(String uniformNameLeft, String uniformNameRight, String uniformNameTop,
-                          String uniformNameBottom) {
-        leftName = uniformNameLeft;
-        rightName = uniformNameRight;
-        topName = uniformNameTop;
-        bottomName = uniformNameBottom;
-        screen = true;
     }
 
     protected void setAttribute(String name, Boolean normalized, int stride, int offset){
@@ -365,20 +347,10 @@ public abstract class GLImage extends ArrayList<GLImage.GLObject> {
         return textureIndex;
     }
 
-    public void setScreen(float ratio) {
+    public void setRatio(float ratio) {
         this.ratio = ratio;
         if (!ratioName.isEmpty()) {
             setUniform(ratioName, ratio);
-        }
-        if (screen) {
-            left = ratio <= 1f ? -ratio : -1f;
-            setUniform(leftName, left);
-            right = ratio <= 1f ? ratio : 1f;
-            setUniform(rightName, right);
-            bottom = ratio > 1f ? -1f / ratio : -1f;
-            setUniform(bottomName, bottom);
-            top = ratio > 1f ? 1f / ratio : 1f;
-            setUniform(topName, top);
         }
     }
 
@@ -398,22 +370,6 @@ public abstract class GLImage extends ArrayList<GLImage.GLObject> {
 
     public abstract void onMove(float dx, float dy);
 
-    protected float getLeft() {
-        return left;
-    }
-
-    protected float getRight() {
-        return right;
-    }
-
-    protected float getTop() {
-        return top;
-    }
-
-    protected float getBottom() {
-        return bottom;
-    }
-
     public abstract void onDown(float x, float y);
 
     public abstract void onUp();
@@ -422,15 +378,11 @@ public abstract class GLImage extends ArrayList<GLImage.GLObject> {
         return ratio;
     }
 
-    public void setRatio(float ratio) {
-        this.ratio = ratio;
-    }
-
     public class GLObject {
-        private float[] position = new float[] {0f, 0f, 0f};
+        private float[] position = new float[] {0f, 0f, 0f, 1f};
         private float[] color = new float[] {0f, 0f, 0f, 1f};
-        private float[] scale = new float[] {1f, 1f, 1f};
-        private float[] orientation = new float[] {0f, 0f, 0f};
+        private float[] scale = new float[] {1f, 1f, 1f, 1f};
+        private float[] orientation = new float[] {0f, 0f, 0f, 0f};
 
         public float[] getPosition() {
             return position;
@@ -483,6 +435,14 @@ public abstract class GLImage extends ArrayList<GLImage.GLObject> {
 
     protected void setScaleName(String uniformName) {
         scaleName = uniformName;
+        if (uniforms.containsKey(uniformName)) {
+            throw new RuntimeException("Uniform " + uniformName + " em uso!");
+        }
+        uniforms.put(uniformName, new GLUniform());
+    }
+
+    protected void setOrientationName(String uniformName) {
+        orientationName = uniformName;
         if (uniforms.containsKey(uniformName)) {
             throw new RuntimeException("Uniform " + uniformName + " em uso!");
         }

@@ -25,12 +25,12 @@ public class MainActivity extends Activity {
 
         PlayingCards cards = new PlayingCards();
         cardImage.print(cards);
-        cards.shuffle();
-        cardImage.print(cards);
-        cards.remove("Joker Black");
-        cardImage.print(cards);
-        cards.clear();
-        cards.add("Joker Black");
-        cardImage.print(cards);
+//        cards.shuffle();
+//        cardImage.print(cards);
+//        cards.remove("Joker Black");
+//        cardImage.print(cards);
+//        cards.clear();
+//        cards.add("Joker Black");
+//        cardImage.print(cards);
     }
 }

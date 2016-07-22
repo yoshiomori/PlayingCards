@@ -76,7 +76,7 @@ public class GLRenderer implements GLSurfaceView.Renderer{
         float ratio = (float) width / height;
         for (GLImage image :
                 images) {
-            image.setScreen(ratio);
+            image.setRatio(ratio);
         }
     }
 

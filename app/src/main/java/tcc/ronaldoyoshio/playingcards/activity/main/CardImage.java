@@ -16,12 +16,9 @@ import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
  */
 public class CardImage extends GLImage {
     private final CardData cardData;
-    private ArrayList<GLObject> selectCards = new ArrayList<>();
-    private float[] invMMVPMatrix;
-    private float left = 0;
-    private float right = 0;
-    private float bottom = 0;
-    private float top = 0;
+    private ArrayList<float[]> selectCards = new ArrayList<>();
+    float[] m = new float[16];
+    float[] v = new float[4];
 
     public CardImage() {
         cardData = new CardData();
@@ -30,67 +27,106 @@ public class CardImage extends GLImage {
         setShader(
                 "/* Vertex Shader */" +
                         "attribute vec3 vertex;" +
-                        "uniform float right, left, top, bottom, near, far;" +
-                        "uniform vec3 eye, center, up;" +
-                        "uniform vec2 card_coord, position;" +
-                        "varying vec2 texture_coord;" +
-                        "mat4 frustum() {" +
-                        "   float r_width  = 1.0 / (right - left);" +
-                        "   float r_height = 1.0 / (top - bottom);" +
-                        "   float r_depth  = 1.0 / (near - far);" +
-                        "   float x = 2.0 * (near * r_width);" +
-                        "   float y = 2.0 * (near * r_height);" +
-                        "   float A = (right + left) * r_width;" +
-                        "   float B = (top + bottom) * r_height;" +
-                        "   float C = (far + near) * r_depth;" +
-                        "   float D = 2.0 * (far * near * r_depth);" +
-                        "   return mat4(x, 0, 0, 0, 0, y, 0, 0, A, B, C, -1, 0, 0, D, 0);" +
+                        "uniform float ratio;" +
+                        "uniform vec2 position, scale;" +
+                        "uniform vec4 orientation;" +
+                        "varying vec3 texture_coord;" +
+                        "mat4 projection() {" +
+                        "   float width = ratio > 1.0 ? 1.0 / ratio : 1.0;" +
+                        "   float height = ratio <= 1.0 ? ratio : 1.0;" +
+                        "   return mat4(" +
+                        "       width,  0     , 0, 0," +
+                        "       0    ,  height, 0, 0," +
+                        "       0    ,  0     , 1, 0," +
+                        "       0    ,  0     , 0, 1 " +
+                        "   );" +
                         "}" +
-                        "mat4 look_at() {" +
-                        "   vec3 f, s, u;" +
-                        "" +
-                        "   f = normalize(vec3(center - eye));" +
-                        "" +
-                        "   s = normalize(cross(f, up));" +
-                        "" +
-                        "   u = cross(s, f);" +
-                        "   return mat4(s.x, u.x, -f.x, 0," +
-                        "               s.y, u.y, -f.y, 0," +
-                        "               s.z, u.z, -f.z, 0," +
-                        "               0, 0, 0, 1)" +
-                        "       * mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -eye, 1);" +
+                        "mat4 model() {" +
+                        "   mat4 m;" +
+                        "   float s, c, a;" +
+                        "   m = mat4(" +
+                        "           scale.x, 0      , 0, 0," +
+                        "           0      , scale.y, 0, 0," +
+                        "           0      , 0      , 1, 0," +
+                        "           0      , 0      , 0, 1 " +
+                        "   );" +
+                        "   a = orientation.w;" +
+                        "   a *= 3.14159 / 180.0;" +
+                        "   s = sin(a);" +
+                        "   c = cos(a);" +
+                        "   m *= mat4(" +
+                        "            c, s, 0, 0," +
+                        "           -s, c, 0, 0," +
+                        "            0, 0, 1, 0," +
+                        "            0, 0, 0, 1 " +
+                        "   );" +
+                        "   m *= mat4(" +
+                        "           1, 0, 0, position.x," +
+                        "           0, 1, 0, position.y," +
+                        "           0, 0, 1, 0         ," +
+                        "           0, 0, 0, 1          " +
+                        "   );" +
+                        "   return m;" +
                         "}" +
                         "void main() {" +
-                        "   vec4 v = vec4(vertex, 1);" +
-                        "   v = mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0.890552, 0.634646, 0, 1) * v;" +
-                        "   v = mat4(0.561449, 0, 0, 0, 0, 0.787840, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) * v;" +
-                        "   v = mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, card_coord, 0, 1) * v;" +
-                        "   v = mat4(0.1998355, 0, 0, 0, 0, 0.0769158, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) * v;" +
-                        "   texture_coord = v.xy;" +
-                        "   gl_Position = frustum() * look_at() * mat4(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1) * mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, position, 0, 1) * vec4(vertex, 1);" +
+                        "   texture_coord = vertex;" +
+                        "   gl_Position = vec4(vertex, 1);" +
+                        "   gl_Position *= model();" +
+                        "   gl_Position *= projection();" +
                         "}",
                 "/* Fragment Shader */" +
                         "precision mediump float;" +
                         "uniform sampler2D texture;" +
-                        "varying vec2 texture_coord;" +
+                        "uniform vec2 card_coord;" +
+                        "varying vec3 texture_coord;" +
+                        "vec2 coord () {" +
+                        "   vec4 v = vec4(texture_coord, 1);" +
+                        "   v *= mat4(" +
+                        "       -1, 0, 0, 0," +
+                        "        0, 1, 0, 0," +
+                        "        0, 0, 1, 0," +
+                        "        0, 0, 0, 1 " +
+                        "   );" +
+                        "   v *= mat4(" +
+                        "       1, 0, 0, 0.890552," +
+                        "       0, 1, 0, 0.634646," +
+                        "       0, 0, 1, 0       ," +
+                        "       0, 0, 0, 1        " +
+                        "   );" +
+                        "   v *= mat4(" +
+                        "       0.561449, 0       , 0, 0," +
+                        "       0       , 0.787840, 0, 0," +
+                        "       0       , 0       , 1, 0," +
+                        "       0       , 0       , 0, 1 " +
+                        "   );" +
+                        "   v *= mat4(" +
+                        "       1, 0, 0, card_coord.x," +
+                        "       0, 1, 0, card_coord.y," +
+                        "       0, 0, 1, 0           ," +
+                        "       0, 0, 0, 1            " +
+                        "   );" +
+                        "   v *= mat4(" +
+                        "       0.1998355, 0        , 0, 0," +
+                        "       0        , 0.0769158, 0, 0," +
+                        "       0        , 0        , 1, 0," +
+                        "       0        , 0        , 0, 1 " +
+                        "   );" +
+                        "   return v.xy;" +
+                        "}" +
                         "void main() {" +
-                        "   gl_FragColor = texture2D(texture, texture_coord);" +
+                        "   gl_FragColor = texture2D(texture, coord());" +
                         "}",
                 GL.GL_TRIANGLES, 0, cardData.getCount()
         );
         setAttribute("vertex", false, 0, 0);
 
-        setScreen("left", "right", "bottom", "top");
-        setUniform("near", 3f);
-        setUniform("far", 7f);
-
-        setUniform("eye", 0f, 0f, 6f);
-        setUniform("center", 0f, 0f, 0f);
-        setUniform("up", 0f, 1f, 0f);
+        setRatioName("ratio");
 
         setTexture("texture", R.drawable.playing_cards);
 
         setPositionName("position");
+        setScaleName("scale");
+        setOrientationName("orientation");
         setColorName("card_coord");
     }
 
@@ -101,6 +137,8 @@ public class CardImage extends GLImage {
                 cards) {
             object = new GLObject();
             object.setPosition(0, 0);
+            object.setScale(0.7f, 0.7f);
+            object.setOrientation(0f, 0f, 1f, 90f);
             object.setColor(cardData.getCardCoord(card));
             add(object);
         }
@@ -108,49 +146,52 @@ public class CardImage extends GLImage {
 
     @Override
     public void onMove(float dx, float dy) {
-        transformCoordinates();
-        float[] d = new float[4];
-        Matrix.multiplyMV(d, 0, invMMVPMatrix, 0, new float[]{dx, dy, 0, 0}, 0);
-        for (GLObject card : selectCards) {
-            float[] position = card.getPosition();
-            card.setPosition(position[0] + d[0] * 6f, position[1] + d[1] * 6f);
-        }
-    }
+        float ratio = getRatio();
+        float width = ratio > 1f ? 1f / ratio : 1f;
+        float height = ratio <= 1f ? ratio : 1f;
 
-    private void transformCoordinates() {
-        if (left != getLeft() || right != getRight() || bottom != getBottom() || top != getTop()) {
-            left = getLeft();
-            right = getRight();
-            bottom = getBottom();
-            top = getTop();
-            invMMVPMatrix = new float[16];
-            float[] mProjectionMatrix = new float[16];
-            Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, 3, 7);
-            float[] mViewMatrix = new float[16];
-            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 6, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
-            float[] mMVPMatrix = new float[16];
-            Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
-            Matrix.rotateM(mMVPMatrix, 0, -90f, 0f, 0f, 1f);
-            Matrix.invertM(invMMVPMatrix, 0, mMVPMatrix, 0);
+        Matrix.setIdentityM(m, 0);
+        Matrix.scaleM(m, 0, width, height, 1);
+        Matrix.invertM(m, 0, m, 0);
+
+        Matrix.multiplyMV(v, 0, m, 0, new float[] {dx, dy, 0, 0}, 0);
+
+        for (float[] position :
+                selectCards) {
+            position[0] += v[0];
+            position[1] += v[1];
         }
     }
 
     @Override
     public void onDown(float x, float y) {
-        transformCoordinates();
-        float[] v = new float[4];
-        Matrix.multiplyMV(v, 0, invMMVPMatrix, 0, new float[]{x, y, 0, 1}, 0);
-        for(int index = size() - 1; index >= 0; index--) {
-            if (!selectCards.contains(get(index))) {
-                float[] position = get(index).getPosition();
-                if (Math.abs(position[0] - v[0] * 6f) <= 0.890552f
-                        && Math.abs(position[1] - v[1] * 6f ) <= 0.634646f) {
-                    selectCards.add(get(index));
-                    break;
-                }
+        float ratio = getRatio();
+        float width = ratio > 1f ? 1f / ratio : 1f;
+        float height = ratio <= 1f ? ratio : 1f;
+
+        for (int index = size() - 1; index >= 0; index--) {
+            GLObject card = get(index);
+
+            Matrix.setIdentityM(m, 0);
+
+            float[] position = card.getPosition();
+            float[] orientation = card.getOrientation();
+            float[] scale = card.getScale();
+
+            Matrix.scaleM(m, 0, width, height, 1);
+            Matrix.translateM(m, 0, position[0], position[1], 1);
+            Matrix.rotateM(m, 0, orientation[3], 0, 0, 1f);
+            Matrix.scaleM(m, 0, scale[0], scale[1], 1);
+
+            Matrix.invertM(m, 0, m, 0);
+
+            Matrix.multiplyMV(v, 0, m, 0, new float[] {x, y, 0, 1}, 0);
+
+            if (-0.890552f <= v[0] && v[0] <= 0.890552f && -0.634646f <= v[1] && v[1] <= 0.634646f) {
+                selectCards.add(position);
+                break;
             }
         }
-
     }
 
     @Override
