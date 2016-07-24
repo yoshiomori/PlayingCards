@@ -6,13 +6,14 @@ import android.graphics.BitmapFactory;
 
 import java.nio.Buffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 /**
  * Abstração de dados usados para renderizar com a biblioteca gráfica.
  * Created by mori on 09/07/16.
  */
-public abstract class GLImage extends ArrayList<GLImage.GLObject> {
+public abstract class GLImage extends ArrayList<GLObject> {
 
     private int arrayIndex = -1;
     private int elementArrayIndex = -1;
@@ -30,12 +31,9 @@ public abstract class GLImage extends ArrayList<GLImage.GLObject> {
     private int textureIndex = -1;
     private Resources resources;
     private int bitmapId = -1;
-    private String positionName = "";
-    private String colorName = "";
     private float ratio;
     private String ratioName = "";
-    private String scaleName = "";
-    private String orientationName = "";
+    private ArrayList<String> objectUniformNames = new ArrayList<>();
 
     public void setRatioName(String uniformName) {
         ratioName = uniformName;
@@ -279,31 +277,10 @@ public abstract class GLImage extends ArrayList<GLImage.GLObject> {
         defineUniforms();
         for (GLObject object :
                 this) {
-            GLUniform uniform;
-            if (!positionName.isEmpty()) {
-                uniform = uniforms.get(positionName);
-                uniform.setValue(object.getPosition());
-                uniform.define();
-            }
-            if (!colorName.isEmpty()) {
-                uniform = uniforms.get(colorName);
-                uniform.setValue(object.getColor());
-                uniform.define();
-            }
-            if (!scaleName.isEmpty()) {
-                uniform = uniforms.get(scaleName);
-                uniform.setValue(object.getScale());
-                uniform.define();
-            }
-            if (!orientationName.isEmpty()) {
-                uniform = uniforms.get(orientationName);
-                uniform.setValue(object.getOrientation());
-                uniform.define();
-            }
+            object.bind(uniforms, objectUniformNames);
             draw();
         }
-        if (this.isEmpty() & positionName.isEmpty() & colorName.isEmpty() & scaleName.isEmpty()
-                & orientationName.isEmpty()) {
+        if (this.isEmpty()) {
             draw();
         }
     }
@@ -328,8 +305,7 @@ public abstract class GLImage extends ArrayList<GLImage.GLObject> {
     private void defineUniforms() {
         for (String uniformName :
                 uniforms.keySet()) {
-            if (!uniformName.equals(positionName) & !uniformName.equals(colorName)
-                    & !uniformName.equals(scaleName) & !uniformName.equals(orientationName)) {
+            if (!objectUniformNames.contains(uniformName)) {
                 uniforms.get(uniformName).define();
             }
         }
@@ -378,74 +354,14 @@ public abstract class GLImage extends ArrayList<GLImage.GLObject> {
         return ratio;
     }
 
-    public class GLObject {
-        private float[] position = new float[] {0f, 0f, 0f, 1f};
-        private float[] color = new float[] {0f, 0f, 0f, 1f};
-        private float[] scale = new float[] {1f, 1f, 1f, 1f};
-        private float[] orientation = new float[] {0f, 0f, 0f, 0f};
-
-        public float[] getPosition() {
-            return position;
+    protected void setObjectUniformNames(String... objectUniformNames) {
+        Collections.addAll(this.objectUniformNames, objectUniformNames);
+        for (String objectUniformName :
+                objectUniformNames) {
+            if (uniforms.containsKey(objectUniformName)) {
+                throw new RuntimeException("Uniform " + objectUniformName + " em uso!");
+            }
+            uniforms.put(objectUniformName, new GLUniform());
         }
-
-        public float[] getColor() {
-            return color;
-        }
-
-        public void setPosition(float... position) {
-            System.arraycopy(position, 0, this.position, 0, position.length);
-        }
-
-        public void setColor(float... color) {
-            System.arraycopy(color, 0, this.color, 0, color.length);
-        }
-
-        public void setScale(float... scale) {
-            System.arraycopy(scale, 0, this.scale, 0, scale.length);
-        }
-
-        public float[] getScale() {
-            return scale;
-        }
-
-        public float[] getOrientation() {
-            return orientation;
-        }
-
-        public void setOrientation(float... orientation) {
-            System.arraycopy(orientation, 0, this.orientation, 0, orientation.length);
-        }
-    }
-
-    protected void setPositionName(String uniformName) {
-        positionName = uniformName;
-        if (uniforms.containsKey(uniformName)) {
-            throw new RuntimeException("Uniform " + uniformName + " em uso!");
-        }
-        uniforms.put(uniformName, new GLUniform());
-    }
-
-    protected void setColorName(String uniformName) {
-        colorName = uniformName;
-        if (uniforms.containsKey(uniformName)) {
-            throw new RuntimeException("Uniform " + uniformName + " em uso!");
-        }
-        uniforms.put(uniformName, new GLUniform());
-    }
-
-    protected void setScaleName(String uniformName) {
-        scaleName = uniformName;
-        if (uniforms.containsKey(uniformName)) {
-            throw new RuntimeException("Uniform " + uniformName + " em uso!");
-        }
-        uniforms.put(uniformName, new GLUniform());
-    }
-
-    protected void setOrientationName(String uniformName) {
-        orientationName = uniformName;
-        if (uniforms.containsKey(uniformName)) {
-            throw new RuntimeException("Uniform " + uniformName + " em uso!");
-        }
-        uniforms.put(uniformName, new GLUniform());
     }
 }

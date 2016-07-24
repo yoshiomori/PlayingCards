@@ -5,6 +5,7 @@ import android.opengl.Matrix;
 
 import tcc.ronaldoyoshio.playingcards.GL.GL;
 import tcc.ronaldoyoshio.playingcards.GL.GLImage;
+import tcc.ronaldoyoshio.playingcards.GL.GLObject;
 import tcc.ronaldoyoshio.playingcards.R;
 
 /**
@@ -70,18 +71,17 @@ public class ButtonImage extends GLImage {
 
         setTexture("texture", R.drawable.menu_text);
 
-        setPositionName("position");
-        setColorName("color");
+        setObjectUniformNames("position", "color");
         GLObject button;
 
         button = new GLObject();
-        button.setPosition(0f, 0.33f);
-        button.setColor(0f, 0f);
+        button.set("position", 0f, 0.33f);
+        button.set("color", 0f, 0f);
         add(button);
 
         button = new GLObject();
-        button.setPosition(0f, -0.33f);
-        button.setColor(0f, 0.5f);
+        button.set("position", 0f, -0.33f);
+        button.set("color", 0f, 0.5f);
         add(button);
     }
 
@@ -101,7 +101,7 @@ public class ButtonImage extends GLImage {
         for (GLObject button :
                 this) {
             Matrix.setIdentityM(m, 0);
-            float[] position = button.getPosition();
+            float[] position = button.getFloats("position");
             Matrix.translateM(m, 0, projection, 0, position[0], position[1], 0f);
             Matrix.scaleM(m, 0, 0.5f, 0.5f, 1f);
             Matrix.scaleM(m, 0, 1f, 0.216f, 1f);
@@ -110,7 +110,7 @@ public class ButtonImage extends GLImage {
             System.out.println(v[0] + ", " + v[1]);
             if (-1 <= v[0] & v[0] <= 1 & -1 <= v[1] & v[1] <= 1) {
                 System.out.println("Botão pressionado");
-                float[] color = button.getColor();
+                float[] color = button.getFloats("color");
                 if (0f == color[1]) {
                     System.out.println("Hospedar");
 

@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import tcc.ronaldoyoshio.playingcards.GL.GL;
 import tcc.ronaldoyoshio.playingcards.GL.GLImage;
+import tcc.ronaldoyoshio.playingcards.GL.GLObject;
 import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
 
@@ -124,10 +125,7 @@ public class CardImage extends GLImage {
 
         setTexture("texture", R.drawable.playing_cards);
 
-        setPositionName("position");
-        setScaleName("scale");
-        setOrientationName("orientation");
-        setColorName("card_coord");
+        setObjectUniformNames("position", "scale", "orientation", "card_coord");
     }
 
     protected void print(PlayingCards cards) {
@@ -136,10 +134,10 @@ public class CardImage extends GLImage {
         for (String card :
                 cards) {
             object = new GLObject();
-            object.setPosition(0, 0);
-            object.setScale(0.7f, 0.7f);
-            object.setOrientation(0f, 0f, 1f, 90f);
-            object.setColor(cardData.getCardCoord(card));
+            object.set("position", 0, 0);
+            object.set("scale", 0.7f, 0.7f);
+            object.set("orientation", 0f, 0f, 1f, 90f);
+            object.set("card_coord", cardData.getCardCoord(card));
             add(object);
         }
     }
@@ -174,9 +172,9 @@ public class CardImage extends GLImage {
 
             Matrix.setIdentityM(m, 0);
 
-            float[] position = card.getPosition();
-            float[] orientation = card.getOrientation();
-            float[] scale = card.getScale();
+            float[] position = card.getFloats("position");
+            float[] orientation = card.getFloats("orientation");
+            float[] scale = card.getFloats("scale");
 
             Matrix.scaleM(m, 0, width, height, 1);
             Matrix.translateM(m, 0, position[0], position[1], 1);
