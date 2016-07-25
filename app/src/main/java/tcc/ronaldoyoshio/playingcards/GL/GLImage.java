@@ -1,6 +1,5 @@
 package tcc.ronaldoyoshio.playingcards.GL;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.MotionEvent;
@@ -30,9 +29,15 @@ public abstract class GLImage extends ArrayList<GLObject> {
     private int count = -1;
     private Bitmap bitmap;
     private int textureIndex = -1;
-    private Resources resources;
+    private GLScreen context = null;
     private int bitmapId = -1;
     private ArrayList<String> objectUniformNames = new ArrayList<>();
+
+    protected void requestRender() {
+        if (context != null) {
+            context.requestRender();
+        }
+    }
 
     public void setTexture(String name, int id) {
         setUniform(name, 0);
@@ -318,14 +323,14 @@ public abstract class GLImage extends ArrayList<GLObject> {
         return textureIndex;
     }
 
-    public void setResources(Resources resources) {
-        this.resources = resources;
+    public void setContext(GLScreen context) {
+        this.context = context;
     }
 
     public void loadDatas() {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;	// No pre-scaling
-        this.bitmap = bitmapId < 0 ? null : BitmapFactory.decodeResource(resources, bitmapId, options);
+        this.bitmap = bitmapId < 0 ? null : BitmapFactory.decodeResource(context.getResources(), bitmapId, options);
     }
 
     public int getBitmapId() {

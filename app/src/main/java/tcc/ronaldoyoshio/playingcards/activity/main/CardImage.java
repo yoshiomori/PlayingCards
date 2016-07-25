@@ -4,6 +4,7 @@ import android.opengl.Matrix;
 import android.view.MotionEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import tcc.ronaldoyoshio.playingcards.GL.GL;
@@ -17,6 +18,9 @@ import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
  * Created by mori on 15/07/16.
  */
 public class CardImage extends GLImage {
+    public static final int SIDEBYSIDE = 1;
+    public static final int CENTERED = 0;
+    private int mode;
     private CardData cardData;
     private ArrayList<float[]> selectCards = new ArrayList<>();
     float[] m = new float[16];
@@ -25,6 +29,9 @@ public class CardImage extends GLImage {
     private float mPreviousY;
     private float width;
     private float height;
+    private PlayingCards cards;
+    private float r_width;
+    private float r_height;
 
     public CardImage() {
         cardData = new CardData();
@@ -54,8 +61,8 @@ public class CardImage extends GLImage {
                         "   mat4 m;" +
                         "   float s, c, a;" +
                         "   m = mat4(" +
-                        "           0.7f, 0      , 0, 0," +
-                        "           0      , 0.7f, 0, 0," +
+                        "           0.4, 0      , 0, 0," +
+                        "           0      , 0.4, 0, 0," +
                         "           0      , 0   , 1, 0," +
                         "           0      , 0   , 0, 1 " +
                         "   );" +
@@ -130,32 +137,72 @@ public class CardImage extends GLImage {
         setObjectUniformNames("position", "card_coord");
     }
 
-    protected void print(PlayingCards cards) {
-        clear();
-        GLObject object;
-        for (String card :
-                cards) {
-            object = new GLObject();
-            object.set("position", 0, 0);
-            object.set("card_coord", cardData.getCardCoord(card));
-            add(object);
-        }
+    public void print(PlayingCards cards, int mode) {
+        this.cards = cards;
+        changeMode(mode);
+    }
+
+    private void changeMode(int mode) {
+        this.mode = mode;
+        requestRender();
     }
 
     @Override
     protected void onSurfaceChanged(int width, int height) {
         this.width = width;
         this.height = height;
-        setUniform("ratio", (float) width / height);
+
+        float ratio = (float) width / height;
+
+        r_width = ratio > 1f ? 1f / ratio : 1f;
+        r_height = ratio <= 1f ? ratio : 1f;
+
+        System.out.println(r_width + ", " + r_height);
+
+        setUniform("ratio", ratio);
+
+        GLObject object;
+        switch (mode) {
+            case CENTERED:
+                clear();
+                for (String card :
+                        cards) {
+                    object = new GLObject();
+                    object.set("position", 0, 0);
+                    object.set("card_coord", cardData.getCardCoord(card));
+                    add(object);
+                }
+                break;
+            case SIDEBYSIDE:
+                clear();
+                float x = - 1 / r_width + 0.634646f * 0.4f;
+                float y = 1 / r_height - 0.890552f * 0.4f;
+                for (String card :
+                        cards) {
+                    object = new GLObject();
+                    object.set("position", x, y);
+                    if (x <= 1 / r_width - 0.634646f * 0.4f) {
+                        x += 0.634646f * 0.4f;
+                    }
+                    else {
+                        x = - 1 / r_width + 0.634646f * 0.4f;
+                        if (y >= - 1 / r_height + 0.890552f * 0.4f) {
+                            y -= 0.890552f * 0.4f;
+                        }
+                        else {
+                            y = 1 / r_height - 0.890552f * 0.4f;
+                        }
+                    }
+                    object.set("card_coord", cardData.getCardCoord(card));
+                    add(object);
+                }
+                break;
+        }
+        mode = -1;
     }
 
     @Override
     public void onTouchEvent(MotionEvent event) {
-        float ratio = width / height;
-
-        float r_width = ratio > 1f ? 1f / ratio : 1f;
-        float r_height = ratio <= 1f ? ratio : 1f;
-
         float x = (2 * event.getX() - width) / width;
         float y = (height - 2 * event.getY()) / height;
 
@@ -180,20 +227,26 @@ public class CardImage extends GLImage {
                 for (int index = size() - 1; index >= 0; index--) {
                     GLObject card = get(index);
 
-                    Matrix.setIdentityM(m, 0);
-
                     float[] position = card.getFloats("position");
 
+                    Matrix.setIdentityM(m, 0);
                     Matrix.scaleM(m, 0, r_width, r_height, 1);
                     Matrix.translateM(m, 0, position[0], position[1], 1);
                     Matrix.rotateM(m, 0, 90f, 0, 0, 1f);
-                    Matrix.scaleM(m, 0, 0.7f, 0.7f, 1);
+                    Matrix.scaleM(m, 0, 0.4f, 0.4f, 1);
 
                     Matrix.invertM(m, 0, m, 0);
 
                     Matrix.multiplyMV(v, 0, m, 0, new float[] {x, y, 0, 1}, 0);
 
                     if (-0.890552f <= v[0] && v[0] <= 0.890552f && -0.634646f <= v[1] && v[1] <= 0.634646f) {
+                        Matrix.setIdentityM(m, 0);
+                        Matrix.scaleM(m, 0, r_width, r_height, 1);
+                        Matrix.translateM(m, 0, position[0], position[1], 1);
+                        Matrix.rotateM(m, 0, 90f, 0, 0, 1f);
+                        Matrix.scaleM(m, 0, 0.4f, 0.4f, 1);
+                        Matrix.multiplyMV(v, 0, m, 0, new float[] {0.890552f, 0.634646f, 0, 0}, 0);
+                        System.out.println(Arrays.toString(v));
                         selectCards.add(position);
                         break;
                     }

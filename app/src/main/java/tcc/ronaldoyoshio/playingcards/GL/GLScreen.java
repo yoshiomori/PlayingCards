@@ -20,7 +20,7 @@ public class GLScreen extends GLSurfaceView {
     public void setImages(GLImage... images) {
         for (GLImage image :
                 images) {
-            image.setResources(getResources());
+            image.setContext(this);
         }
         renderer.setImages(images);
         this.images = images;
