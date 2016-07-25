@@ -30,20 +30,6 @@ public class CardImage extends GLImage {
         cardData = new CardData();
     }
 
-    protected void print(PlayingCards cards) {
-        clear();
-        GLObject object;
-        for (String card :
-                cards) {
-            object = new GLObject();
-            object.set("position", 0, 0);
-            object.set("scale", 0.7f, 0.7f);
-            object.set("orientation", 0f, 0f, 1f, 90f);
-            object.set("card_coord", cardData.getCardCoord(card));
-            add(object);
-        }
-    }
-
     @Override
     protected void onSurfaceCreated() {
         setArray(cardData.getArray());
@@ -52,8 +38,7 @@ public class CardImage extends GLImage {
                 "/* Vertex Shader */" +
                         "attribute vec2 vertex;" +
                         "uniform float ratio;" +
-                        "uniform vec2 position, scale;" +
-                        "uniform vec4 orientation;" +
+                        "uniform vec2 position;" +
                         "varying vec2 texture_coord;" +
                         "mat4 projection() {" +
                         "   float width = ratio > 1.0 ? 1.0 / ratio : 1.0;" +
@@ -69,18 +54,14 @@ public class CardImage extends GLImage {
                         "   mat4 m;" +
                         "   float s, c, a;" +
                         "   m = mat4(" +
-                        "           scale.x, 0      , 0, 0," +
-                        "           0      , scale.y, 0, 0," +
-                        "           0      , 0      , 1, 0," +
-                        "           0      , 0      , 0, 1 " +
+                        "           0.7f, 0      , 0, 0," +
+                        "           0      , 0.7f, 0, 0," +
+                        "           0      , 0   , 1, 0," +
+                        "           0      , 0   , 0, 1 " +
                         "   );" +
-                        "   a = orientation.w;" +
-                        "   a *= 3.14159 / 180.0;" +
-                        "   s = sin(a);" +
-                        "   c = cos(a);" +
                         "   m *= mat4(" +
-                        "            c, s, 0, 0," +
-                        "           -s, c, 0, 0," +
+                        "            0, 1, 0, 0," +
+                        "           -1, 0, 0, 0," +
                         "            0, 0, 1, 0," +
                         "            0, 0, 0, 1 " +
                         "   );" +
@@ -146,7 +127,19 @@ public class CardImage extends GLImage {
 
         setTexture("texture", R.drawable.playing_cards);
 
-        setObjectUniformNames("position", "scale", "orientation", "card_coord");
+        setObjectUniformNames("position", "card_coord");
+    }
+
+    protected void print(PlayingCards cards) {
+        clear();
+        GLObject object;
+        for (String card :
+                cards) {
+            object = new GLObject();
+            object.set("position", 0, 0);
+            object.set("card_coord", cardData.getCardCoord(card));
+            add(object);
+        }
     }
 
     @Override
@@ -190,13 +183,11 @@ public class CardImage extends GLImage {
                     Matrix.setIdentityM(m, 0);
 
                     float[] position = card.getFloats("position");
-                    float[] orientation = card.getFloats("orientation");
-                    float[] scale = card.getFloats("scale");
 
                     Matrix.scaleM(m, 0, r_width, r_height, 1);
                     Matrix.translateM(m, 0, position[0], position[1], 1);
-                    Matrix.rotateM(m, 0, orientation[3], 0, 0, 1f);
-                    Matrix.scaleM(m, 0, scale[0], scale[1], 1);
+                    Matrix.rotateM(m, 0, 90f, 0, 0, 1f);
+                    Matrix.scaleM(m, 0, 0.7f, 0.7f, 1);
 
                     Matrix.invertM(m, 0, m, 0);
 
