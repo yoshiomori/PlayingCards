@@ -1,6 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.activity.main;
 
 import android.opengl.Matrix;
+import android.view.MotionEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,13 +17,35 @@ import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
  * Created by mori on 15/07/16.
  */
 public class CardImage extends GLImage {
-    private final CardData cardData;
+    private CardData cardData;
     private ArrayList<float[]> selectCards = new ArrayList<>();
     float[] m = new float[16];
     float[] v = new float[4];
+    private float mPreviousX;
+    private float mPreviousY;
+    private float width;
+    private float height;
 
     public CardImage() {
         cardData = new CardData();
+    }
+
+    protected void print(PlayingCards cards) {
+        clear();
+        GLObject object;
+        for (String card :
+                cards) {
+            object = new GLObject();
+            object.set("position", 0, 0);
+            object.set("scale", 0.7f, 0.7f);
+            object.set("orientation", 0f, 0f, 1f, 90f);
+            object.set("card_coord", cardData.getCardCoord(card));
+            add(object);
+        }
+    }
+
+    @Override
+    protected void onSurfaceCreated() {
         setArray(cardData.getArray());
         setElementArray(cardData.getElementArray());
         setShader(
@@ -121,80 +144,77 @@ public class CardImage extends GLImage {
         );
         setAttribute("vertex", false, 0, 0);
 
-        setRatioName("ratio");
-
         setTexture("texture", R.drawable.playing_cards);
 
         setObjectUniformNames("position", "scale", "orientation", "card_coord");
     }
 
-    protected void print(PlayingCards cards) {
-        clear();
-        GLObject object;
-        for (String card :
-                cards) {
-            object = new GLObject();
-            object.set("position", 0, 0);
-            object.set("scale", 0.7f, 0.7f);
-            object.set("orientation", 0f, 0f, 1f, 90f);
-            object.set("card_coord", cardData.getCardCoord(card));
-            add(object);
-        }
+    @Override
+    protected void onSurfaceChanged(int width, int height) {
+        this.width = width;
+        this.height = height;
+        setUniform("ratio", (float) width / height);
     }
 
     @Override
-    public void onMove(float dx, float dy) {
-        float ratio = getRatio();
-        float width = ratio > 1f ? 1f / ratio : 1f;
-        float height = ratio <= 1f ? ratio : 1f;
+    public void onTouchEvent(MotionEvent event) {
+        float ratio = width / height;
 
-        Matrix.setIdentityM(m, 0);
-        Matrix.scaleM(m, 0, width, height, 1);
-        Matrix.invertM(m, 0, m, 0);
+        float r_width = ratio > 1f ? 1f / ratio : 1f;
+        float r_height = ratio <= 1f ? ratio : 1f;
 
-        Matrix.multiplyMV(v, 0, m, 0, new float[] {dx, dy, 0, 0}, 0);
+        float x = (2 * event.getX() - width) / width;
+        float y = (height - 2 * event.getY()) / height;
 
-        for (float[] position :
-                selectCards) {
-            position[0] += v[0];
-            position[1] += v[1];
-        }
-    }
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_MOVE:
+                float dx = x - mPreviousX;
+                float dy = y - mPreviousY;
 
-    @Override
-    public void onDown(float x, float y) {
-        float ratio = getRatio();
-        float width = ratio > 1f ? 1f / ratio : 1f;
-        float height = ratio <= 1f ? ratio : 1f;
+                Matrix.setIdentityM(m, 0);
+                Matrix.scaleM(m, 0, r_width, r_height, 1);
+                Matrix.invertM(m, 0, m, 0);
 
-        for (int index = size() - 1; index >= 0; index--) {
-            GLObject card = get(index);
+                Matrix.multiplyMV(v, 0, m, 0, new float[] {dx, dy, 0, 0}, 0);
 
-            Matrix.setIdentityM(m, 0);
-
-            float[] position = card.getFloats("position");
-            float[] orientation = card.getFloats("orientation");
-            float[] scale = card.getFloats("scale");
-
-            Matrix.scaleM(m, 0, width, height, 1);
-            Matrix.translateM(m, 0, position[0], position[1], 1);
-            Matrix.rotateM(m, 0, orientation[3], 0, 0, 1f);
-            Matrix.scaleM(m, 0, scale[0], scale[1], 1);
-
-            Matrix.invertM(m, 0, m, 0);
-
-            Matrix.multiplyMV(v, 0, m, 0, new float[] {x, y, 0, 1}, 0);
-
-            if (-0.890552f <= v[0] && v[0] <= 0.890552f && -0.634646f <= v[1] && v[1] <= 0.634646f) {
-                selectCards.add(position);
+                for (float[] position :
+                        selectCards) {
+                    position[0] += v[0];
+                    position[1] += v[1];
+                }
                 break;
-            }
-        }
-    }
+            case MotionEvent.ACTION_DOWN:
+                for (int index = size() - 1; index >= 0; index--) {
+                    GLObject card = get(index);
 
-    @Override
-    public void onUp() {
-        selectCards.clear();
+                    Matrix.setIdentityM(m, 0);
+
+                    float[] position = card.getFloats("position");
+                    float[] orientation = card.getFloats("orientation");
+                    float[] scale = card.getFloats("scale");
+
+                    Matrix.scaleM(m, 0, r_width, r_height, 1);
+                    Matrix.translateM(m, 0, position[0], position[1], 1);
+                    Matrix.rotateM(m, 0, orientation[3], 0, 0, 1f);
+                    Matrix.scaleM(m, 0, scale[0], scale[1], 1);
+
+                    Matrix.invertM(m, 0, m, 0);
+
+                    Matrix.multiplyMV(v, 0, m, 0, new float[] {x, y, 0, 1}, 0);
+
+                    if (-0.890552f <= v[0] && v[0] <= 0.890552f && -0.634646f <= v[1] && v[1] <= 0.634646f) {
+                        selectCards.add(position);
+                        break;
+                    }
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                selectCards.clear();
+                break;
+        }
+
+        mPreviousX = x;
+        mPreviousY = y;
     }
 
     private class CardData {

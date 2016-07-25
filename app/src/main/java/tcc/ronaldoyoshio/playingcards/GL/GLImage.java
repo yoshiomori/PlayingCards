@@ -3,6 +3,7 @@ package tcc.ronaldoyoshio.playingcards.GL;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.view.MotionEvent;
 
 import java.nio.Buffer;
 import java.util.ArrayList;
@@ -31,13 +32,7 @@ public abstract class GLImage extends ArrayList<GLObject> {
     private int textureIndex = -1;
     private Resources resources;
     private int bitmapId = -1;
-    private float ratio;
-    private String ratioName = "";
     private ArrayList<String> objectUniformNames = new ArrayList<>();
-
-    public void setRatioName(String uniformName) {
-        ratioName = uniformName;
-    }
 
     public void setTexture(String name, int id) {
         setUniform(name, 0);
@@ -323,13 +318,6 @@ public abstract class GLImage extends ArrayList<GLObject> {
         return textureIndex;
     }
 
-    public void setRatio(float ratio) {
-        this.ratio = ratio;
-        if (!ratioName.isEmpty()) {
-            setUniform(ratioName, ratio);
-        }
-    }
-
     public void setResources(Resources resources) {
         this.resources = resources;
     }
@@ -344,16 +332,6 @@ public abstract class GLImage extends ArrayList<GLObject> {
         return bitmapId;
     }
 
-    public abstract void onMove(float dx, float dy);
-
-    public abstract void onDown(float x, float y);
-
-    public abstract void onUp();
-
-    public float getRatio() {
-        return ratio;
-    }
-
     protected void setObjectUniformNames(String... objectUniformNames) {
         Collections.addAll(this.objectUniformNames, objectUniformNames);
         for (String objectUniformName :
@@ -364,4 +342,10 @@ public abstract class GLImage extends ArrayList<GLObject> {
             uniforms.put(objectUniformName, new GLUniform());
         }
     }
+
+    protected abstract void onSurfaceCreated();
+
+    protected abstract void onSurfaceChanged(int width, int height);
+
+    protected abstract void onTouchEvent(MotionEvent event);
 }

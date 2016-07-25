@@ -24,6 +24,7 @@ public class GLRenderer implements GLSurfaceView.Renderer{
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         for (GLImage image :
                 images) {
+            image.onSurfaceCreated();
             if (image.getArray() != null) {
                 image.setArrayIndex(bufferSize++);
             }
@@ -73,10 +74,9 @@ public class GLRenderer implements GLSurfaceView.Renderer{
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GL.glViewport(0, 0, width, height);
-        float ratio = (float) width / height;
         for (GLImage image :
                 images) {
-            image.setRatio(ratio);
+            image.onSurfaceChanged(width, height);
         }
     }
 
