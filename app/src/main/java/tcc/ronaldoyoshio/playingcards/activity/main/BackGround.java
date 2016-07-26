@@ -1,7 +1,5 @@
 package tcc.ronaldoyoshio.playingcards.activity.main;
 
-import android.view.MotionEvent;
-
 import tcc.ronaldoyoshio.playingcards.GL.GL;
 import tcc.ronaldoyoshio.playingcards.GL.GLImage;
 import tcc.ronaldoyoshio.playingcards.R;
@@ -43,10 +41,5 @@ public class BackGround extends GLImage {
     @Override
     public void onSurfaceChanged(int width, int height) {
         setUniform("ratio", (float) width / height);
-    }
-
-    @Override
-    public void onTouchEvent(MotionEvent event) {
-
     }
 }

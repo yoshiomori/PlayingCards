@@ -352,5 +352,7 @@ public abstract class GLImage extends ArrayList<GLObject> {
 
     protected abstract void onSurfaceChanged(int width, int height);
 
-    protected abstract void onTouchEvent(MotionEvent event);
+    protected boolean onTouchEvent(MotionEvent event) {
+        return false;
+    }
 }

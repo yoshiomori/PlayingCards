@@ -202,7 +202,7 @@ public class CardImage extends GLImage {
     }
 
     @Override
-    public void onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent event) {
         float x = (2 * event.getX() - width) / width;
         float y = (height - 2 * event.getY()) / height;
 
@@ -259,6 +259,7 @@ public class CardImage extends GLImage {
 
         mPreviousX = x;
         mPreviousY = y;
+        return true;
     }
 
     private class CardData {

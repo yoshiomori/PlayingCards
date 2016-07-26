@@ -100,7 +100,7 @@ public class ButtonImage extends GLImage {
     }
 
     @Override
-    public void onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent event) {
         float x = (2 * event.getX() - width) / width;
         float y = (height - 2 * event.getY()) / height;
 
@@ -138,5 +138,6 @@ public class ButtonImage extends GLImage {
                 }
                 break;
         }
+        return false;
     }
 }
