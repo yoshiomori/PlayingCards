@@ -24,7 +24,7 @@ public class MainActivity extends Activity {
         screen.setSaveEnabled(true);
 
         PlayingCards cards = new PlayingCards();
-        cardImage.print(cards, CardImage.SIDEBYSIDE);
+        cardImage.print(cards, CardImage.CENTERED);
 //        cards.shuffle();
 //        cardImage.print(cards);
 //        cards.remove("Joker Black");
