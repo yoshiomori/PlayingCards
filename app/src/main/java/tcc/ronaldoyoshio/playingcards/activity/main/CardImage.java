@@ -40,8 +40,10 @@ public class CardImage extends GLImage {
             previousDownTime = downTime;
             previousX = x;
             previousY = y;
-
-            overAll(setPointerCards(pointerId, getGLX(x, width), getGLY(y, height)));
+            int index = setPointerCards(pointerId, getGLX(x, width), getGLY(y, height));
+            if (index >= 0) {
+                overAll(index);
+            }
             return true;
         }
 
