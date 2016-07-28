@@ -29,11 +29,24 @@ public class CardImage extends GLImage {
     private float r_height;
     private boolean doubleTap = false;
     private EventHandler eventHandler = new EventHandler(){
+        public long previousDownTime = Long.MIN_VALUE;
+        public float previousX = Float.POSITIVE_INFINITY;
+        public float previousY = Float.POSITIVE_INFINITY;
         private HashMap<Integer, GLObject> pointerCards = new HashMap<>();
         @Override
-        public boolean onDown(int pointerId, float x, float y, int width, int height) {
-            findObject(pointerId, getGLX(x, width), getGLY(y, height));
+        public boolean onDown(int pointerId, float x, float y, int width, int height, long downTime) {
+            // Verificando se é double tap
+            doubleTap = isDoubleTap(downTime - previousDownTime, x - previousX, y - previousY);
+            previousDownTime = downTime;
+            previousX = x;
+            previousY = y;
+
+            overAll(setPointerCards(pointerId, getGLX(x, width), getGLY(y, height)));
             return true;
+        }
+
+        public boolean isDoubleTap(long dt, float dx, float dy) {
+            return dx * dx + dy * dy <= 1600 && dt * dt <= 100000;
         }
 
         @Override
@@ -58,23 +71,18 @@ public class CardImage extends GLImage {
         }
 
         @Override
-        public boolean onDoubleTap() {
-            doubleTap = true;
-            return true;
-        }
-
-        @Override
         public boolean onPointerDown(int pointerId, float x, float y, int width, int height) {
             // rX, rY é a posição do dedo nas coordenadas da tela
-            findObject(pointerId, getGLX(x, width), getGLY(y, height));
+            setPointerCards(pointerId, getGLX(x, width), getGLY(y, height));
             return true;
         }
 
-        private void findObject(int pointerId, float x, float y) {
+        private int setPointerCards(int pointerId, float x, float y) {
+            int index;
             ArrayList<GLObject> objects = getObjects();
 
             // Procurando a última das cartas que contém o ponto x, y
-            for (int index = objects.size() - 1; index >= 0; index--) {
+            for (index = objects.size() - 1; index >= 0; index--) {
                 GLObject card = getGlObject(x, y, index);
 
                 // Se o ponto x, y está contido no modelo da carta então o ponto foi encontrado
@@ -85,10 +93,10 @@ public class CardImage extends GLImage {
                         flipCard(card, index);
                     }
                     pointerCards.put(pointerId, card);
-                    overAll(index);
                     break;
                 }
             }
+            return index;
         }
 
         @Override
