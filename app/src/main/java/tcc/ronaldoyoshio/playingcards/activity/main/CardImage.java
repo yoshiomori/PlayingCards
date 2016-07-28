@@ -1,9 +1,10 @@
 package tcc.ronaldoyoshio.playingcards.activity.main;
 
 import android.opengl.Matrix;
-import android.view.MotionEvent;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import tcc.ronaldoyoshio.playingcards.GL.GL;
@@ -21,16 +22,14 @@ public class CardImage extends GLImage {
     public static final int CENTERED = 0;
     private int mode;
     private CardData cardData;
-    private ArrayList<float[]> selectCards = new ArrayList<>();
+    private ArrayList<GLObject> selectCards = new ArrayList<>();
     float[] m = new float[16];
     float[] v = new float[4];
-    private float mPreviousX;
-    private float mPreviousY;
-    private float width;
-    private float height;
     private PlayingCards cards;
     private float r_width;
     private float r_height;
+    private boolean doubleTap = false;
+    private HashMap<Integer, GLObject> pointerCards = new HashMap<>();
 
     public CardImage() {
         cardData = new CardData();
@@ -139,6 +138,7 @@ public class CardImage extends GLImage {
     public void print(PlayingCards cards, int mode) {
         this.cards = cards;
         this.mode = mode;
+        requestRender();
     }
 
     /**
@@ -188,93 +188,180 @@ public class CardImage extends GLImage {
 
     @Override
     protected void onSurfaceChanged(int width, int height) {
-        this.width = width;
-        this.height = height;
-
         float ratio = (float) width / height;
 
         r_width = ratio > 1f ? 1f / ratio : 1f;
         r_height = ratio <= 1f ? ratio : 1f;
 
-        System.out.println(r_width + ", " + r_height);
-
         setUniform("ratio", ratio);
+        mode = ratio > 1 ? SIDEBYSIDE : CENTERED;
         changeMode();
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        float x = (2 * event.getX() - width) / width;
-        float y = (height - 2 * event.getY()) / height;
+    protected boolean onDown(float x, float y) {
 
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_MOVE:
-                // dx, dy é a variação da posição do dedo na tela
-                float dx = x - mPreviousX;
-                float dy = y - mPreviousY;
+        // Procurando a última das cartas que contém o ponto x, y
+        for (int index = size() - 1; index >= 0; index--) {
 
-                // Criando a matriz de projeção do modelo para a tela, idêntico ao do shader.
-                Matrix.setIdentityM(m, 0);
-                Matrix.scaleM(m, 0, r_width, r_height, 1);
+            // Pegando a carta
+            GLObject card = getGlObject(x, y, index);
 
-                // Criando uma matriz que transforma coordenadas da tela em coordenadas do modelo.
-                Matrix.invertM(m, 0, m, 0);
-
-                // Obtendo a variação do dedo nas coordenadas do modelo.
-                Matrix.multiplyMV(v, 0, m, 0, new float[] {dx, dy, 0, 0}, 0);
-
-                // Se usássemos x, y em vez de dx, dy, perderíamos o efeito de naturalidade do
-                // início do movimento da carta.
-
-                // Todas as cartas selecionadas serão movidas
-                for (float[] position :
-                        selectCards) {
-                    position[0] += v[0];
-                    position[1] += v[1];
+            // Se o ponto x, y está contido no modelo da carta então o ponto foi encontrado
+            // e o laço é quebrado.
+            if (cardHit()) {
+                if (doubleTap) {
+                    doubleTap = false;
+                    flipCard(card, index);
                 }
+                selectCards.add(card);
+                overAll(index);
                 break;
-            case MotionEvent.ACTION_DOWN:
-                // Procurando a última das cartas que contém o ponto x, y
-                for (int index = size() - 1; index >= 0; index--) {
-
-                    // Pegando a carta
-                    GLObject card = get(index);
-
-                    // Pegando a posição da carta
-                    float[] position = card.getFloats("position");
-
-                    // Criando a matriz de transformação dos vértices da carta, idêntico ao do
-                    // shader
-                    Matrix.setIdentityM(m, 0);
-                    Matrix.scaleM(m, 0, r_width, r_height, 1);
-                    Matrix.translateM(m, 0, position[0], position[1], 1);
-                    Matrix.rotateM(m, 0, 90f, 0, 0, 1f);
-                    Matrix.scaleM(m, 0, 0.4f, 0.4f, 1);
-
-                    // x, y são coordenadas da tela, m é uma matriz que transforma coordenadas do
-                    // modelo da carta em coordenadas da tela, por isso é necessário inverter a
-                    // matriz.
-                    Matrix.invertM(m, 0, m, 0);
-
-                    // Aplicando a transformação do ponto x, y.
-                    Matrix.multiplyMV(v, 0, m, 0, new float[] {x, y, 0, 1}, 0);
-
-                    // Se o ponto x, y está contido no modelo da carta então o ponto foi encontrado
-                    // e o laço é quebrado.
-                    if (-0.890552f <= v[0] && v[0] <= 0.890552f && -0.634646f <= v[1] && v[1] <= 0.634646f) {
-                        selectCards.add(position);
-                        break;
-                    }
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-                selectCards.clear();
-                break;
+            }
         }
 
-        mPreviousX = x;
-        mPreviousY = y;
         return true;
+    }
+
+    private boolean cardHit() {
+        return v[0] * v[0] <= 0.890552f * 0.890552f && v[1] * v[1] <= 0.634646f * 0.634646f;
+    }
+
+    private void flipCard(GLObject card, int index) {
+        if (cardData.getCardCoord("Back") == card.getFloats("card_coord")) {
+            card.set("card_coord", cardData.getCardCoord(cards.get(index)));
+        }
+        else {
+            card.set("card_coord", cardData.getCardCoord("Back"));
+        }
+    }
+
+    @Override
+    protected boolean onMove(int pointerId, float dx, float dy) {
+        if (selectCards.isEmpty()) {
+            return false;
+        }
+
+        // Criando a matriz de projeção do modelo para a tela, idêntico ao do shader.
+        setProjectionMatrix();
+        setModelCoord(m, v, new float[]{dx, dy, 0, 0});
+
+
+        // Se usássemos x, y em vez de dx, dy, perderíamos o efeito de naturalidade do
+        // início do movimento da carta.
+
+        if (pointerId == 0) {
+            // Todas as cartas selecionadas serão movidas
+            for (GLObject card :
+                    selectCards) {
+                positionUpdate(card.getFloats("position"));
+            }
+        }
+        if (pointerCards.containsKey(pointerId)) {
+            GLObject card = pointerCards.get(pointerId);
+            positionUpdate(card.getFloats("position"));
+        }
+
+        return true;
+    }
+
+    private void setModelCoord(float[] m, float[] v, float[] rhsVec) {
+        // Criando uma matriz que transforma coordenadas da tela em coordenadas do modelo.
+        Matrix.invertM(m, 0, m, 0);
+
+        // Obtendo a variação do dedo nas coordenadas do modelo.
+        Matrix.multiplyMV(v, 0, m, 0, rhsVec, 0);
+    }
+
+    private void positionUpdate(float[] position) {
+        position[0] += v[0];
+        position[1] += v[1];
+    }
+
+    @Override
+    protected boolean onUp() {
+        selectCards.clear();
+        return true;
+    }
+
+    @Override
+    protected boolean onDoubleTap() {
+        doubleTap = true;
+        return true;
+    }
+
+    @Override
+    public boolean onPointerDown(int pointerId, float x, float y) {
+        if (pointerCards.containsKey(pointerId)) {
+            return false;
+        }
+
+        // Procurando a última das cartas que contém o ponto x, y
+        for (int index = size() - 1; index >= 0; index--) {
+            GLObject card = getGlObject(x, y, index);
+
+            // Se o ponto x, y está contido no modelo da carta então o ponto foi encontrado
+            // e o laço é quebrado.
+            if (cardHit()) {
+                if (doubleTap) {
+                    doubleTap = false;
+                    flipCard(card, index);
+                }
+                pointerCards.put(pointerId, card);
+                overAll(index);
+                break;
+            }
+        }
+        return true;
+    }
+
+    private void overAll(int index) {
+        for (int i = index; i < size()-1; i++) {
+            Collections.swap(this, i, i+1);
+            Collections.swap(cards, i, i+1);
+        }
+    }
+
+    @NonNull
+    private GLObject getGlObject(float x, float y, int index) {
+        // Pegando a carta
+        GLObject card = get(index);
+
+        // Pegando a posição da carta
+        float[] position = card.getFloats("position");
+
+        // Criando a matriz de transformação dos vértices da carta, idêntico ao do
+        // shader
+        setModelMatrix(position);
+
+        // x, y são coordenadas da tela, m é uma matriz que transforma coordenadas do
+        // modelo da carta em coordenadas da tela, por isso é necessário inverter a
+        // matriz.
+        setModelCoord(m, v, new float[] {x, y, 0, 1});
+        return card;
+    }
+
+    private void setModelMatrix(float[] position) {
+        setProjectionMatrix();
+        Matrix.translateM(m, 0, position[0], position[1], 1);
+        Matrix.rotateM(m, 0, 90f, 0, 0, 1f);
+        Matrix.scaleM(m, 0, 0.4f, 0.4f, 1);
+    }
+
+    private void setProjectionMatrix() {
+        Matrix.setIdentityM(m, 0);
+        Matrix.scaleM(m, 0, r_width, r_height, 1);
+    }
+
+    @Override
+    public boolean onPointerUp(int pointerId) {
+        if (pointerCards.containsKey(pointerId)) {
+            pointerCards.remove(pointerId);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     private class CardData {

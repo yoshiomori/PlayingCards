@@ -2,7 +2,6 @@ package tcc.ronaldoyoshio.playingcards.GL;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.view.MotionEvent;
 
 import java.nio.Buffer;
 import java.util.ArrayList;
@@ -352,7 +351,27 @@ public abstract class GLImage extends ArrayList<GLObject> {
 
     protected abstract void onSurfaceChanged(int width, int height);
 
-    protected boolean onTouchEvent(MotionEvent event) {
+    protected boolean onDown(float x, float y) {
+        return false;
+    }
+
+    protected boolean onMove(int pointerId, float dx, float dy) {
+        return false;
+    }
+
+    protected boolean onUp() {
+        return false;
+    }
+
+    protected boolean onDoubleTap() {
+        return false;
+    }
+
+    public boolean onPointerUp(int pointerId) {
+        return false;
+    }
+
+    public boolean onPointerDown(int pointerId, float rX, float rY) {
         return false;
     }
 }
