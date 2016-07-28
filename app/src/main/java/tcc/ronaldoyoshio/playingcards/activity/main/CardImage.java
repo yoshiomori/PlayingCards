@@ -1,7 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.activity.main;
 
 import android.opengl.Matrix;
-import android.support.annotation.NonNull;
+import android.view.MotionEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +21,7 @@ public class CardImage extends GLImage {
     public static final int SIDEBYSIDE = 1;
     public static final int CENTERED = 0;
     private int mode;
-    private CardData cardData;
+    private CardData cardData = new CardData();
     private ArrayList<GLObject> selectCards = new ArrayList<>();
     float[] m = new float[16];
     float[] v = new float[4];
@@ -30,10 +30,114 @@ public class CardImage extends GLImage {
     private float r_height;
     private boolean doubleTap = false;
     private HashMap<Integer, GLObject> pointerCards = new HashMap<>();
+    private EventHandler eventHandler = new EventHandler(){
+        @Override
+        public boolean onDown(float x, float y) {
+            ArrayList<GLObject> objects = getObjects();
 
-    public CardImage() {
-        cardData = new CardData();
-    }
+            // Procurando a última das cartas que contém o ponto x, y
+            for (int index = objects.size() - 1; index >= 0; index--) {
+
+                // Pegando a carta
+                GLObject card = getGlObject(x, y, index);
+
+                // Se o ponto x, y está contido no modelo da carta então o ponto foi encontrado
+                // e o laço é quebrado.
+                if (cardHit()) {
+                    if (doubleTap) {
+                        doubleTap = false;
+                        flipCard(card, index);
+                    }
+                    selectCards.add(card);
+                    overAll(index);
+                    break;
+                }
+            }
+
+            return true;
+        }
+
+        @Override
+        public boolean onMove(int pointerId, float dx, float dy) {
+            if (selectCards.isEmpty()) {
+                return false;
+            }
+
+            // Criando a matriz de projeção do modelo para a tela, idêntico ao do shader.
+            setProjectionMatrix();
+            setModelCoord(m, v, new float[]{dx, dy, 0, 0});
+
+
+            // Se usássemos x, y em vez de dx, dy, perderíamos o efeito de naturalidade do
+            // início do movimento da carta.
+
+            if (pointerId == 0) {
+                // Todas as cartas selecionadas serão movidas
+                for (GLObject card :
+                        selectCards) {
+                    positionUpdate(card.getFloats("position"));
+                }
+            }
+            if (pointerCards.containsKey(pointerId)) {
+                GLObject card = pointerCards.get(pointerId);
+                positionUpdate(card.getFloats("position"));
+            }
+
+            return true;
+        }
+
+
+
+        @Override
+        public boolean onUp() {
+            selectCards.clear();
+            return true;
+        }
+
+        @Override
+        public boolean onDoubleTap() {
+            doubleTap = true;
+            return true;
+        }
+
+        @Override
+        public boolean onPointerDown(int pointerId, float x, float y) {
+            ArrayList<GLObject> objects = getObjects();
+
+            if (pointerCards.containsKey(pointerId)) {
+                return false;
+            }
+
+            // Procurando a última das cartas que contém o ponto x, y
+            for (int index = objects.size() - 1; index >= 0; index--) {
+                GLObject card = getGlObject(x, y, index);
+
+                // Se o ponto x, y está contido no modelo da carta então o ponto foi encontrado
+                // e o laço é quebrado.
+                if (cardHit()) {
+                    if (doubleTap) {
+                        doubleTap = false;
+                        flipCard(card, index);
+                    }
+                    pointerCards.put(pointerId, card);
+                    overAll(index);
+                    break;
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onPointerUp(int pointerId) {
+            if (pointerCards.containsKey(pointerId)) {
+                pointerCards.remove(pointerId);
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    };
 
     @Override
     protected void onSurfaceCreated() {
@@ -146,20 +250,21 @@ public class CardImage extends GLImage {
      * Pode ser todas as cartas no centro da tela ou todas as cartas lado a lado.
      */
     private void changeMode() {
+        ArrayList<GLObject> objects = getObjects();
         GLObject object;
         switch (mode) {
             case CENTERED:
-                clear();
+                objects.clear();
                 for (String card :
                         cards) {
                     object = new GLObject();
                     object.set("position", 0, 0);
                     object.set("card_coord", cardData.getCardCoord(card));
-                    add(object);
+                    objects.add(object);
                 }
                 break;
             case SIDEBYSIDE:
-                clear();
+                objects.clear();
                 float x = - 1 / r_width + 0.634646f * 0.4f;
                 float y = 1 / r_height - 0.890552f * 0.4f;
                 for (String card :
@@ -179,7 +284,7 @@ public class CardImage extends GLImage {
                         }
                     }
                     object.set("card_coord", cardData.getCardCoord(card));
-                    add(object);
+                    objects.add(object);
                 }
                 break;
         }
@@ -199,28 +304,8 @@ public class CardImage extends GLImage {
     }
 
     @Override
-    protected boolean onDown(float x, float y) {
-
-        // Procurando a última das cartas que contém o ponto x, y
-        for (int index = size() - 1; index >= 0; index--) {
-
-            // Pegando a carta
-            GLObject card = getGlObject(x, y, index);
-
-            // Se o ponto x, y está contido no modelo da carta então o ponto foi encontrado
-            // e o laço é quebrado.
-            if (cardHit()) {
-                if (doubleTap) {
-                    doubleTap = false;
-                    flipCard(card, index);
-                }
-                selectCards.add(card);
-                overAll(index);
-                break;
-            }
-        }
-
-        return true;
+    public boolean onTouchEvent(MotionEvent event, int width, int height) {
+        return eventHandler.onTouchEvent(event, width, height);
     }
 
     private boolean cardHit() {
@@ -236,35 +321,6 @@ public class CardImage extends GLImage {
         }
     }
 
-    @Override
-    protected boolean onMove(int pointerId, float dx, float dy) {
-        if (selectCards.isEmpty()) {
-            return false;
-        }
-
-        // Criando a matriz de projeção do modelo para a tela, idêntico ao do shader.
-        setProjectionMatrix();
-        setModelCoord(m, v, new float[]{dx, dy, 0, 0});
-
-
-        // Se usássemos x, y em vez de dx, dy, perderíamos o efeito de naturalidade do
-        // início do movimento da carta.
-
-        if (pointerId == 0) {
-            // Todas as cartas selecionadas serão movidas
-            for (GLObject card :
-                    selectCards) {
-                positionUpdate(card.getFloats("position"));
-            }
-        }
-        if (pointerCards.containsKey(pointerId)) {
-            GLObject card = pointerCards.get(pointerId);
-            positionUpdate(card.getFloats("position"));
-        }
-
-        return true;
-    }
-
     private void setModelCoord(float[] m, float[] v, float[] rhsVec) {
         // Criando uma matriz que transforma coordenadas da tela em coordenadas do modelo.
         Matrix.invertM(m, 0, m, 0);
@@ -278,54 +334,19 @@ public class CardImage extends GLImage {
         position[1] += v[1];
     }
 
-    @Override
-    protected boolean onUp() {
-        selectCards.clear();
-        return true;
-    }
-
-    @Override
-    protected boolean onDoubleTap() {
-        doubleTap = true;
-        return true;
-    }
-
-    @Override
-    public boolean onPointerDown(int pointerId, float x, float y) {
-        if (pointerCards.containsKey(pointerId)) {
-            return false;
-        }
-
-        // Procurando a última das cartas que contém o ponto x, y
-        for (int index = size() - 1; index >= 0; index--) {
-            GLObject card = getGlObject(x, y, index);
-
-            // Se o ponto x, y está contido no modelo da carta então o ponto foi encontrado
-            // e o laço é quebrado.
-            if (cardHit()) {
-                if (doubleTap) {
-                    doubleTap = false;
-                    flipCard(card, index);
-                }
-                pointerCards.put(pointerId, card);
-                overAll(index);
-                break;
-            }
-        }
-        return true;
-    }
-
     private void overAll(int index) {
-        for (int i = index; i < size()-1; i++) {
-            Collections.swap(this, i, i+1);
+        ArrayList<GLObject> objects = getObjects();
+        for (int i = index; i < objects.size()-1; i++) {
+            Collections.swap(objects, i, i+1);
             Collections.swap(cards, i, i+1);
         }
     }
 
-    @NonNull
     private GLObject getGlObject(float x, float y, int index) {
+        ArrayList<GLObject> objects = getObjects();
+
         // Pegando a carta
-        GLObject card = get(index);
+        GLObject card = objects.get(index);
 
         // Pegando a posição da carta
         float[] position = card.getFloats("position");
@@ -351,17 +372,6 @@ public class CardImage extends GLImage {
     private void setProjectionMatrix() {
         Matrix.setIdentityM(m, 0);
         Matrix.scaleM(m, 0, r_width, r_height, 1);
-    }
-
-    @Override
-    public boolean onPointerUp(int pointerId) {
-        if (pointerCards.containsKey(pointerId)) {
-            pointerCards.remove(pointerId);
-            return true;
-        }
-        else {
-            return false;
-        }
     }
 
     private class CardData {

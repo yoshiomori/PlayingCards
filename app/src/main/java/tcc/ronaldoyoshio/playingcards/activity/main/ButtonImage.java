@@ -2,6 +2,9 @@ package tcc.ronaldoyoshio.playingcards.activity.main;
 
 import android.content.Intent;
 import android.opengl.Matrix;
+import android.view.MotionEvent;
+
+import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.GL.GL;
 import tcc.ronaldoyoshio.playingcards.GL.GLImage;
@@ -16,6 +19,38 @@ public class ButtonImage extends GLImage {
 
     private final MainMenuActivity mainMenuActivity;
     private float ratio;
+    private EventHandler swingHandler = new EventHandler() {
+        @Override
+        public boolean onDown(float x, float y) {
+            float[] projection = new float[16];
+            float[] m = new float[16];
+            float[] v = new float[4];
+            Matrix.setIdentityM(projection, 0);
+            Matrix.scaleM(projection , 0,
+                    ratio > 1.0f ? 1.0f/ratio : 1.0f, ratio <= 1.0f ? ratio : 1.0f, 1f);
+            for (GLObject button :
+                    getObjects()) {
+                Matrix.setIdentityM(m, 0);
+                float[] position = button.getFloats("position");
+                Matrix.translateM(m, 0, projection, 0, position[0], position[1], 0f);
+                Matrix.scaleM(m, 0, 0.5f, 0.5f, 1f);
+                Matrix.scaleM(m, 0, 1f, 0.216f, 1f);
+                Matrix.invertM(m, 0, m, 0);
+                Matrix.multiplyMV(v, 0, m, 0, new float[]{x, y, 0f, 1f}, 0);
+                if (-1 <= v[0] & v[0] <= 1 & -1 <= v[1] & v[1] <= 1) {
+                    float[] color = button.getFloats("color");
+                    if (0f == color[1]) {
+                        Intent intent = new Intent(mainMenuActivity, MainActivity.class);
+                        mainMenuActivity.startActivity(intent);
+                    }
+                    else if (0.5f == color[1]) {
+                        System.out.println("Conectar");
+                    }
+                }
+            }
+            return true;
+        }
+    };
 
     public ButtonImage(MainMenuActivity mainMenuActivity) {
         this.mainMenuActivity = mainMenuActivity;
@@ -77,15 +112,19 @@ public class ButtonImage extends GLImage {
         setObjectUniformNames("position", "color");
         GLObject button;
 
+        ArrayList<GLObject> objects = new ArrayList<>();
+
         button = new GLObject();
         button.set("position", 0f, 0.33f);
         button.set("color", 0f, 0f);
-        add(button);
+        objects.add(button);
 
         button = new GLObject();
         button.set("position", 0f, -0.33f);
         button.set("color", 0f, 0.5f);
-        add(button);
+        objects.add(button);
+
+        setObjects(objects);
     }
 
     @Override
@@ -95,33 +134,7 @@ public class ButtonImage extends GLImage {
     }
 
     @Override
-    protected boolean onDown(float x, float y) {
-        float[] projection = new float[16];
-        float[] m = new float[16];
-        float[] v = new float[4];
-        Matrix.setIdentityM(projection, 0);
-        Matrix.scaleM(projection , 0,
-                ratio > 1.0f ? 1.0f/ratio : 1.0f, ratio <= 1.0f ? ratio : 1.0f, 1f);
-        for (GLObject button :
-                this) {
-            Matrix.setIdentityM(m, 0);
-            float[] position = button.getFloats("position");
-            Matrix.translateM(m, 0, projection, 0, position[0], position[1], 0f);
-            Matrix.scaleM(m, 0, 0.5f, 0.5f, 1f);
-            Matrix.scaleM(m, 0, 1f, 0.216f, 1f);
-            Matrix.invertM(m, 0, m, 0);
-            Matrix.multiplyMV(v, 0, m, 0, new float[]{x, y, 0f, 1f}, 0);
-            if (-1 <= v[0] & v[0] <= 1 & -1 <= v[1] & v[1] <= 1) {
-                float[] color = button.getFloats("color");
-                if (0f == color[1]) {
-                    Intent intent = new Intent(mainMenuActivity, MainActivity.class);
-                    mainMenuActivity.startActivity(intent);
-                }
-                else if (0.5f == color[1]) {
-                    System.out.println("Conectar");
-                }
-            }
-        }
-        return true;
+    public boolean onTouchEvent(MotionEvent event, int width, int height) {
+        return swingHandler.onTouchEvent(event, width, height);
     }
 }

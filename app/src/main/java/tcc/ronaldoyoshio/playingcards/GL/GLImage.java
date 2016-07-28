@@ -2,6 +2,7 @@ package tcc.ronaldoyoshio.playingcards.GL;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.view.MotionEvent;
 
 import java.nio.Buffer;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.HashMap;
  * Abstração de dados usados para renderizar com a biblioteca gráfica.
  * Created by mori on 09/07/16.
  */
-public abstract class GLImage extends ArrayList<GLObject> {
+public abstract class GLImage {
 
     private int arrayIndex = -1;
     private int elementArrayIndex = -1;
@@ -31,6 +32,7 @@ public abstract class GLImage extends ArrayList<GLObject> {
     private GLScreen context = null;
     private int bitmapId = -1;
     private ArrayList<String> objectUniformNames = new ArrayList<>();
+    private ArrayList<GLObject> objects = new ArrayList<>();
 
     protected void requestRender() {
         if (context != null) {
@@ -275,11 +277,11 @@ public abstract class GLImage extends ArrayList<GLObject> {
         defineAttributes();
         defineUniforms();
         for (GLObject object :
-                this) {
+                objects) {
             object.bind(uniforms, objectUniformNames);
             draw();
         }
-        if (this.isEmpty()) {
+        if (objects.isEmpty()) {
             draw();
         }
     }
@@ -351,27 +353,15 @@ public abstract class GLImage extends ArrayList<GLObject> {
 
     protected abstract void onSurfaceChanged(int width, int height);
 
-    protected boolean onDown(float x, float y) {
+    public boolean onTouchEvent(MotionEvent event, int width, int height) {
         return false;
     }
 
-    protected boolean onMove(int pointerId, float dx, float dy) {
-        return false;
+    public ArrayList<GLObject> getObjects() {
+        return objects;
     }
 
-    protected boolean onUp() {
-        return false;
-    }
-
-    protected boolean onDoubleTap() {
-        return false;
-    }
-
-    public boolean onPointerUp(int pointerId) {
-        return false;
-    }
-
-    public boolean onPointerDown(int pointerId, float rX, float rY) {
-        return false;
+    public void setObjects(ArrayList<GLObject> objects) {
+        this.objects = objects;
     }
 }
