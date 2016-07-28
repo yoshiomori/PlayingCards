@@ -40,7 +40,7 @@ public class CardImage extends GLImage {
             previousDownTime = downTime;
             previousX = x;
             previousY = y;
-            int index = setPointerCards(pointerId, getGLX(x, width), getGLY(y, height));
+            int index = seachCard(pointerId, getGLX(x, width), getGLY(y, height));
             if (index >= 0) {
                 overAll(index);
             }
@@ -75,11 +75,11 @@ public class CardImage extends GLImage {
         @Override
         public boolean onPointerDown(int pointerId, float x, float y, int width, int height) {
             // rX, rY é a posição do dedo nas coordenadas da tela
-            setPointerCards(pointerId, getGLX(x, width), getGLY(y, height));
+            seachCard(pointerId, getGLX(x, width), getGLY(y, height));
             return true;
         }
 
-        private int setPointerCards(int pointerId, float x, float y) {
+        private int seachCard(int pointerId, float x, float y) {
             int index;
             ArrayList<GLObject> objects = getObjects();
 
