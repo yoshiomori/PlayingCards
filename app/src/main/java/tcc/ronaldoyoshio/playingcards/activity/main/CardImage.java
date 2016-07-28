@@ -22,62 +22,26 @@ public class CardImage extends GLImage {
     public static final int CENTERED = 0;
     private int mode;
     private CardData cardData = new CardData();
-    private ArrayList<GLObject> selectCards = new ArrayList<>();
     float[] m = new float[16];
     float[] v = new float[4];
     private PlayingCards cards;
     private float r_width;
     private float r_height;
     private boolean doubleTap = false;
-    private HashMap<Integer, GLObject> pointerCards = new HashMap<>();
     private EventHandler eventHandler = new EventHandler(){
+        private HashMap<Integer, GLObject> pointerCards = new HashMap<>();
         @Override
-        public boolean onDown(float x, float y) {
-            ArrayList<GLObject> objects = getObjects();
-
-            // Procurando a última das cartas que contém o ponto x, y
-            for (int index = objects.size() - 1; index >= 0; index--) {
-
-                // Pegando a carta
-                GLObject card = getGlObject(x, y, index);
-
-                // Se o ponto x, y está contido no modelo da carta então o ponto foi encontrado
-                // e o laço é quebrado.
-                if (cardHit()) {
-                    if (doubleTap) {
-                        doubleTap = false;
-                        flipCard(card, index);
-                    }
-                    selectCards.add(card);
-                    overAll(index);
-                    break;
-                }
-            }
-
+        public boolean onDown(int pointerId, float x, float y) {
+            findObject(pointerId, x, y);
             return true;
         }
 
         @Override
         public boolean onMove(int pointerId, float dx, float dy) {
-            if (selectCards.isEmpty()) {
-                return false;
-            }
-
             // Criando a matriz de projeção do modelo para a tela, idêntico ao do shader.
             setProjectionMatrix();
             setModelCoord(m, v, new float[]{dx, dy, 0, 0});
 
-
-            // Se usássemos x, y em vez de dx, dy, perderíamos o efeito de naturalidade do
-            // início do movimento da carta.
-
-            if (pointerId == 0) {
-                // Todas as cartas selecionadas serão movidas
-                for (GLObject card :
-                        selectCards) {
-                    positionUpdate(card.getFloats("position"));
-                }
-            }
             if (pointerCards.containsKey(pointerId)) {
                 GLObject card = pointerCards.get(pointerId);
                 positionUpdate(card.getFloats("position"));
@@ -90,7 +54,7 @@ public class CardImage extends GLImage {
 
         @Override
         public boolean onUp() {
-            selectCards.clear();
+            pointerCards.clear();
             return true;
         }
 
@@ -102,11 +66,12 @@ public class CardImage extends GLImage {
 
         @Override
         public boolean onPointerDown(int pointerId, float x, float y) {
-            ArrayList<GLObject> objects = getObjects();
+            findObject(pointerId, x, y);
+            return true;
+        }
 
-            if (pointerCards.containsKey(pointerId)) {
-                return false;
-            }
+        private void findObject(int pointerId, float x, float y) {
+            ArrayList<GLObject> objects = getObjects();
 
             // Procurando a última das cartas que contém o ponto x, y
             for (int index = objects.size() - 1; index >= 0; index--) {
@@ -124,18 +89,12 @@ public class CardImage extends GLImage {
                     break;
                 }
             }
-            return true;
         }
 
         @Override
         public boolean onPointerUp(int pointerId) {
-            if (pointerCards.containsKey(pointerId)) {
-                pointerCards.remove(pointerId);
-                return true;
-            }
-            else {
-                return false;
-            }
+            pointerCards.remove(pointerId);
+            return true;
         }
     };
 

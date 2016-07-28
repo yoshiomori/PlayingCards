@@ -19,10 +19,10 @@ public class EventHandler {
     public boolean onTouchEvent(MotionEvent event, int width, int height) {
         boolean b = false;
         float x, y, rX, rY;
-        int pointerId;
+        int pointerId, index;
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_MOVE:
-                for (int index = 0; index < event.getPointerCount(); index++) {
+                for (index = 0; index < event.getPointerCount(); index++) {
                     // x, y é a posição do dedo em coordenada de pixel
                     x = event.getX(index);
                     y = event.getY(index);
@@ -60,16 +60,17 @@ public class EventHandler {
                 }
                 break;
             case MotionEvent.ACTION_DOWN:
+                index = event.getActionIndex();
 
                 // x, y é a posição do dedo em coordenada de pixel
-                x = event.getX(0);
-                y = event.getY(0);
+                x = event.getX(index);
+                y = event.getY(index);
 
                 // rX, rY é a posição do dedo nas coordenadas da tela
                 rX = (2 * x - width) / width;
                 rY = (height - 2 * y) / height;
 
-                pointerId = event.getPointerId(0);
+                pointerId = event.getPointerId(index);
 
                 mainPointerId = pointerId;
                 long downTime = event.getDownTime();
@@ -83,7 +84,7 @@ public class EventHandler {
                 if (isDoubleTap(dt, dx, dy)) {
                     b = onDoubleTap();
                 }
-                b |= onDown(rX, rY);
+                b |= onDown(pointerId, rX, rY);
 
                 mPreviousRX.put(pointerId, rX);
                 mPreviousRY.put(pointerId, rY);
@@ -91,81 +92,71 @@ public class EventHandler {
                 mPreviousY.put(pointerId, y);
                 break;
             case MotionEvent.ACTION_UP:
-                for (int index = 0; index < event.getPointerCount(); index++) {
-                    // x, y é a posição do dedo em coordenada de pixel
-                    x = event.getX(index);
-                    y = event.getY(index);
+                // x, y é a posição do dedo em coordenada de pixel
+                x = event.getX(0);
+                y = event.getY(0);
 
-                    // rX, rY é a posição do dedo nas coordenadas da tela
-                    rX = (2 * x - width) / width;
-                    rY = (height - 2 * y) / height;
+                // rX, rY é a posição do dedo nas coordenadas da tela
+                rX = (2 * x - width) / width;
+                rY = (height - 2 * y) / height;
 
-                    pointerId = event.getPointerId(index);
+                pointerId = event.getPointerId(0);
 
-                    b |= onUp();
+                b = onUp();
 
-                    if (mainPointerId != pointerId) {
-                        switch (event.getActionMasked()) {
-                            case MotionEvent.ACTION_POINTER_DOWN:
-                                b |= onPointerDown(pointerId, rX, rY);
-                                break;
-                            case MotionEvent.ACTION_POINTER_UP:
-                                b |= onPointerUp(pointerId);
-                                break;
-                        }
-                    }
-
-                    mPreviousRX.put(pointerId, rX);
-                    mPreviousRY.put(pointerId, rY);
-                    mPreviousX.put(pointerId, x);
-                    mPreviousY.put(pointerId, y);
-                }
+                mPreviousRX.put(pointerId, rX);
+                mPreviousRY.put(pointerId, rY);
+                mPreviousX.put(pointerId, x);
+                mPreviousY.put(pointerId, y);
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                for (int index = 0; index < event.getPointerCount(); index++) {
-                    // x, y é a posição do dedo em coordenada de pixel
-                    x = event.getX(index);
-                    y = event.getY(index);
+                index = event.getActionIndex();
+                System.out.println(index);
+                // x, y é a posição do dedo em coordenada de pixel
+                x = event.getX(index);
+                y = event.getY(index);
 
-                    // rX, rY é a posição do dedo nas coordenadas da tela
-                    rX = (2 * x - width) / width;
-                    rY = (height - 2 * y) / height;
+                // rX, rY é a posição do dedo nas coordenadas da tela
+                rX = (2 * x - width) / width;
+                rY = (height - 2 * y) / height;
 
-                    pointerId = event.getPointerId(index);
+                pointerId = event.getPointerId(index);
 
-                    if (mainPointerId != pointerId) {
+                MotionEvent.PointerProperties pointerProperties = new MotionEvent.PointerProperties();
+                event.getPointerProperties(index, pointerProperties);
 
-                        b |= onPointerDown(pointerId, rX, rY);
-                    }
+                if (mainPointerId != pointerId) {
 
-                    mPreviousRX.put(pointerId, rX);
-                    mPreviousRY.put(pointerId, rY);
-                    mPreviousX.put(pointerId, x);
-                    mPreviousY.put(pointerId, y);
+                    b = onPointerDown(pointerId, rX, rY);
                 }
+
+                mPreviousRX.put(pointerId, rX);
+                mPreviousRY.put(pointerId, rY);
+                mPreviousX.put(pointerId, x);
+                mPreviousY.put(pointerId, y);
+
                 break;
             case MotionEvent.ACTION_POINTER_UP:
-                for (int index = 0; index < event.getPointerCount(); index++) {
-                    // x, y é a posição do dedo em coordenada de pixel
-                    x = event.getX(index);
-                    y = event.getY(index);
+                index = event.getActionIndex();
+                // x, y é a posição do dedo em coordenada de pixel
+                x = event.getX(index);
+                y = event.getY(index);
 
-                    // rX, rY é a posição do dedo nas coordenadas da tela
-                    rX = (2 * x - width) / width;
-                    rY = (height - 2 * y) / height;
+                // rX, rY é a posição do dedo nas coordenadas da tela
+                rX = (2 * x - width) / width;
+                rY = (height - 2 * y) / height;
 
-                    pointerId = event.getPointerId(index);
+                pointerId = event.getPointerId(index);
 
-                    if (mainPointerId != pointerId) {
+                if (mainPointerId != pointerId) {
 
-                        b |= onPointerUp(pointerId);
-                    }
-
-                    mPreviousRX.put(pointerId, rX);
-                    mPreviousRY.put(pointerId, rY);
-                    mPreviousX.put(pointerId, x);
-                    mPreviousY.put(pointerId, y);
+                    b = onPointerUp(pointerId);
                 }
+
+                mPreviousRX.put(pointerId, rX);
+                mPreviousRY.put(pointerId, rY);
+                mPreviousX.put(pointerId, x);
+                mPreviousY.put(pointerId, y);
                 break;
         }
         return b;
@@ -183,7 +174,7 @@ public class EventHandler {
         return false;
     }
 
-    public boolean onDown(float rX, float rY) {
+    public boolean onDown(int pointerId, float x, float y) {
         return false;
     }
 

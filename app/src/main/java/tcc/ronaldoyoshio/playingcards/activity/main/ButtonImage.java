@@ -21,7 +21,7 @@ public class ButtonImage extends GLImage {
     private float ratio;
     private EventHandler swingHandler = new EventHandler() {
         @Override
-        public boolean onDown(float x, float y) {
+        public boolean onDown(int pointerId, float x, float y) {
             float[] projection = new float[16];
             float[] m = new float[16];
             float[] v = new float[4];
