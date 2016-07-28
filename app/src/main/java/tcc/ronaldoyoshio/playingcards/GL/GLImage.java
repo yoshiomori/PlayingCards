@@ -34,6 +34,22 @@ public abstract class GLImage {
     private ArrayList<String> objectUniformNames = new ArrayList<>();
     private ArrayList<GLObject> objects = new ArrayList<>();
 
+    public float getGLDy(float dy, int height) {
+        return  - 2 * dy / height;
+    }
+
+    public float getGLDx(float dy, int width) {
+        return 2 * dy / width;
+    }
+
+    public float getGLX(float x, int width) {
+        return (2 * x - width) / width;
+    }
+
+    public float getGLY(float y, int height) {
+        return (height - 2 * y) / height;
+    }
+
     protected void requestRender() {
         if (context != null) {
             context.requestRender();

@@ -9,8 +9,6 @@ import java.util.HashMap;
  * Created by mori on 28/07/16.
  */
 public class EventHandler {
-    private HashMap<Integer, Float> mPreviousRX = new HashMap<>();
-    private HashMap<Integer, Float> mPreviousRY = new HashMap<>();
     private long mPreviousDownTime = Long.MIN_VALUE;
     private HashMap<Integer, Float> mPreviousX = new HashMap<>();
     private HashMap<Integer, Float> mPreviousY = new HashMap<>();
@@ -18,7 +16,7 @@ public class EventHandler {
 
     public boolean onTouchEvent(MotionEvent event, int width, int height) {
         boolean b = false;
-        float x, y, rX, rY;
+        float x, y;
         int pointerId, index;
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_MOVE:
@@ -27,34 +25,15 @@ public class EventHandler {
                     x = event.getX(index);
                     y = event.getY(index);
 
-                    // rX, rY é a posição do dedo nas coordenadas da tela
-                    rX = (2 * x - width) / width;
-                    rY = (height - 2 * y) / height;
-
                     pointerId = event.getPointerId(index);
 
+                    float dx = mPreviousX.containsKey(pointerId) ?
+                            x - mPreviousX.get(pointerId) : 0;
+                    float dy = mPreviousY.containsKey(pointerId) ?
+                            y - mPreviousY.get(pointerId) : 0;
 
-                    // rDx, rDy é a variação da posição do dedo nas coordenadas da tela
-                    float rDx = mPreviousRX.containsKey(pointerId) ?
-                            rX - mPreviousRX.get(pointerId) : 0;
-                    float rDy = mPreviousY.containsKey(pointerId) ?
-                            rY - mPreviousRY.get(pointerId) : 0;
+                    b = onMove(pointerId, dx, dy, width, height);
 
-                    b = onMove(pointerId, rDx, rDy);
-
-                    if (mainPointerId != pointerId) {
-                        switch (event.getActionMasked()) {
-                            case MotionEvent.ACTION_POINTER_DOWN:
-                                b |= onPointerDown(pointerId, rX, rY);
-                                break;
-                            case MotionEvent.ACTION_POINTER_UP:
-                                b |= onPointerUp(pointerId);
-                                break;
-                        }
-                    }
-
-                    mPreviousRX.put(pointerId, rX);
-                    mPreviousRY.put(pointerId, rY);
                     mPreviousX.put(pointerId, x);
                     mPreviousY.put(pointerId, y);
                 }
@@ -65,10 +44,6 @@ public class EventHandler {
                 // x, y é a posição do dedo em coordenada de pixel
                 x = event.getX(index);
                 y = event.getY(index);
-
-                // rX, rY é a posição do dedo nas coordenadas da tela
-                rX = (2 * x - width) / width;
-                rY = (height - 2 * y) / height;
 
                 pointerId = event.getPointerId(index);
 
@@ -84,79 +59,40 @@ public class EventHandler {
                 if (isDoubleTap(dt, dx, dy)) {
                     b = onDoubleTap();
                 }
-                b |= onDown(pointerId, rX, rY);
+                b |= onDown(pointerId, x, y, width, height);
 
-                mPreviousRX.put(pointerId, rX);
-                mPreviousRY.put(pointerId, rY);
                 mPreviousX.put(pointerId, x);
                 mPreviousY.put(pointerId, y);
                 break;
             case MotionEvent.ACTION_UP:
-                // x, y é a posição do dedo em coordenada de pixel
-                x = event.getX(0);
-                y = event.getY(0);
-
-                // rX, rY é a posição do dedo nas coordenadas da tela
-                rX = (2 * x - width) / width;
-                rY = (height - 2 * y) / height;
-
-                pointerId = event.getPointerId(0);
-
-                b = onUp();
-
-                mPreviousRX.put(pointerId, rX);
-                mPreviousRY.put(pointerId, rY);
-                mPreviousX.put(pointerId, x);
-                mPreviousY.put(pointerId, y);
+                index = event.getActionIndex();
+                pointerId = event.getPointerId(index);
+                b = onUp(pointerId);
+                mPreviousX.remove(pointerId);
+                mPreviousY.remove(pointerId);
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 index = event.getActionIndex();
-                System.out.println(index);
+
                 // x, y é a posição do dedo em coordenada de pixel
                 x = event.getX(index);
                 y = event.getY(index);
 
-                // rX, rY é a posição do dedo nas coordenadas da tela
-                rX = (2 * x - width) / width;
-                rY = (height - 2 * y) / height;
-
                 pointerId = event.getPointerId(index);
-
-                MotionEvent.PointerProperties pointerProperties = new MotionEvent.PointerProperties();
-                event.getPointerProperties(index, pointerProperties);
-
                 if (mainPointerId != pointerId) {
-
-                    b = onPointerDown(pointerId, rX, rY);
+                    b = onPointerDown(pointerId, x, y, width, height);
                 }
-
-                mPreviousRX.put(pointerId, rX);
-                mPreviousRY.put(pointerId, rY);
                 mPreviousX.put(pointerId, x);
                 mPreviousY.put(pointerId, y);
-
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 index = event.getActionIndex();
-                // x, y é a posição do dedo em coordenada de pixel
-                x = event.getX(index);
-                y = event.getY(index);
-
-                // rX, rY é a posição do dedo nas coordenadas da tela
-                rX = (2 * x - width) / width;
-                rY = (height - 2 * y) / height;
-
                 pointerId = event.getPointerId(index);
-
                 if (mainPointerId != pointerId) {
-
                     b = onPointerUp(pointerId);
                 }
-
-                mPreviousRX.put(pointerId, rX);
-                mPreviousRY.put(pointerId, rY);
-                mPreviousX.put(pointerId, x);
-                mPreviousY.put(pointerId, y);
+                mPreviousX.remove(pointerId);
+                mPreviousY.remove(pointerId);
                 break;
         }
         return b;
@@ -166,23 +102,23 @@ public class EventHandler {
         return false;
     }
 
-    public boolean onPointerDown(int pointerId, float rX, float rY) {
+    public boolean onPointerDown(int pointerId, float x, float y, int width, int height) {
         return false;
     }
 
-    public boolean onUp() {
+    public boolean onUp(int pointerId) {
         return false;
     }
 
-    public boolean onDown(int pointerId, float x, float y) {
+    public boolean onDown(int pointerId, float x, float y, int width, int height) {
+        return false;
+    }
+
+    public boolean onMove(int pointerId, float dx, float dy, int width, int height) {
         return false;
     }
 
     public boolean onDoubleTap() {
-        return false;
-    }
-
-    public boolean onMove(int pointerId, float rDx, float rDy) {
         return false;
     }
 

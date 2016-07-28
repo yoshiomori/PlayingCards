@@ -31,16 +31,16 @@ public class CardImage extends GLImage {
     private EventHandler eventHandler = new EventHandler(){
         private HashMap<Integer, GLObject> pointerCards = new HashMap<>();
         @Override
-        public boolean onDown(int pointerId, float x, float y) {
-            findObject(pointerId, x, y);
+        public boolean onDown(int pointerId, float x, float y, int width, int height) {
+            findObject(pointerId, getGLX(x, width), getGLY(y, height));
             return true;
         }
 
         @Override
-        public boolean onMove(int pointerId, float dx, float dy) {
+        public boolean onMove(int pointerId, float dx, float dy, int width, int height) {
             // Criando a matriz de projeção do modelo para a tela, idêntico ao do shader.
             setProjectionMatrix();
-            setModelCoord(m, v, new float[]{dx, dy, 0, 0});
+            setModelCoord(m, v, new float[]{getGLDx(dx, width), getGLDy(dy, height), 0, 0});
 
             if (pointerCards.containsKey(pointerId)) {
                 GLObject card = pointerCards.get(pointerId);
@@ -51,9 +51,8 @@ public class CardImage extends GLImage {
         }
 
 
-
         @Override
-        public boolean onUp() {
+        public boolean onUp(int pointerId) {
             pointerCards.clear();
             return true;
         }
@@ -65,8 +64,9 @@ public class CardImage extends GLImage {
         }
 
         @Override
-        public boolean onPointerDown(int pointerId, float x, float y) {
-            findObject(pointerId, x, y);
+        public boolean onPointerDown(int pointerId, float x, float y, int width, int height) {
+            // rX, rY é a posição do dedo nas coordenadas da tela
+            findObject(pointerId, getGLX(x, width), getGLY(y, height));
             return true;
         }
 
