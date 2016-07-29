@@ -8,7 +8,7 @@ import java.util.HashMap;
  * Classe trata de toque na tela.
  * Created by mori on 28/07/16.
  */
-public class EventHandler {
+public class TouchEventHandler {
     private HashMap<Integer, Float> mPreviousX = new HashMap<>();
     private HashMap<Integer, Float> mPreviousY = new HashMap<>();
 

@@ -19,7 +19,7 @@ public class ButtonImage extends GLImage {
 
     private final MainMenuActivity mainMenuActivity;
     private float ratio;
-    private EventHandler swingHandler = new EventHandler() {
+    private TouchEventHandler swingHandler = new TouchEventHandler() {
         @Override
         public boolean onDown(int pointerId, float x, float y, int width, int height, long downTime) {
             float[] projection = new float[16];

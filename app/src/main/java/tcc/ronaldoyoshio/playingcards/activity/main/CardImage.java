@@ -28,7 +28,7 @@ public class CardImage extends GLImage {
     private float r_width;
     private float r_height;
     private boolean doubleTap = false;
-    private EventHandler eventHandler = new EventHandler(){
+    private TouchEventHandler touchEventHandler = new TouchEventHandler(){
         public long previousDownTime = Long.MIN_VALUE;
         public float previousX = Float.POSITIVE_INFINITY;
         public float previousY = Float.POSITIVE_INFINITY;
@@ -274,7 +274,7 @@ public class CardImage extends GLImage {
 
     @Override
     public boolean onTouchEvent(MotionEvent event, int width, int height) {
-        return eventHandler.onTouchEvent(event, width, height);
+        return touchEventHandler.onTouchEvent(event, width, height);
     }
 
     private boolean cardHit() {
