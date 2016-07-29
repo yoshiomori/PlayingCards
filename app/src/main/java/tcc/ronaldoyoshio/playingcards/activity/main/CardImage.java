@@ -143,19 +143,22 @@ public class CardImage extends GLImage {
         public float previousX = Float.POSITIVE_INFINITY;
         public float previousY = Float.POSITIVE_INFINITY;
         public boolean doubleTap;
+        public GLObject previousCard;
         @Override
         public boolean onDown(int pointerId, float x, float y, int width, int height) {
             // Verificando se é double tap
             long downTime = System.currentTimeMillis();
-            doubleTap = isDoubleTap(downTime - previousDownTime, x - previousX, y - previousY);
-            previousDownTime = downTime;
-            previousX = x;
-            previousY = y;
+            int index = findFirstCardIndexAt(getGLX(x, width), getGLY(y, height));
+            if (index >= 0) {
+                GLObject currentCard = getObjects().get(index);
+                doubleTap = isDoubleTap(downTime - previousDownTime, x - previousX, y - previousY, currentCard);
+                previousDownTime = downTime;
+                previousX = x;
+                previousY = y;
+                previousCard = currentCard;
 
-            if (doubleTap) {
-                doubleTap = false;
-                int index = findFirstCardIndexAt(getGLX(x, width), getGLY(y, height));
-                if (index >= 0) {
+                if (doubleTap) {
+                    doubleTap = false;
                     if (activeCards.isEmpty()) {
                         flipCard(getObjects().get(index), index);
                     } else {
@@ -173,8 +176,8 @@ public class CardImage extends GLImage {
             return false;
         }
 
-        public boolean isDoubleTap(long dt, float dx, float dy) {
-            return dx * dx + dy * dy <= 1600 && dt * dt <= 100000;
+        public boolean isDoubleTap(long dt, float dx, float dy, GLObject card) {
+            return dx * dx + dy * dy <= 1000 && dt * dt <= 100000 && previousCard == card;
         }
     };
 
