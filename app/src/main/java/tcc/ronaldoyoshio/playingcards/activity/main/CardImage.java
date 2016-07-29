@@ -31,46 +31,61 @@ public class CardImage extends GLImage {
     private float r_width;
     private float r_height;
     private boolean doubleTap = false;
+    public ArrayList<GLObject> activeCards = new ArrayList<>();
     private TouchEventHandler holdEventHandler = new TouchEventHandler() {
         public float downY;
         public float downX;
-        public ArrayList<GLObject> activateCards = new ArrayList<>();
         TimerTask timerTask = null;
         long previousDownTime = Long.MIN_VALUE;
-        private static final int DELAY = 700;
+        private static final int DELAY = 500;
         @Override
         public boolean onDown(int pointerId, float x, float y, int width, int height) {
             final float glx = getGLX(x, width);
             final float gly = getGLY(y, height);
             final int cardIndex = findFirstCardIndexAt(glx, gly);
             if (cardIndex < 0) {
-                activateCards.clear();
+                deactivateCards();
+                return true;
+            }
+
+            GLObject card = getObjects().get(cardIndex);
+            if (activeCards.contains(card)) {
+                return false;
+            }
+
+            if (activeCards.isEmpty()) {
+                long downTime = System.currentTimeMillis();
+                if (previousDownTime == Long.MIN_VALUE) {
+                    previousDownTime = downTime;
+                }
+                if (previousDownTime - downTime < DELAY && timerTask != null) {
+                    timerTask.cancel();
+                }
+                previousDownTime = downTime;
+                downX = x;
+                downY = y;
+                timerTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        activateCards(glx, gly);
+                    }
+                };
+                Timer timer = new Timer();
+                timer.schedule(timerTask, DELAY);
+                return false;
             }
             else {
-                GLObject card = getObjects().get(cardIndex);
-                if (!activateCards.contains(card)) {
-                    activateCards.clear();
-                }
+                activateCards(glx, gly);
+                return true;
             }
-            long downTime = System.currentTimeMillis();
-            if (previousDownTime == Long.MIN_VALUE) {
-                previousDownTime = downTime;
+        }
+
+        private void deactivateCards() {
+            for (GLObject card :
+                    getObjects()) {
+                card.set("blue_tone", 0);
             }
-            if (previousDownTime - downTime < DELAY && timerTask != null) {
-                timerTask.cancel();
-            }
-            previousDownTime = downTime;
-            downX = x;
-            downY = y;
-            timerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    activateCards(glx, gly);
-                }
-            };
-            Timer timer = new Timer();
-            timer.schedule(timerTask, DELAY);
-            return true;
+            activeCards.clear();
         }
 
         @Override
@@ -78,7 +93,7 @@ public class CardImage extends GLImage {
             if ((x - downX)*(x - downX)+(y - downY)*(y - downY) > 100) {
                 timerTask.cancel();
             }
-            return true;
+            return false;
         }
 
         @Override
@@ -86,14 +101,13 @@ public class CardImage extends GLImage {
             if (System.currentTimeMillis() - previousDownTime < DELAY) {
                 timerTask.cancel();
             }
-            return true;
+            return false;
         }
 
         private void activateCards(float x, float y) {
             int index;
-            activateCards.clear();
-            System.out.println("Cartas desativadas");
             List<GLObject> objects = getObjects();
+            float[] lastCardPosition = objects.get(objects.size() - 1).getFloats("position");
 
             // Procurando a última das cartas que contém o ponto x, y
             for (index = objects.size() - 1; index >= 0; index--) {
@@ -103,15 +117,13 @@ public class CardImage extends GLImage {
                 // Se o ponto x, y está contido no modelo da carta então o ponto foi encontrado
                 // e o laço é quebrado.
                 if (cardHit()) {
-                    activateCards.add(card);
+                    activeCards.add(card);
+                    float[] position = card.getFloats("position");
+                    System.arraycopy(lastCardPosition, 0, position, 0, position.length);
+                    card.set("blue_tone", 0.2f);
                 }
             }
-            float[] lastCardPosition = objects.get(objects.size() - 1).getFloats("position");
-            for (GLObject card :
-                    activateCards) {
-                float[] position = card.getFloats("position");
-                System.arraycopy(lastCardPosition, 0, position, 0, position.length);
-            }
+            requestRender();
         }
     };
 
@@ -127,11 +139,10 @@ public class CardImage extends GLImage {
         return index;
     }
 
-    private TouchEventHandler touchEventHandler = new TouchEventHandler(){
+    private TouchEventHandler flipCardsEventHandler = new TouchEventHandler() {
         public long previousDownTime = Long.MIN_VALUE;
         public float previousX = Float.POSITIVE_INFINITY;
         public float previousY = Float.POSITIVE_INFINITY;
-        private HashMap<Integer, GLObject> pointerCards = new HashMap<>();
         @Override
         public boolean onDown(int pointerId, float x, float y, int width, int height) {
             // Verificando se é double tap
@@ -140,63 +151,98 @@ public class CardImage extends GLImage {
             previousDownTime = downTime;
             previousX = x;
             previousY = y;
-            int index = putPointerCards(pointerId, getGLX(x, width), getGLY(y, height));
-            if (index >= 0) {
-                overAll(index);
+
+            if (doubleTap) {
+                doubleTap = false;
+                int index = findFirstCardIndexAt(getGLX(x, width), getGLY(y, height));
+                if (index >= 0) {
+                    if (activeCards.isEmpty()) {
+                        flipCard(getObjects().get(index), index);
+                    } else {
+                        if (activeCards.contains(getObjects().get(index))) {
+                            for (GLObject card :
+                                    activeCards) {
+                                flipCard(card, getObjects().indexOf(card));
+                            }
+
+                        }
+                    }
+                }
             }
-            return true;
+
+            return false;
         }
 
         public boolean isDoubleTap(long dt, float dx, float dy) {
             return dx * dx + dy * dy <= 1600 && dt * dt <= 100000;
         }
+    };
+
+    private TouchEventHandler moveCardsEventHandler = new TouchEventHandler(){
+        private HashMap<Integer, GLObject> pointerCards = new HashMap<>();
+        @Override
+        public boolean onDown(int pointerId, float x, float y, int width, int height) {
+            int index = findFirstCardIndexAt(getGLX(x, width), getGLY(y, height));
+            if (index >= 0) {
+                putPointerCards(pointerId, index);
+            }
+
+            if (!activeCards.isEmpty()) {
+                return true;
+            }
+
+            if (index >= 0) {
+                overAll(index);
+            }
+            return index >= 0;
+        }
 
         @Override
         public boolean onMove(int pointerId, float x, float y, float dx, float dy, int width, int height) {
+            if (!activeCards.isEmpty()) {
+                for (GLObject card :
+                        activeCards) {
+                    setProjectionCoords(dx, dy, width, height);
+                    positionUpdate(card.getFloats("position"));
+                }
+                return true;
+            }
+
+            if (pointerCards.isEmpty()) {
+                return false;
+            }
+
             // Criando a matriz de projeção do modelo para a tela, idêntico ao do shader.
-            setProjectionMatrix();
-            MultiplyInvMRhsVec(m, new float[]{getGLDx(dx, width), getGLDy(dy, height), 0, 0});
+            setProjectionCoords(dx, dy, width, height);
 
             if (pointerCards.containsKey(pointerId)) {
                 GLObject card = pointerCards.get(pointerId);
                 positionUpdate(card.getFloats("position"));
             }
-
             return true;
         }
 
 
         @Override
         public boolean onUp(int pointerId) {
+            if (pointerCards.isEmpty()) {
+                return false;
+            }
             pointerCards.clear();
-            return true;
+            return false;
         }
 
         @Override
         public boolean onPointerDown(int pointerId, float x, float y, int width, int height) {
-            // rX, rY é a posição do dedo nas coordenadas da tela
-            putPointerCards(pointerId, getGLX(x, width), getGLY(y, height));
-            return true;
-        }
-
-        /**
-         * Adiciona a carta que está na posição glx, gly
-         * @param pointerId Identificador do ponteiro que será inserido a carta
-         * @param glx posição entre -1 1
-         * @param gly posição entre -1 1
-         * @return índice da carta inserido, -1 se não houver nenhuma carta na posição glx, gly
-         */
-        private int putPointerCards(int pointerId, float glx, float gly) {
-            int index = findFirstCardIndexAt(glx, gly);
-            if (index >= 0) {
-                GLObject card = getObjects().get(index);
-                if (doubleTap) {
-                    doubleTap = false;
-                    flipCard(card, index);
-                }
-                pointerCards.put(pointerId, card);
+            if (!activeCards.isEmpty()) {
+                return false;
             }
-            return index;
+            int index = findFirstCardIndexAt(x, y);
+            if (index >= 0) {
+                putPointerCards(pointerId, index);
+                return true;
+            }
+            return false;
         }
 
         @Override
@@ -204,7 +250,23 @@ public class CardImage extends GLImage {
             pointerCards.remove(pointerId);
             return true;
         }
+
+        /**
+         * Adiciona a carta de índice index
+         * @param pointerId Identificador do ponteiro que será inserido a carta
+         * @param index Indice da List de GLObjects, ou índice da carta.
+         */
+        private void putPointerCards(int pointerId, int index) {
+            GLObject card = getObjects().get(index);
+            pointerCards.put(pointerId, card);
+        }
     };
+
+    private void setProjectionCoords(float dx, float dy, int width, int height) {
+        // Criando a matriz de projeção do modelo para a tela, idêntico ao do shader.
+        setProjectionMatrix();
+        MultiplyInvMRhsVec(m, new float[]{getGLDx(dx, width), getGLDy(dy, height), 0, 0});
+    }
 
     @Override
     protected void onSurfaceCreated() {
@@ -259,6 +321,7 @@ public class CardImage extends GLImage {
                         "precision mediump float;" +
                         "uniform sampler2D texture;" +
                         "uniform vec2 card_coord;" +
+                        "uniform float blue_tone;" +
                         "varying vec2 texture_coord;" +
                         "vec2 coord () {" +
                         "   vec4 v = vec4(texture_coord, 0, 1);" +
@@ -295,7 +358,7 @@ public class CardImage extends GLImage {
                         "   return v.xy;" +
                         "}" +
                         "void main() {" +
-                        "   gl_FragColor = texture2D(texture, coord());" +
+                        "   gl_FragColor = texture2D(texture, coord()) * vec4(1.0 - blue_tone, 1.0 - blue_tone, 1.0, 1.0);" +
                         "}",
                 GL.GL_TRIANGLES, 0, cardData.getCount()
         );
@@ -303,7 +366,7 @@ public class CardImage extends GLImage {
 
         setTexture("texture", R.drawable.playing_cards);
 
-        setObjectUniformNames("position", "card_coord");
+        setObjectUniformNames("position", "card_coord", "blue_tone");
     }
 
     public void print(PlayingCards cards, int mode) {
@@ -327,6 +390,7 @@ public class CardImage extends GLImage {
                     object = new GLObject();
                     object.set("position", 0, 0);
                     object.set("card_coord", cardData.getCardCoord(card));
+                    object.set("blue_tone", 0);
                     objects.add(object);
                 }
                 break;
@@ -351,6 +415,7 @@ public class CardImage extends GLImage {
                         }
                     }
                     object.set("card_coord", cardData.getCardCoord(card));
+                    object.set("blue_tone", 0);
                     objects.add(object);
                 }
                 break;
@@ -372,7 +437,11 @@ public class CardImage extends GLImage {
 
     @Override
     public boolean onTouchEvent(MotionEvent event, int width, int height) {
-        return touchEventHandler.onTouchEvent(event, width, height) | holdEventHandler.onTouchEvent(event, width, height);
+        boolean b;
+        b = moveCardsEventHandler.onTouchEvent(event, width, height);
+        b |= holdEventHandler.onTouchEvent(event, width, height);
+        b |= flipCardsEventHandler.onTouchEvent(event, width, height);
+        return b;
     }
 
     private boolean cardHit() {

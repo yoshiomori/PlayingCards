@@ -49,6 +49,7 @@ public class GL{
     public static final int GL_ELEMENT_ARRAY_BUFFER_BINDING = GLES20.GL_ELEMENT_ARRAY_BUFFER_BINDING;
     public static final int GL_TEXTURE_BINDING_2D = GLES20.GL_TEXTURE_BINDING_2D;
     public static final int GL_ACTIVE_TEXTURE = GLES20.GL_ACTIVE_TEXTURE;
+    public static final int GL_INT = GLES20.GL_INT;
 
     private static void checkGlError(String glOperation) {
         int error;

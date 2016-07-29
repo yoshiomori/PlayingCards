@@ -1,5 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.GL;
 
+import android.opengl.GLES20;
+
 /**
  * Abstração de uniform.
  * Created by mori on 09/07/16.
@@ -39,6 +41,9 @@ public class GLUniform {
             GL.glUniformMatrix4fv(location, 1, false, array, 0);
         }
         else if (type == GL.GL_SAMPLER_2D) {
+            GL.glUniform1i(location, xi);
+        }
+        else if (type == GL.GL_INT) {
             GL.glUniform1i(location, xi);
         }
         else if (type == GL.GL_FLOAT) {

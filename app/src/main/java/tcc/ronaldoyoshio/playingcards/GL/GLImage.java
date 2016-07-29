@@ -51,7 +51,7 @@ public abstract class GLImage {
         return (height - 2 * y) / height;
     }
 
-    protected void requestRender() {
+    public void requestRender() {
         if (context != null) {
             context.requestRender();
         }
