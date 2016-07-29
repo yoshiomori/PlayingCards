@@ -30,7 +30,6 @@ public class CardImage extends GLImage {
     private PlayingCards cards;
     private float r_width;
     private float r_height;
-    private boolean doubleTap = false;
     public ArrayList<GLObject> activeCards = new ArrayList<>();
     private TouchEventHandler holdEventHandler = new TouchEventHandler() {
         public float downY;
@@ -97,7 +96,7 @@ public class CardImage extends GLImage {
         }
 
         @Override
-        public boolean onUp(int pointerId) {
+        public boolean onUp() {
             if (System.currentTimeMillis() - previousDownTime < DELAY) {
                 timerTask.cancel();
             }
@@ -143,6 +142,7 @@ public class CardImage extends GLImage {
         public long previousDownTime = Long.MIN_VALUE;
         public float previousX = Float.POSITIVE_INFINITY;
         public float previousY = Float.POSITIVE_INFINITY;
+        public boolean doubleTap;
         @Override
         public boolean onDown(int pointerId, float x, float y, int width, int height) {
             // Verificando se é double tap
@@ -182,13 +182,12 @@ public class CardImage extends GLImage {
         private HashMap<Integer, GLObject> pointerCards = new HashMap<>();
         @Override
         public boolean onDown(int pointerId, float x, float y, int width, int height) {
+            if (!activeCards.isEmpty()) {
+                return true;
+            }
             int index = findFirstCardIndexAt(getGLX(x, width), getGLY(y, height));
             if (index >= 0) {
                 putPointerCards(pointerId, index);
-            }
-
-            if (!activeCards.isEmpty()) {
-                return true;
             }
 
             if (index >= 0) {
@@ -199,7 +198,8 @@ public class CardImage extends GLImage {
 
         @Override
         public boolean onMove(int pointerId, float x, float y, float dx, float dy, int width, int height) {
-            if (!activeCards.isEmpty()) {
+            if (!activeCards.isEmpty() && pointerId == 0
+                    && findFirstCardIndexAt(getGLX(x, width), getGLY(y, height))>=0) {
                 for (GLObject card :
                         activeCards) {
                     setProjectionCoords(dx, dy, width, height);
@@ -214,7 +214,6 @@ public class CardImage extends GLImage {
 
             // Criando a matriz de projeção do modelo para a tela, idêntico ao do shader.
             setProjectionCoords(dx, dy, width, height);
-
             if (pointerCards.containsKey(pointerId)) {
                 GLObject card = pointerCards.get(pointerId);
                 positionUpdate(card.getFloats("position"));
@@ -224,7 +223,7 @@ public class CardImage extends GLImage {
 
 
         @Override
-        public boolean onUp(int pointerId) {
+        public boolean onUp() {
             if (pointerCards.isEmpty()) {
                 return false;
             }
@@ -237,7 +236,12 @@ public class CardImage extends GLImage {
             if (!activeCards.isEmpty()) {
                 return false;
             }
-            int index = findFirstCardIndexAt(x, y);
+            int index = findFirstCardIndexAt(getGLX(x, width), getGLY(y, height));
+
+            if (pointerId != 0) {
+                System.out.println(pointerId);
+                System.out.println(index);
+            }
             if (index >= 0) {
                 putPointerCards(pointerId, index);
                 return true;

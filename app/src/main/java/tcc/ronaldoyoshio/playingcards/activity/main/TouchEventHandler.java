@@ -52,7 +52,7 @@ public class TouchEventHandler {
             case MotionEvent.ACTION_UP:
                 index = event.getActionIndex();
                 pointerId = event.getPointerId(index);
-                b = onUp(pointerId);
+                b = onUp();
                 mPreviousX.remove(pointerId);
                 mPreviousY.remove(pointerId);
                 break;
@@ -87,7 +87,7 @@ public class TouchEventHandler {
         return false;
     }
 
-    public boolean onUp(int pointerId) {
+    public boolean onUp() {
         return false;
     }
 
