@@ -8,6 +8,7 @@ import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Abstração de dados usados para renderizar com a biblioteca gráfica.
@@ -32,7 +33,7 @@ public abstract class GLImage {
     private GLScreen context = null;
     private int bitmapId = -1;
     private ArrayList<String> objectUniformNames = new ArrayList<>();
-    private ArrayList<GLObject> objects = new ArrayList<>();
+    private List<GLObject> objects = Collections.synchronizedList(new ArrayList<GLObject>());
 
     public float getGLDy(float dy, int height) {
         return  - 2 * dy / height;
@@ -373,11 +374,7 @@ public abstract class GLImage {
         return false;
     }
 
-    public ArrayList<GLObject> getObjects() {
+    public List<GLObject> getObjects() {
         return objects;
-    }
-
-    public void setObjects(ArrayList<GLObject> objects) {
-        this.objects = objects;
     }
 }

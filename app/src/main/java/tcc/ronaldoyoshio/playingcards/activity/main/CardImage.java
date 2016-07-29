@@ -6,6 +6,9 @@ import android.view.MotionEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import tcc.ronaldoyoshio.playingcards.GL.GL;
 import tcc.ronaldoyoshio.playingcards.GL.GLImage;
@@ -28,19 +31,116 @@ public class CardImage extends GLImage {
     private float r_width;
     private float r_height;
     private boolean doubleTap = false;
+    private TouchEventHandler holdEventHandler = new TouchEventHandler() {
+        public float downY;
+        public float downX;
+        public ArrayList<GLObject> activateCards = new ArrayList<>();
+        TimerTask timerTask = null;
+        long previousDownTime = Long.MIN_VALUE;
+        private static final int DELAY = 700;
+        @Override
+        public boolean onDown(int pointerId, float x, float y, int width, int height) {
+            final float glx = getGLX(x, width);
+            final float gly = getGLY(y, height);
+            final int cardIndex = findFirstCardIndexAt(glx, gly);
+            if (cardIndex < 0) {
+                activateCards.clear();
+            }
+            else {
+                GLObject card = getObjects().get(cardIndex);
+                if (!activateCards.contains(card)) {
+                    activateCards.clear();
+                }
+            }
+            long downTime = System.currentTimeMillis();
+            if (previousDownTime == Long.MIN_VALUE) {
+                previousDownTime = downTime;
+            }
+            if (previousDownTime - downTime < DELAY && timerTask != null) {
+                timerTask.cancel();
+            }
+            previousDownTime = downTime;
+            downX = x;
+            downY = y;
+            timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    activateCards(glx, gly);
+                }
+            };
+            Timer timer = new Timer();
+            timer.schedule(timerTask, DELAY);
+            return true;
+        }
+
+        @Override
+        public boolean onMove(int pointerId, float x, float y, float dx, float dy, int width, int height) {
+            if ((x - downX)*(x - downX)+(y - downY)*(y - downY) > 100) {
+                timerTask.cancel();
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onUp(int pointerId) {
+            if (System.currentTimeMillis() - previousDownTime < DELAY) {
+                timerTask.cancel();
+            }
+            return true;
+        }
+
+        private void activateCards(float x, float y) {
+            int index;
+            activateCards.clear();
+            System.out.println("Cartas desativadas");
+            List<GLObject> objects = getObjects();
+
+            // Procurando a última das cartas que contém o ponto x, y
+            for (index = objects.size() - 1; index >= 0; index--) {
+                GLObject card = objects.get(index);
+                setModelCoord(x, y, card);
+
+                // Se o ponto x, y está contido no modelo da carta então o ponto foi encontrado
+                // e o laço é quebrado.
+                if (cardHit()) {
+                    activateCards.add(card);
+                }
+            }
+            float[] lastCardPosition = objects.get(objects.size() - 1).getFloats("position");
+            for (GLObject card :
+                    activateCards) {
+                float[] position = card.getFloats("position");
+                System.arraycopy(lastCardPosition, 0, position, 0, position.length);
+            }
+        }
+    };
+
+    private int findFirstCardIndexAt(float glx, float gly) {
+        int index;
+        final List<GLObject> cards = getObjects();
+        for (index = cards.size() - 1; index >= 0; index--){
+            setModelCoord(glx, gly, cards.get(index));
+            if (cardHit()) {
+                break;
+            }
+        }
+        return index;
+    }
+
     private TouchEventHandler touchEventHandler = new TouchEventHandler(){
         public long previousDownTime = Long.MIN_VALUE;
         public float previousX = Float.POSITIVE_INFINITY;
         public float previousY = Float.POSITIVE_INFINITY;
         private HashMap<Integer, GLObject> pointerCards = new HashMap<>();
         @Override
-        public boolean onDown(int pointerId, float x, float y, int width, int height, long downTime) {
+        public boolean onDown(int pointerId, float x, float y, int width, int height) {
             // Verificando se é double tap
+            long downTime = System.currentTimeMillis();
             doubleTap = isDoubleTap(downTime - previousDownTime, x - previousX, y - previousY);
             previousDownTime = downTime;
             previousX = x;
             previousY = y;
-            int index = seachCard(pointerId, getGLX(x, width), getGLY(y, height));
+            int index = putPointerCards(pointerId, getGLX(x, width), getGLY(y, height));
             if (index >= 0) {
                 overAll(index);
             }
@@ -52,10 +152,10 @@ public class CardImage extends GLImage {
         }
 
         @Override
-        public boolean onMove(int pointerId, float dx, float dy, int width, int height) {
+        public boolean onMove(int pointerId, float x, float y, float dx, float dy, int width, int height) {
             // Criando a matriz de projeção do modelo para a tela, idêntico ao do shader.
             setProjectionMatrix();
-            setModelCoord(m, v, new float[]{getGLDx(dx, width), getGLDy(dy, height), 0, 0});
+            MultiplyInvMRhsVec(m, new float[]{getGLDx(dx, width), getGLDy(dy, height), 0, 0});
 
             if (pointerCards.containsKey(pointerId)) {
                 GLObject card = pointerCards.get(pointerId);
@@ -75,28 +175,26 @@ public class CardImage extends GLImage {
         @Override
         public boolean onPointerDown(int pointerId, float x, float y, int width, int height) {
             // rX, rY é a posição do dedo nas coordenadas da tela
-            seachCard(pointerId, getGLX(x, width), getGLY(y, height));
+            putPointerCards(pointerId, getGLX(x, width), getGLY(y, height));
             return true;
         }
 
-        private int seachCard(int pointerId, float x, float y) {
-            int index;
-            ArrayList<GLObject> objects = getObjects();
-
-            // Procurando a última das cartas que contém o ponto x, y
-            for (index = objects.size() - 1; index >= 0; index--) {
-                GLObject card = getGlObject(x, y, index);
-
-                // Se o ponto x, y está contido no modelo da carta então o ponto foi encontrado
-                // e o laço é quebrado.
-                if (cardHit()) {
-                    if (doubleTap) {
-                        doubleTap = false;
-                        flipCard(card, index);
-                    }
-                    pointerCards.put(pointerId, card);
-                    break;
+        /**
+         * Adiciona a carta que está na posição glx, gly
+         * @param pointerId Identificador do ponteiro que será inserido a carta
+         * @param glx posição entre -1 1
+         * @param gly posição entre -1 1
+         * @return índice da carta inserido, -1 se não houver nenhuma carta na posição glx, gly
+         */
+        private int putPointerCards(int pointerId, float glx, float gly) {
+            int index = findFirstCardIndexAt(glx, gly);
+            if (index >= 0) {
+                GLObject card = getObjects().get(index);
+                if (doubleTap) {
+                    doubleTap = false;
+                    flipCard(card, index);
                 }
+                pointerCards.put(pointerId, card);
             }
             return index;
         }
@@ -219,7 +317,7 @@ public class CardImage extends GLImage {
      * Pode ser todas as cartas no centro da tela ou todas as cartas lado a lado.
      */
     private void changeMode() {
-        ArrayList<GLObject> objects = getObjects();
+        List<GLObject> objects = getObjects();
         GLObject object;
         switch (mode) {
             case CENTERED:
@@ -274,7 +372,7 @@ public class CardImage extends GLImage {
 
     @Override
     public boolean onTouchEvent(MotionEvent event, int width, int height) {
-        return touchEventHandler.onTouchEvent(event, width, height);
+        return touchEventHandler.onTouchEvent(event, width, height) | holdEventHandler.onTouchEvent(event, width, height);
     }
 
     private boolean cardHit() {
@@ -290,7 +388,12 @@ public class CardImage extends GLImage {
         }
     }
 
-    private void setModelCoord(float[] m, float[] v, float[] rhsVec) {
+    /**
+     * Multiplica rhsVec com a inversa da matriz m
+     *  @param m float[16] representando uma matriz 4x4
+     * @param rhsVec float[4] representando um vetor de dimenção 4
+     */
+    private void MultiplyInvMRhsVec(float[] m, float[] rhsVec) {
         // Criando uma matriz que transforma coordenadas da tela em coordenadas do modelo.
         Matrix.invertM(m, 0, m, 0);
 
@@ -304,19 +407,20 @@ public class CardImage extends GLImage {
     }
 
     private void overAll(int index) {
-        ArrayList<GLObject> objects = getObjects();
+        List<GLObject> objects = getObjects();
         for (int i = index; i < objects.size()-1; i++) {
             Collections.swap(objects, i, i+1);
             Collections.swap(cards, i, i+1);
         }
     }
 
-    private GLObject getGlObject(float x, float y, int index) {
-        ArrayList<GLObject> objects = getObjects();
-
-        // Pegando a carta
-        GLObject card = objects.get(index);
-
+    /**
+     * Transforma as coordenadas x, y em coordenadas do modelo da carta card
+     *  @param x coordenada entre -1 1
+     * @param y coordenada entre -1 1
+     * @param card GLObject que representa carta e tem como atributos "position" e "card_coord"
+     */
+    private void setModelCoord(float x, float y, GLObject card) {
         // Pegando a posição da carta
         float[] position = card.getFloats("position");
 
@@ -327,8 +431,7 @@ public class CardImage extends GLImage {
         // x, y são coordenadas da tela, m é uma matriz que transforma coordenadas do
         // modelo da carta em coordenadas da tela, por isso é necessário inverter a
         // matriz.
-        setModelCoord(m, v, new float[] {x, y, 0, 1});
-        return card;
+        MultiplyInvMRhsVec(m, new float[] {x, y, 0, 1});
     }
 
     private void setModelMatrix(float[] position) {

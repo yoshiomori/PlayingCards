@@ -21,7 +21,7 @@ public class ButtonImage extends GLImage {
     private float ratio;
     private TouchEventHandler swingHandler = new TouchEventHandler() {
         @Override
-        public boolean onDown(int pointerId, float x, float y, int width, int height, long downTime) {
+        public boolean onDown(int pointerId, float x, float y, int width, int height) {
             float[] projection = new float[16];
             float[] m = new float[16];
             float[] v = new float[4];
@@ -124,7 +124,7 @@ public class ButtonImage extends GLImage {
         button.set("color", 0f, 0.5f);
         objects.add(button);
 
-        setObjects(objects);
+        getObjects().addAll(objects);
     }
 
     @Override

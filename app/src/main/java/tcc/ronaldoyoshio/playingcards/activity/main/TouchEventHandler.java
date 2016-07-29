@@ -31,7 +31,7 @@ public class TouchEventHandler {
                     float dy = mPreviousY.containsKey(pointerId) ?
                             y - mPreviousY.get(pointerId) : 0;
 
-                    b = onMove(pointerId, dx, dy, width, height);
+                    b = onMove(pointerId, x, y, dx, dy, width, height);
 
                     mPreviousX.put(pointerId, x);
                     mPreviousY.put(pointerId, y);
@@ -45,7 +45,7 @@ public class TouchEventHandler {
                 y = event.getY(index);
 
                 pointerId = event.getPointerId(index);
-                b = onDown(pointerId, x, y, width, height, event.getDownTime());
+                b = onDown(pointerId, x, y, width, height);
                 mPreviousX.put(pointerId, x);
                 mPreviousY.put(pointerId, y);
                 break;
@@ -91,11 +91,11 @@ public class TouchEventHandler {
         return false;
     }
 
-    public boolean onDown(int pointerId, float x, float y, int width, int height, long downTime) {
+    public boolean onDown(int pointerId, float x, float y, int width, int height) {
         return false;
     }
 
-    public boolean onMove(int pointerId, float dx, float dy, int width, int height) {
+    public boolean onMove(int pointerId, float x, float y, float dx, float dy, int width, int height) {
         return false;
     }
 }
