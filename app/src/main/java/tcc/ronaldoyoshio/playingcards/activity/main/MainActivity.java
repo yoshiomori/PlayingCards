@@ -8,12 +8,12 @@ import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
 
 public class MainActivity extends Activity {
     GLScreen screen;
+    PlayingCards cards;
+    CardImage cardImage = new CardImage();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        CardImage cardImage = new CardImage();
 
         screen = new GLScreen(this);
         screen.setImages(
@@ -23,7 +23,14 @@ public class MainActivity extends Activity {
         setContentView(screen);
         screen.setSaveEnabled(true);
 
-        PlayingCards cards = new PlayingCards();
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey("cards")) {
+                cards = new PlayingCards(savedInstanceState.getStringArrayList("cards"));
+            }
+        }
+        else {
+            cards = new PlayingCards();
+        }
         cardImage.print(cards, CardImage.CENTERED);
 //        cards.shuffle();
 //        cardImage.print(cards);
@@ -32,5 +39,11 @@ public class MainActivity extends Activity {
 //        cards.clear();
 //        cards.add("Joker Black");
 //        cardImage.print(cards);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putStringArrayList("cards", cards);
+        super.onSaveInstanceState(outState);
     }
 }

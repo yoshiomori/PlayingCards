@@ -90,7 +90,9 @@ public class CardImage extends GLImage {
         @Override
         public boolean onMove(int pointerId, float x, float y, float dx, float dy, int width, int height) {
             if ((x - downX)*(x - downX)+(y - downY)*(y - downY) > 100) {
-                timerTask.cancel();
+                if (timerTask != null) {
+                    timerTask.cancel();
+                }
             }
             return false;
         }
@@ -98,7 +100,9 @@ public class CardImage extends GLImage {
         @Override
         public boolean onUp() {
             if (System.currentTimeMillis() - previousDownTime < DELAY) {
-                timerTask.cancel();
+                if (timerTask != null) {
+                    timerTask.cancel();
+                }
             }
             return false;
         }

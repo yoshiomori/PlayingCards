@@ -16,6 +16,10 @@ public class PlayingCards extends ArrayList<String> {
         Collections.addAll(this, strings);
     }
 
+    public PlayingCards(ArrayList<String> cards) {
+        this.addAll(cards);
+    }
+
     public void shuffle(){
         Collections.shuffle(this);
     }
