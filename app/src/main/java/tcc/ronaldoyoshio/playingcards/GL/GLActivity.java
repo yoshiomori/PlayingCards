@@ -8,13 +8,16 @@ import android.os.Bundle;
  * Created by mori on 30/07/16.
  */
 public abstract class GLActivity extends Activity{
-    public abstract GLImage[] getImages();
+    GLScreen screen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GLScreen screen = new GLScreen(this);
-        screen.setImages(getImages());
+        screen = new GLScreen(this);
         setContentView(screen);
+    }
+
+    protected void setImages(GLImage... images) {
+        screen.setImages(images);
     }
 }
