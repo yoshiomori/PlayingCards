@@ -1,25 +1,18 @@
 package tcc.ronaldoyoshio.playingcards.activity.main;
 
-import android.app.Activity;
-import android.os.Bundle;
-
-import tcc.ronaldoyoshio.playingcards.GL.GLScreen;
+import tcc.ronaldoyoshio.playingcards.GL.GLActivity;
+import tcc.ronaldoyoshio.playingcards.GL.GLImage;
 
 /**
  * Responsável por desenhar o menu principal e tratar dos eventos de toques na tela.
  * Created by mori on 21/07/16.
  */
-public class MainMenuActivity extends Activity {
+public class MainMenuActivity extends GLActivity {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        GLScreen screen = new GLScreen(this);
-
-        screen.setImages(
+    public GLImage[] getImages() {
+        return new GLImage[] {
                 new BackGround(),
                 new ButtonImage(this)
-        );
-
-        setContentView(screen);
+        };
     }
 }
