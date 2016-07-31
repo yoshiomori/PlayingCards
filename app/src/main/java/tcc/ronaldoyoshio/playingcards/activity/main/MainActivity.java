@@ -7,7 +7,7 @@ import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
 
 public class MainActivity extends GLActivity {
     PlayingCards cards;
-    CardImage cardImage = new CardImage();
+    CardImage cardImage = new DeckCardImage();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,12 +23,12 @@ public class MainActivity extends GLActivity {
         }
         cardImage.print(cards, CardImage.CENTERED);
 //        cards.shuffle();
-//        cardImage.print(cards);
+//        deckCardImage.print(cards);
 //        cards.remove("Joker Black");
-//        cardImage.print(cards);
+//        deckCardImage.print(cards);
 //        cards.clear();
 //        cards.add("Joker Black");
-//        cardImage.print(cards);
+//        deckCardImage.print(cards);
     }
 
     @Override

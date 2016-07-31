@@ -21,6 +21,7 @@
         </activity>
 
         <activity android:name=".activity.main.MainActivity" />
+        <activity android:name=".activity.main.SelectCardsActivity" />
 
     </application>
 

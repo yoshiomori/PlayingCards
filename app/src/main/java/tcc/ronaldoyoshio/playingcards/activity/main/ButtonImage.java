@@ -40,7 +40,7 @@ public class ButtonImage extends GLImage {
                 if (-1 <= v[0] & v[0] <= 1 & -1 <= v[1] & v[1] <= 1) {
                     float[] color = button.getFloats("color");
                     if (0f == color[1]) {
-                        Intent intent = new Intent(mainMenuActivity, MainActivity.class);
+                        Intent intent = new Intent(mainMenuActivity, SelectCardsActivity.class);
                         mainMenuActivity.startActivity(intent);
                     }
                     else if (0.5f == color[1]) {

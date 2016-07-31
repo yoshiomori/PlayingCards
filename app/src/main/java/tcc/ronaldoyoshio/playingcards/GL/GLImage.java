@@ -298,7 +298,7 @@ public abstract class GLImage {
             object.bind(uniforms, objectUniformNames);
             draw();
         }
-        if (objects.isEmpty()) {
+        if (objects.isEmpty() && objectUniformNames.isEmpty()) {
             draw();
         }
     }
