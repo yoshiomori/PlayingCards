@@ -272,10 +272,4 @@ public class DeckCardImage extends CardImage {
             Collections.swap(cards, i, i+1);
         }
     }
-
-    @Override
-    protected void onSurfaceChanged(int width, int height) {
-        setMode((float) width / height > 1 ? SIDEBYSIDE : CENTERED);
-        super.onSurfaceChanged(width, height);
-    }
 }
