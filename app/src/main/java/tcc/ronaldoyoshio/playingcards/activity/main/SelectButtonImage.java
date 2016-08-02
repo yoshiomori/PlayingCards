@@ -25,7 +25,7 @@ public class SelectButtonImage extends GLImage {
                 float gly = (getGLY(y, height) + 1) * (width > height ? 1 : height / width) * 4f;
                 if (-1 < glx && glx < 1 && -0.294 < gly && gly < 0.294) {
                     Intent intent = new Intent(selectCardsActivity, MainActivity.class);
-                    intent.putExtra("cards", cards.toArray());
+                    intent.putExtra("cards", cards);
                     selectCardsActivity.startActivity(intent);
                 }
                 return super.onDown(pointerId, x, y, width, height);

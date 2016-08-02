@@ -13,13 +13,18 @@ public class MainActivity extends GLActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setImages(new BackGround(), cardImage);
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey("cards")) {
-                cards = new PlayingCards(savedInstanceState.getStringArrayList("cards"));
-            }
+        Bundle extras = getIntent().getExtras();
+        if (extras.containsKey("cards")) {
+            cards = new PlayingCards(extras.getStringArrayList("cards"));
         }
         else {
-            cards = new PlayingCards();
+            if (savedInstanceState != null) {
+                if (savedInstanceState.containsKey("cards")) {
+                    cards = new PlayingCards(savedInstanceState.getStringArrayList("cards"));
+                }
+            } else {
+                cards = new PlayingCards();
+            }
         }
         cardImage.print(cards, CardImage.CENTERED);
 //        cards.shuffle();
