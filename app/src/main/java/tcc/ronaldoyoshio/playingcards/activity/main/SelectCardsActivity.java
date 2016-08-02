@@ -14,7 +14,8 @@ public class SelectCardsActivity extends GLActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SelectCardImage SelectCardImage = new SelectCardImage();
-        setImages(new BackGround(), SelectCardImage);
-        SelectCardImage.print(new PlayingCards(), CardImage.SIDEBYSIDE);
+        PlayingCards playingCards = new PlayingCards();
+        setImages(new BackGround(), SelectCardImage, new SelectButtonImage(this, playingCards));
+        SelectCardImage.print(playingCards, CardImage.SIDEBYSIDE);
     }
 }

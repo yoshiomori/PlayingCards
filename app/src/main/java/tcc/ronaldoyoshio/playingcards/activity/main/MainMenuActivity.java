@@ -14,7 +14,7 @@ public class MainMenuActivity extends GLActivity {
         super.onCreate(savedInstanceState);
         setImages(
                 new BackGround(),
-                new ButtonImage(this)
+                new MainMenuButtonImage(this)
         );
     }
 }
