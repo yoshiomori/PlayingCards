@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.activity.main;
+package tcc.ronaldoyoshio.playingcards.activity;
 
 import android.opengl.Matrix;
 
@@ -9,7 +9,7 @@ import tcc.ronaldoyoshio.playingcards.GL.GL;
 import tcc.ronaldoyoshio.playingcards.GL.GLImage;
 import tcc.ronaldoyoshio.playingcards.GL.GLObject;
 import tcc.ronaldoyoshio.playingcards.R;
-import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
+import tcc.ronaldoyoshio.playingcards.model.Hand;
 
 /**
  * Imagem de carta sem o tratamento de eventos.
@@ -19,12 +19,16 @@ public class CardImage extends GLImage {
     public static final int SIDEBYSIDE = 1;
     public static final int CENTERED = 0;
     protected CardData cardData = new CardData();
-    protected PlayingCards cards;
+    protected Hand cards = new Hand();
     float[] m = new float[16];
     float[] v = new float[4];
     private int mode;
     private float r_width;
     private float r_height;
+
+    public float[] getV() {
+        return v;
+    }
 
     protected void setProjectionCoords(float dx, float dy, int width, int height) {
         // Criando a matriz de projeção do modelo para a tela, idêntico ao do shader.
@@ -133,7 +137,7 @@ public class CardImage extends GLImage {
         setObjectUniformNames("position", "card_coord", "blue_tone");
     }
 
-    public void print(PlayingCards cards, int mode) {
+    public void print(Hand cards, int mode) {
         this.cards = cards;
         this.mode = mode;
         requestRender();
@@ -143,7 +147,7 @@ public class CardImage extends GLImage {
         this.mode = mode;
     }
 
-    public PlayingCards getCards() {
+    public Hand getCards() {
         return cards;
     }
 

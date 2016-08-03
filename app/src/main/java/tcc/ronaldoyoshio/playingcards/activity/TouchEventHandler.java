@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.activity.main;
+package tcc.ronaldoyoshio.playingcards.activity;
 
 import android.view.MotionEvent;
 

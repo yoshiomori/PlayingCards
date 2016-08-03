@@ -1,12 +1,15 @@
-package tcc.ronaldoyoshio.playingcards.activity.main;
+package tcc.ronaldoyoshio.playingcards.activity.deck;
 
 import android.os.Bundle;
 
 import tcc.ronaldoyoshio.playingcards.GL.GLActivity;
+import tcc.ronaldoyoshio.playingcards.activity.BackGround;
+import tcc.ronaldoyoshio.playingcards.activity.CardImage;
+import tcc.ronaldoyoshio.playingcards.model.Hand;
 import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
 
-public class MainActivity extends GLActivity {
-    PlayingCards cards;
+public class DeckActivity extends GLActivity {
+    Hand cards;
     CardImage cardImage = new DeckCardImage();
 
     @Override

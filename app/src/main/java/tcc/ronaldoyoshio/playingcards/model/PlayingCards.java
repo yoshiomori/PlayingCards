@@ -3,7 +3,7 @@ package tcc.ronaldoyoshio.playingcards.model;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class PlayingCards extends ArrayList<String> {
+public class PlayingCards extends Hand {
     public PlayingCards() {
         super();
         final String[] strings = {
@@ -18,13 +18,5 @@ public class PlayingCards extends ArrayList<String> {
 
     public PlayingCards(ArrayList<String> cards) {
         this.addAll(cards);
-    }
-
-    public PlayingCards(String[] cards) {
-        Collections.addAll(this, cards);
-    }
-
-    public void shuffle(){
-        Collections.shuffle(this);
     }
 }

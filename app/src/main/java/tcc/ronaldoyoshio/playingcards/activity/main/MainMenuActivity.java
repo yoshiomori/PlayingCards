@@ -3,6 +3,7 @@ package tcc.ronaldoyoshio.playingcards.activity.main;
 import android.os.Bundle;
 
 import tcc.ronaldoyoshio.playingcards.GL.GLActivity;
+import tcc.ronaldoyoshio.playingcards.activity.BackGround;
 
 /**
  * Responsável por desenhar o menu principal e tratar dos eventos de toques na tela.

@@ -1,8 +1,11 @@
-package tcc.ronaldoyoshio.playingcards.activity.main;
+package tcc.ronaldoyoshio.playingcards.activity.select;
 
 import android.os.Bundle;
 
 import tcc.ronaldoyoshio.playingcards.GL.GLActivity;
+import tcc.ronaldoyoshio.playingcards.activity.BackGround;
+import tcc.ronaldoyoshio.playingcards.activity.CardImage;
+import tcc.ronaldoyoshio.playingcards.model.Hand;
 import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
 
 /**
@@ -14,7 +17,7 @@ public class SelectCardsActivity extends GLActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SelectCardImage SelectCardImage = new SelectCardImage();
-        PlayingCards playingCards = new PlayingCards();
+        Hand playingCards = new PlayingCards();
         setImages(new BackGround(), SelectCardImage, new SelectButtonImage(this, playingCards));
         SelectCardImage.print(playingCards, CardImage.SIDEBYSIDE);
     }

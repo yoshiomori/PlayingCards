@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.activity.main;
+package tcc.ronaldoyoshio.playingcards.activity.deck;
 
 import android.view.MotionEvent;
 
@@ -10,6 +10,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import tcc.ronaldoyoshio.playingcards.GL.GLObject;
+import tcc.ronaldoyoshio.playingcards.activity.CardImage;
+import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
 
 /**
  * Desenhando uma carta de baralho
@@ -261,8 +263,8 @@ public class DeckCardImage extends CardImage {
     }
 
     private void positionUpdate(float[] position) {
-        position[0] += v[0];
-        position[1] += v[1];
+        position[0] += getV()[0];
+        position[1] += getV()[1];
     }
 
     private void overAll(int index) {

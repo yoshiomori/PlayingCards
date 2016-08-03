@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.activity.main;
+package tcc.ronaldoyoshio.playingcards.activity.select;
 
 import android.content.Intent;
 import android.view.MotionEvent;
@@ -6,7 +6,9 @@ import android.view.MotionEvent;
 import tcc.ronaldoyoshio.playingcards.GL.GL;
 import tcc.ronaldoyoshio.playingcards.GL.GLImage;
 import tcc.ronaldoyoshio.playingcards.R;
-import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
+import tcc.ronaldoyoshio.playingcards.activity.deck.DeckActivity;
+import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
+import tcc.ronaldoyoshio.playingcards.model.Hand;
 
 /**
  * Botão de proseguir usado no SelectCardsActivity
@@ -15,7 +17,7 @@ import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
 public class SelectButtonImage extends GLImage {
     TouchEventHandler touchEventHandler;
 
-    public SelectButtonImage(final SelectCardsActivity selectCardsActivity, final PlayingCards cards) {
+    public SelectButtonImage(final SelectCardsActivity selectCardsActivity, final Hand cards) {
         touchEventHandler = new TouchEventHandler() {
             @Override
             public boolean onDown(int pointerId, float x, float y, int width, int height) {
@@ -24,7 +26,7 @@ public class SelectButtonImage extends GLImage {
                 float glx = (getGLX(x, width) - 1) * (width > height ? (float) width / height : 1) * 4f;
                 float gly = (getGLY(y, height) + 1) * (width > height ? 1 : height / width) * 4f;
                 if (-1 < glx && glx < 1 && -0.294 < gly && gly < 0.294) {
-                    Intent intent = new Intent(selectCardsActivity, MainActivity.class);
+                    Intent intent = new Intent(selectCardsActivity, DeckActivity.class);
                     intent.putExtra("cards", cards);
                     selectCardsActivity.startActivity(intent);
                 }

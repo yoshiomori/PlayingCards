@@ -20,8 +20,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.main.MainActivity" />
-        <activity android:name=".activity.main.SelectCardsActivity" />
+        <activity android:name=".activity.deck.DeckActivity" />
+        <activity android:name=".activity.select.SelectCardsActivity" />
+        <activity android:name=".activity.hand.HandActivity" />
 
     </application>
 

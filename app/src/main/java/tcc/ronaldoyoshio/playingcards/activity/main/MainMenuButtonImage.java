@@ -9,7 +9,10 @@ import java.util.ArrayList;
 import tcc.ronaldoyoshio.playingcards.GL.GL;
 import tcc.ronaldoyoshio.playingcards.GL.GLImage;
 import tcc.ronaldoyoshio.playingcards.GL.GLObject;
+import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
 import tcc.ronaldoyoshio.playingcards.R;
+import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
+import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
 
 /**
  * Dados para criar um botão usando opengl e tratar eventos de toque.
@@ -44,7 +47,8 @@ public class MainMenuButtonImage extends GLImage {
                         mainMenuActivity.startActivity(intent);
                     }
                     else if (0.5f == color[1]) {
-                        System.out.println("Conectar");
+                        Intent intent = new Intent(mainMenuActivity, HandActivity.class);
+                        mainMenuActivity.startActivity(intent);
                     }
                 }
             }

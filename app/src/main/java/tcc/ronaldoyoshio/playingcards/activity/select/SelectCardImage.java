@@ -1,6 +1,9 @@
-package tcc.ronaldoyoshio.playingcards.activity.main;
+package tcc.ronaldoyoshio.playingcards.activity.select;
 
 import android.view.MotionEvent;
+
+import tcc.ronaldoyoshio.playingcards.activity.CardImage;
+import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
 
 /**
  * CardImage usado na seleção de cartas.
