@@ -14,18 +14,24 @@ import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
  * Created by mori on 30/07/16.
  */
 public class SelectCardsActivity extends GLActivity {
-    SelectCardImage SelectCardImage = new SelectCardImage();
+    SelectCardImage selectCardImage = new SelectCardImage();
     Hand playingCards = new PlayingCards();
     @Override
     protected GLImage[] getImages() {
         return new GLImage[]{
-                new BackGround(), SelectCardImage, new SelectButtonImage(this, playingCards)
+                new BackGround(), selectCardImage, new SelectButtonImage(this, playingCards)
         };
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SelectCardImage.print(playingCards, CardImage.SIDEBYSIDE);
+        print(playingCards);
+    }
+
+    private void print(Hand playingCards) {
+        selectCardImage.setCards(playingCards);
+        selectCardImage.setMode(CardImage.SIDEBYSIDE);
+        getScreen().requestRender();
     }
 }

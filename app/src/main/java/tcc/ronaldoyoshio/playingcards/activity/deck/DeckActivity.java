@@ -32,8 +32,7 @@ public class DeckActivity extends GLActivity {
         } else {
             cards = new PlayingCards();
         }
-
-        cardImage.print(cards, CardImage.CENTERED);
+        print(cards);
 //        cards.shuffle();
 //        deckCardImage.print(cards);
 //        cards.remove("Joker Black");
@@ -41,6 +40,12 @@ public class DeckActivity extends GLActivity {
 //        cards.clear();
 //        cards.add("Joker Black");
 //        deckCardImage.print(cards);
+    }
+
+    private void print(Hand cards) {
+        cardImage.setCards(cards);
+        cardImage.setMode(CardImage.CENTERED);
+        getScreen().requestRender();
     }
 
     @Override

@@ -1,13 +1,12 @@
 package tcc.ronaldoyoshio.playingcards.activity.select;
 
 import android.content.Intent;
-import android.view.MotionEvent;
 
 import tcc.ronaldoyoshio.playingcards.GL.GL;
 import tcc.ronaldoyoshio.playingcards.GL.GLImage;
 import tcc.ronaldoyoshio.playingcards.R;
-import tcc.ronaldoyoshio.playingcards.activity.deck.DeckActivity;
 import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
+import tcc.ronaldoyoshio.playingcards.activity.deck.DeckActivity;
 import tcc.ronaldoyoshio.playingcards.model.Hand;
 
 /**
@@ -15,10 +14,9 @@ import tcc.ronaldoyoshio.playingcards.model.Hand;
  * Created by mori on 01/08/16.
  */
 public class SelectButtonImage extends GLImage {
-    TouchEventHandler touchEventHandler;
 
     public SelectButtonImage(final SelectCardsActivity selectCardsActivity, final Hand cards) {
-        touchEventHandler = new TouchEventHandler() {
+        addTouchEventHandler(new TouchEventHandler() {
             @Override
             public boolean onDown(int pointerId, float x, float y, int width, int height) {
                 System.out.println(getGLX(x, width));
@@ -32,7 +30,7 @@ public class SelectButtonImage extends GLImage {
                 }
                 return super.onDown(pointerId, x, y, width, height);
             }
-        };
+        });
     }
 
     @Override
@@ -77,10 +75,5 @@ public class SelectButtonImage extends GLImage {
     @Override
     protected void onSurfaceChanged(int width, int height) {
         setUniform("ratio", (float) width / height);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event, int width, int height) {
-        return touchEventHandler.onTouchEvent(event, width, height);
     }
 }
