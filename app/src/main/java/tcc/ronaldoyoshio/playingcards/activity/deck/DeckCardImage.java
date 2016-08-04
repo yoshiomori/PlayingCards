@@ -240,7 +240,9 @@ public class DeckCardImage extends CardImage {
          */
         private void putPointerCards(int pointerId, int index) {
             GLObject card = getObjects().get(index);
-            pointerCards.put(pointerId, card);
+            if (!pointerCards.values().contains(card)) {
+                pointerCards.put(pointerId, card);
+            }
         }
     };
 
