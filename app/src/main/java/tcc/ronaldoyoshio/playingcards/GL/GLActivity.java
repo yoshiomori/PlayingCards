@@ -10,14 +10,13 @@ import android.os.Bundle;
 public abstract class GLActivity extends Activity{
     GLScreen screen;
 
+    protected abstract GLImage[] getImages();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         screen = new GLScreen(this);
+        screen.setImages(getImages());
         setContentView(screen);
-    }
-
-    protected void setImages(GLImage... images) {
-        screen.setImages(images);
     }
 }

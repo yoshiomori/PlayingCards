@@ -1,8 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.activity.main;
 
-import android.os.Bundle;
-
 import tcc.ronaldoyoshio.playingcards.GL.GLActivity;
+import tcc.ronaldoyoshio.playingcards.GL.GLImage;
 import tcc.ronaldoyoshio.playingcards.activity.BackGround;
 
 /**
@@ -11,11 +10,10 @@ import tcc.ronaldoyoshio.playingcards.activity.BackGround;
  */
 public class MainMenuActivity extends GLActivity {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setImages(
+    protected GLImage[] getImages() {
+        return new GLImage[]{
                 new BackGround(),
                 new MainMenuButtonImage(this)
-        );
+        };
     }
 }
