@@ -28,11 +28,9 @@ public class GLScreen extends GLSurfaceView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean b = super.onTouchEvent(event);
-        int width = getWidth();
-        int height = getHeight();
         for (TouchEventHandler touchEventHandler :
                 touchEventHandlers) {
-            b |= touchEventHandler.onTouchEvent(event, width, height, this);
+            b |= touchEventHandler.onTouchEvent(event);
         }
         if (b) {
             requestRender();

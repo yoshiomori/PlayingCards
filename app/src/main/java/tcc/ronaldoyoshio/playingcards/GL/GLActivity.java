@@ -25,8 +25,13 @@ public abstract class GLActivity extends Activity{
         ArrayList<TouchEventHandler> touchEventHandlers = new ArrayList<>();
         for (GLImage image :
                 images) {
-            touchEventHandlers.addAll(image.getTouchEventHandlers());
-            image.setContext(this);
+            final ArrayList<TouchEventHandler> imageTouchEventHandlers = image.getTouchEventHandlers();
+            for (TouchEventHandler touchEventHandler:
+                    imageTouchEventHandlers) {
+                touchEventHandler.setScreen(screen);
+            }
+            touchEventHandlers.addAll(imageTouchEventHandlers);
+            image.setResources(getResources());
         }
         screen.setTouchEventHandlers(touchEventHandlers);
         setContentView(screen);

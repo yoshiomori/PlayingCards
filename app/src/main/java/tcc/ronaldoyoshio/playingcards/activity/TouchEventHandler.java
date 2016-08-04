@@ -11,15 +11,15 @@ import tcc.ronaldoyoshio.playingcards.GL.GLScreen;
  * Created by mori on 28/07/16.
  */
 public class TouchEventHandler {
-    GLScreen glScreen;
+    GLScreen screen;
     private HashMap<Integer, Float> mPreviousX = new HashMap<>();
     private HashMap<Integer, Float> mPreviousY = new HashMap<>();
 
-    public boolean onTouchEvent(MotionEvent event, int width, int height, GLScreen glScreen) {
+    public boolean onTouchEvent(MotionEvent event) {
         boolean b = false;
         float x, y;
         int pointerId, index;
-        this.glScreen = glScreen;
+        int width = screen.getWidth(), height = screen.getHeight();
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_MOVE:
                 for (index = 0; index < event.getPointerCount(); index++) {
@@ -104,6 +104,10 @@ public class TouchEventHandler {
     }
 
     protected void requestRender(){
-        glScreen.requestRender();
+        screen.requestRender();
+    }
+
+    public void setScreen(GLScreen screen) {
+        this.screen = screen;
     }
 }
