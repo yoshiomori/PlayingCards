@@ -7,8 +7,6 @@ import android.view.MotionEvent;
 public class GLScreen extends GLSurfaceView {
     private final GLRenderer renderer;
     private GLImage[] images;
-    private float mPreviousX;
-    private float mPreviousY;
 
     public GLScreen(Context context) {
         super(context);
@@ -22,45 +20,24 @@ public class GLScreen extends GLSurfaceView {
     public void setImages(GLImage... images) {
         for (GLImage image :
                 images) {
-            image.setResources(getResources());
+            image.setContext(this);
         }
-
         renderer.setImages(images);
         this.images = images;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
-        float x = (2 * event.getX() - getWidth()) / getWidth();
-        float y = (getHeight() - 2 * event.getY()) / getHeight();
-
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_MOVE:
-                float dx = x - mPreviousX;
-                float dy = y - mPreviousY;
-                for (GLImage image :
-                        images) {
-                    image.onMove(dx, dy);
-                }
-                break;
-            case MotionEvent.ACTION_DOWN:
-                for (GLImage image :
-                        images) {
-                    image.onDown(x, y);
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-                for (GLImage image :
-                        images) {
-                    image.onUp();
-                }
-                break;
+        boolean b = super.onTouchEvent(event);
+        int width = getWidth();
+        int height = getHeight();
+        for (GLImage image :
+                images) {
+            b |= image.onTouchEvent(event, width, height);
         }
-
-        mPreviousX = x;
-        mPreviousY = y;
-        requestRender();
-        return true;
+        if (b) {
+            requestRender();
+        }
+        return b;
     }
 }

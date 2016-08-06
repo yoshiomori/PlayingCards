@@ -1,12 +1,12 @@
-package tcc.ronaldoyoshio.playingcards.activity.main;
+package tcc.ronaldoyoshio.playingcards.activity;
 
 import tcc.ronaldoyoshio.playingcards.GL.GL;
 import tcc.ronaldoyoshio.playingcards.GL.GLImage;
 import tcc.ronaldoyoshio.playingcards.R;
 
 public class BackGround extends GLImage {
-
-    public BackGround() {
+    @Override
+    protected void onSurfaceCreated() {
         setArray(
                 -1f, 1f,
                 1f, 1f,
@@ -34,23 +34,12 @@ public class BackGround extends GLImage {
                         "}",
                 GL.GL_TRIANGLES, 0, 6
         );
-        setRatioName("ratio");
         setAttribute("vertex", false, 0, 0);
         setTexture("texture", R.drawable.mesa);
     }
 
     @Override
-    public void onMove(float x, float y) {
-
-    }
-
-    @Override
-    public void onDown(float x, float y) {
-
-    }
-
-    @Override
-    public void onUp() {
-
+    public void onSurfaceChanged(int width, int height) {
+        setUniform("ratio", (float) width / height);
     }
 }
