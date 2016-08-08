@@ -245,6 +245,8 @@ public class DeckCardImage extends CardImage {
                 }
             }
         });
+
+        addTouchEventHandler(new ShuffleEventHandler());
     }
 
     private void flipCard(GLObject card, int index) {
