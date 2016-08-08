@@ -137,10 +137,8 @@ public class CardImage extends GLImage {
         setObjectUniformNames("position", "card_coord", "blue_tone");
     }
 
-    public void print(Hand cards, int mode) {
+    public void setCards(Hand cards) {
         this.cards = cards;
-        this.mode = mode;
-        requestRender();
     }
 
     public void setMode(int mode) {

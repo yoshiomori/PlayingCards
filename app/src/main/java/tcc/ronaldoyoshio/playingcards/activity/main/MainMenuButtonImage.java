@@ -2,15 +2,14 @@ package tcc.ronaldoyoshio.playingcards.activity.main;
 
 import android.content.Intent;
 import android.opengl.Matrix;
-import android.view.MotionEvent;
 
 import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.GL.GL;
 import tcc.ronaldoyoshio.playingcards.GL.GLImage;
 import tcc.ronaldoyoshio.playingcards.GL.GLObject;
-import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
 import tcc.ronaldoyoshio.playingcards.R;
+import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
 import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
 import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
 
@@ -19,45 +18,42 @@ import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
  * Created by mori on 21/07/16.
  */
 public class MainMenuButtonImage extends GLImage {
-
-    private final MainMenuActivity mainMenuActivity;
     private float ratio;
-    private TouchEventHandler swingHandler = new TouchEventHandler() {
-        @Override
-        public boolean onDown(int pointerId, float x, float y, int width, int height) {
-            float[] projection = new float[16];
-            float[] m = new float[16];
-            float[] v = new float[4];
-            Matrix.setIdentityM(projection, 0);
-            Matrix.scaleM(projection , 0,
-                    ratio > 1.0f ? 1.0f/ratio : 1.0f, ratio <= 1.0f ? ratio : 1.0f, 1f);
-            for (GLObject button :
-                    getObjects()) {
-                Matrix.setIdentityM(m, 0);
-                float[] position = button.getFloats("position");
-                Matrix.translateM(m, 0, projection, 0, position[0], position[1], 0f);
-                Matrix.scaleM(m, 0, 0.5f, 0.5f, 1f);
-                Matrix.scaleM(m, 0, 1f, 0.216f, 1f);
-                Matrix.invertM(m, 0, m, 0);
-                Matrix.multiplyMV(v, 0, m, 0, new float[]{getGLX(x, width), getGLY(y, height), 0f, 1f}, 0);
-                if (-1 <= v[0] & v[0] <= 1 & -1 <= v[1] & v[1] <= 1) {
-                    float[] color = button.getFloats("color");
-                    if (0f == color[1]) {
-                        Intent intent = new Intent(mainMenuActivity, SelectCardsActivity.class);
-                        mainMenuActivity.startActivity(intent);
-                    }
-                    else if (0.5f == color[1]) {
-                        Intent intent = new Intent(mainMenuActivity, HandActivity.class);
-                        mainMenuActivity.startActivity(intent);
+
+    public MainMenuButtonImage(final MainMenuActivity mainMenuActivity) {
+        addTouchEventHandler(new TouchEventHandler() {
+            @Override
+            public boolean onDown(int pointerId, float x, float y, int width, int height) {
+                float[] projection = new float[16];
+                float[] m = new float[16];
+                float[] v = new float[4];
+                Matrix.setIdentityM(projection, 0);
+                Matrix.scaleM(projection , 0,
+                        ratio > 1.0f ? 1.0f/ratio : 1.0f, ratio <= 1.0f ? ratio : 1.0f, 1f);
+                for (GLObject button :
+                        getObjects()) {
+                    Matrix.setIdentityM(m, 0);
+                    float[] position = button.getFloats("position");
+                    Matrix.translateM(m, 0, projection, 0, position[0], position[1], 0f);
+                    Matrix.scaleM(m, 0, 0.5f, 0.5f, 1f);
+                    Matrix.scaleM(m, 0, 1f, 0.216f, 1f);
+                    Matrix.invertM(m, 0, m, 0);
+                    Matrix.multiplyMV(v, 0, m, 0, new float[]{getGLX(x, width), getGLY(y, height), 0f, 1f}, 0);
+                    if (-1 <= v[0] & v[0] <= 1 & -1 <= v[1] & v[1] <= 1) {
+                        float[] color = button.getFloats("color");
+                        if (0f == color[1]) {
+                            Intent intent = new Intent(mainMenuActivity, SelectCardsActivity.class);
+                            mainMenuActivity.startActivity(intent);
+                        }
+                        else if (0.5f == color[1]) {
+                            Intent intent = new Intent(mainMenuActivity, HandActivity.class);
+                            mainMenuActivity.startActivity(intent);
+                        }
                     }
                 }
+                return true;
             }
-            return true;
-        }
-    };
-
-    public MainMenuButtonImage(MainMenuActivity mainMenuActivity) {
-        this.mainMenuActivity = mainMenuActivity;
+        });
     }
 
     @Override
@@ -135,10 +131,5 @@ public class MainMenuButtonImage extends GLImage {
     protected void onSurfaceChanged(int width, int height) {
         ratio = (float) width / height;
         setUniform("ratio", ratio);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event, int width, int height) {
-        return swingHandler.onTouchEvent(event, width, height);
     }
 }

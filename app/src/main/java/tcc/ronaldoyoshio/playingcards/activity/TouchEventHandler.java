@@ -4,18 +4,22 @@ import android.view.MotionEvent;
 
 import java.util.HashMap;
 
+import tcc.ronaldoyoshio.playingcards.GL.GLScreen;
+
 /**
  * Classe trata de toque na tela.
  * Created by mori on 28/07/16.
  */
 public class TouchEventHandler {
+    GLScreen screen;
     private HashMap<Integer, Float> mPreviousX = new HashMap<>();
     private HashMap<Integer, Float> mPreviousY = new HashMap<>();
 
-    public boolean onTouchEvent(MotionEvent event, int width, int height) {
+    public boolean onTouchEvent(MotionEvent event) {
         boolean b = false;
         float x, y;
         int pointerId, index;
+        int width = screen.getWidth(), height = screen.getHeight();
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_MOVE:
                 for (index = 0; index < event.getPointerCount(); index++) {
@@ -97,5 +101,13 @@ public class TouchEventHandler {
 
     public boolean onMove(int pointerId, float x, float y, float dx, float dy, int width, int height) {
         return false;
+    }
+
+    protected void requestRender(){
+        screen.requestRender();
+    }
+
+    public void setScreen(GLScreen screen) {
+        this.screen = screen;
     }
 }

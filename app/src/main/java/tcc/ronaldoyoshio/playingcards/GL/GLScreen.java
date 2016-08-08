@@ -4,9 +4,13 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
 
+import java.util.ArrayList;
+
+import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
+
 public class GLScreen extends GLSurfaceView {
     private final GLRenderer renderer;
-    private GLImage[] images;
+    private ArrayList<TouchEventHandler> touchEventHandlers;
 
     public GLScreen(Context context) {
         super(context);
@@ -17,27 +21,24 @@ public class GLScreen extends GLSurfaceView {
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 
-    public void setImages(GLImage... images) {
-        for (GLImage image :
-                images) {
-            image.setContext(this);
-        }
-        renderer.setImages(images);
-        this.images = images;
+    protected GLRenderer getRenderer(){
+        return renderer;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean b = super.onTouchEvent(event);
-        int width = getWidth();
-        int height = getHeight();
-        for (GLImage image :
-                images) {
-            b |= image.onTouchEvent(event, width, height);
+        for (TouchEventHandler touchEventHandler :
+                touchEventHandlers) {
+            b |= touchEventHandler.onTouchEvent(event);
         }
         if (b) {
             requestRender();
         }
         return b;
+    }
+
+    public void setTouchEventHandlers(ArrayList<TouchEventHandler> touchEventHandlers) {
+        this.touchEventHandlers = touchEventHandlers;
     }
 }

@@ -3,6 +3,7 @@ package tcc.ronaldoyoshio.playingcards.activity.deck;
 import android.os.Bundle;
 
 import tcc.ronaldoyoshio.playingcards.GL.GLActivity;
+import tcc.ronaldoyoshio.playingcards.GL.GLImage;
 import tcc.ronaldoyoshio.playingcards.activity.BackGround;
 import tcc.ronaldoyoshio.playingcards.activity.CardImage;
 import tcc.ronaldoyoshio.playingcards.model.Hand;
@@ -13,9 +14,13 @@ public class DeckActivity extends GLActivity {
     CardImage cardImage = new DeckCardImage();
 
     @Override
+    protected GLImage[] getImages() {
+        return new GLImage[]{new BackGround(), cardImage};
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setImages(new BackGround(), cardImage);
         Bundle extras = getIntent().getExtras();
 
         if (savedInstanceState != null) {
@@ -27,8 +32,7 @@ public class DeckActivity extends GLActivity {
         } else {
             cards = new PlayingCards();
         }
-
-        cardImage.print(cards, CardImage.CENTERED);
+        print(cards);
 //        cards.shuffle();
 //        deckCardImage.print(cards);
 //        cards.remove("Joker Black");
@@ -36,6 +40,12 @@ public class DeckActivity extends GLActivity {
 //        cards.clear();
 //        cards.add("Joker Black");
 //        deckCardImage.print(cards);
+    }
+
+    private void print(Hand cards) {
+        cardImage.setCards(cards);
+        cardImage.setMode(CardImage.CENTERED);
+        getScreen().requestRender();
     }
 
     @Override

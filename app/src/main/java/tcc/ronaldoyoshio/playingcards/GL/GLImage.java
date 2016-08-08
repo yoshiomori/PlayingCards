@@ -1,14 +1,16 @@
 package tcc.ronaldoyoshio.playingcards.GL;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.view.MotionEvent;
 
 import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
+import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
 
 /**
  * Abstração de dados usados para renderizar com a biblioteca gráfica.
@@ -30,10 +32,15 @@ public abstract class GLImage {
     private int count = -1;
     private Bitmap bitmap;
     private int textureIndex = -1;
-    private GLScreen context = null;
+    private Resources resources = null;
     private int bitmapId = -1;
     private ArrayList<String> objectUniformNames = new ArrayList<>();
     private List<GLObject> objects = Collections.synchronizedList(new ArrayList<GLObject>());
+    private ArrayList<TouchEventHandler> touchEventHandlers = new ArrayList<>();
+
+    protected void addTouchEventHandler(TouchEventHandler touchEventHandler) {
+        touchEventHandlers.add(touchEventHandler);
+    }
 
     public float getGLDy(float dy, int height) {
         return  - 2 * dy / height;
@@ -49,12 +56,6 @@ public abstract class GLImage {
 
     public float getGLY(float y, int height) {
         return (height - 2 * y) / height;
-    }
-
-    public void requestRender() {
-        if (context != null) {
-            context.requestRender();
-        }
     }
 
     public void setTexture(String name, int id) {
@@ -341,14 +342,14 @@ public abstract class GLImage {
         return textureIndex;
     }
 
-    public void setContext(GLScreen context) {
-        this.context = context;
+    public void setResources(Resources resources) {
+        this.resources = resources;
     }
 
     public void loadDatas() {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;	// No pre-scaling
-        this.bitmap = bitmapId < 0 ? null : BitmapFactory.decodeResource(context.getResources(), bitmapId, options);
+        this.bitmap = bitmapId < 0 ? null : BitmapFactory.decodeResource(resources, bitmapId, options);
     }
 
     public int getBitmapId() {
@@ -370,11 +371,11 @@ public abstract class GLImage {
 
     protected abstract void onSurfaceChanged(int width, int height);
 
-    public boolean onTouchEvent(MotionEvent event, int width, int height) {
-        return false;
-    }
-
     public List<GLObject> getObjects() {
         return objects;
+    }
+
+    public ArrayList<TouchEventHandler> getTouchEventHandlers() {
+        return touchEventHandlers;
     }
 }
