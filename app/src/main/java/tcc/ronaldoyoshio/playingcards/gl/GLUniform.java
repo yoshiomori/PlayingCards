@@ -1,6 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.GL;
-
-import android.opengl.GLES20;
+package tcc.ronaldoyoshio.playingcards.gl;
 
 /**
  * Abstração de uniform.

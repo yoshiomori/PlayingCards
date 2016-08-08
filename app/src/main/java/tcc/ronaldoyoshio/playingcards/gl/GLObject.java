@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.GL;
+package tcc.ronaldoyoshio.playingcards.gl;
 
 import java.util.ArrayList;
 import java.util.HashMap;

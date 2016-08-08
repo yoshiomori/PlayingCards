@@ -2,8 +2,8 @@ package tcc.ronaldoyoshio.playingcards.activity.deck;
 
 import android.os.Bundle;
 
-import tcc.ronaldoyoshio.playingcards.GL.GLActivity;
-import tcc.ronaldoyoshio.playingcards.GL.GLImage;
+import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
+import tcc.ronaldoyoshio.playingcards.gl.GLImage;
 import tcc.ronaldoyoshio.playingcards.activity.BackGround;
 import tcc.ronaldoyoshio.playingcards.activity.CardImage;
 import tcc.ronaldoyoshio.playingcards.model.Hand;

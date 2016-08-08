@@ -2,8 +2,8 @@ package tcc.ronaldoyoshio.playingcards.activity.select;
 
 import android.content.Intent;
 
-import tcc.ronaldoyoshio.playingcards.GL.GL;
-import tcc.ronaldoyoshio.playingcards.GL.GLImage;
+import tcc.ronaldoyoshio.playingcards.gl.GL;
+import tcc.ronaldoyoshio.playingcards.gl.GLImage;
 import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
 import tcc.ronaldoyoshio.playingcards.activity.deck.DeckActivity;
@@ -21,8 +21,8 @@ public class SelectButtonImage extends GLImage {
             public boolean onDown(int pointerId, float x, float y, int width, int height) {
                 System.out.println(getGLX(x, width));
                 System.out.println(getGLY(y, height));
-                float glx = (getGLX(x, width) - 1) * (width > height ? (float) width / height : 1) * 4f;
-                float gly = (getGLY(y, height) + 1) * (width > height ? 1 : height / width) * 4f;
+                float glx = (getGLX(x, width) - 1) * (width > height ? (float) width / height : 1) * 4f + 1;
+                float gly = (getGLY(y, height) + 1) * (width > height ? 1 : height / width) * 4f - 0.294f;
                 if (-1 < glx && glx < 1 && -0.294 < gly && gly < 0.294) {
                     Intent intent = new Intent(selectCardsActivity, DeckActivity.class);
                     intent.putExtra("cards", cards);

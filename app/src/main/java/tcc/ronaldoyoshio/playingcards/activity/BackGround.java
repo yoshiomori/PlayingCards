@@ -1,7 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.activity;
 
-import tcc.ronaldoyoshio.playingcards.GL.GL;
-import tcc.ronaldoyoshio.playingcards.GL.GLImage;
+import tcc.ronaldoyoshio.playingcards.gl.GL;
+import tcc.ronaldoyoshio.playingcards.gl.GLImage;
 import tcc.ronaldoyoshio.playingcards.R;
 
 public class BackGround extends GLImage {

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import tcc.ronaldoyoshio.playingcards.GL.GLObject;
+import tcc.ronaldoyoshio.playingcards.gl.GLObject;
 import tcc.ronaldoyoshio.playingcards.activity.CardImage;
 import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
 

@@ -5,9 +5,9 @@ import android.opengl.Matrix;
 import java.util.HashMap;
 import java.util.List;
 
-import tcc.ronaldoyoshio.playingcards.GL.GL;
-import tcc.ronaldoyoshio.playingcards.GL.GLImage;
-import tcc.ronaldoyoshio.playingcards.GL.GLObject;
+import tcc.ronaldoyoshio.playingcards.gl.GL;
+import tcc.ronaldoyoshio.playingcards.gl.GLImage;
+import tcc.ronaldoyoshio.playingcards.gl.GLObject;
 import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.model.Hand;
 

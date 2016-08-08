@@ -4,7 +4,7 @@ import android.view.MotionEvent;
 
 import java.util.HashMap;
 
-import tcc.ronaldoyoshio.playingcards.GL.GLScreen;
+import tcc.ronaldoyoshio.playingcards.gl.GLScreen;
 
 /**
  * Classe trata de toque na tela.
