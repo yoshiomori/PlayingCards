@@ -11,7 +11,7 @@ import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
 
 public class DeckActivity extends GLActivity {
     Hand cards;
-    CardImage cardImage = new DeckCardImage();
+    CardImage cardImage = new DeckCardImage(this);
 
     @Override
     protected GLImage[] getImages() {

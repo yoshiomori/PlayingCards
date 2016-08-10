@@ -1,5 +1,8 @@
 package tcc.ronaldoyoshio.playingcards.activity.deck;
 
+import android.content.Context;
+import android.os.Vibrator;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,7 +25,7 @@ public class DeckCardImage extends CardImage {
     public List<Integer> activeCardsIndex = Collections.synchronizedList(new ArrayList<Integer>());
     public List<String> activeCardsNames = Collections.synchronizedList(new ArrayList<String>());
 
-    public DeckCardImage() {
+    public DeckCardImage(final DeckActivity deckActivity) {
         addTouchEventHandler(new TouchEventHandler() {
             public float downY;
             public float downX;
@@ -333,6 +336,8 @@ public class DeckCardImage extends CardImage {
                             activeCardsNames.add(cards.get(index));
                         }
                         requestRender();
+                        Vibrator v = (Vibrator) deckActivity.getSystemService(Context.VIBRATOR_SERVICE);
+                        v.vibrate(500);
                     } else {
                         System.out.println("Não é shuffle");
                     }
