@@ -18,15 +18,15 @@ public class SelectButtonImage extends GLImage {
     public SelectButtonImage(final SelectCardsActivity selectCardsActivity, final Hand cards) {
         addTouchEventHandler(new TouchEventHandler() {
             @Override
-            public boolean onDown(int pointerId, float x, float y, int width, int height) {
-                float glx = (getGLX(x, width) - 1) * (width > height ? (float) width / height : 1) * 4f + 1;
-                float gly = (getGLY(y, height) + 1) * (width > height ? 1 : height / width) * 4f - 0.294f;
+            public boolean onDown(int pointerId, float x, float y) {
+                float glx = (getGLX(x, getWidth()) - 1) * (getWidth() > getHeight() ? (float) getWidth() / getHeight() : 1) * 4f + 1;
+                float gly = (getGLY(y, getHeight()) + 1) * (getWidth() > getHeight() ? 1 : getHeight() / getWidth()) * 4f - 0.294f;
                 if (-1 < glx && glx < 1 && -0.294 < gly && gly < 0.294) {
                     Intent intent = new Intent(selectCardsActivity, DeckActivity.class);
                     intent.putExtra("cards", cards);
                     selectCardsActivity.startActivity(intent);
                 }
-                return super.onDown(pointerId, x, y, width, height);
+                return super.onDown(pointerId, x, y);
             }
         });
     }

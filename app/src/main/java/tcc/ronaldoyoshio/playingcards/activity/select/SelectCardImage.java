@@ -11,8 +11,8 @@ public class SelectCardImage extends CardImage {
     public SelectCardImage() {
         addTouchEventHandler(new TouchEventHandler(){
             @Override
-            public boolean onDown(int pointerId, float x, float y, int width, int height) {
-                int index = findFirstCardIndexAt(getGLX(x, width), getGLY(y, height));
+            public boolean onDown(int pointerId, float x, float y) {
+                int index = findFirstCardIndexAt(getGLX(x, getWidth()), getGLY(y, getHeight()));
                 if (index>=0) {
                     getCards().remove(index);
                     getObjects().remove(index);

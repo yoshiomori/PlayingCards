@@ -19,7 +19,6 @@ public class TouchEventHandler {
         boolean b = false;
         float x, y;
         int pointerId, index;
-        int width = screen.getWidth(), height = screen.getHeight();
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_MOVE:
                 for (index = 0; index < event.getPointerCount(); index++) {
@@ -35,7 +34,7 @@ public class TouchEventHandler {
                     float dy = mPreviousY.containsKey(pointerId) ?
                             y - mPreviousY.get(pointerId) : 0;
 
-                    b = onMove(pointerId, x, y, dx, dy, width, height);
+                    b = onMove(pointerId, x, y, dx, dy);
 
                     mPreviousX.put(pointerId, x);
                     mPreviousY.put(pointerId, y);
@@ -49,7 +48,7 @@ public class TouchEventHandler {
                 y = event.getY(index);
 
                 pointerId = event.getPointerId(index);
-                b = onDown(pointerId, x, y, width, height);
+                b = onDown(pointerId, x, y);
                 mPreviousX.put(pointerId, x);
                 mPreviousY.put(pointerId, y);
                 break;
@@ -68,7 +67,7 @@ public class TouchEventHandler {
                 y = event.getY(index);
 
                 pointerId = event.getPointerId(index);
-                b = onPointerDown(pointerId, x, y, width, height);
+                b = onPointerDown(pointerId, x, y);
                 mPreviousX.put(pointerId, x);
                 mPreviousY.put(pointerId, y);
                 break;
@@ -87,7 +86,7 @@ public class TouchEventHandler {
         return false;
     }
 
-    public boolean onPointerDown(int pointerId, float x, float y, int width, int height) {
+    public boolean onPointerDown(int pointerId, float x, float y) {
         return false;
     }
 
@@ -95,11 +94,11 @@ public class TouchEventHandler {
         return false;
     }
 
-    public boolean onDown(int pointerId, float x, float y, int width, int height) {
+    public boolean onDown(int pointerId, float x, float y) {
         return false;
     }
 
-    public boolean onMove(int pointerId, float x, float y, float dx, float dy, int width, int height) {
+    public boolean onMove(int pointerId, float x, float y, float dx, float dy) {
         return false;
     }
 
@@ -109,5 +108,13 @@ public class TouchEventHandler {
 
     public void setScreen(GLScreen screen) {
         this.screen = screen;
+    }
+
+    public int getWidth() {
+        return screen.getWidth();
+    }
+
+    public int getHeight() {
+        return screen.getHeight();
     }
 }

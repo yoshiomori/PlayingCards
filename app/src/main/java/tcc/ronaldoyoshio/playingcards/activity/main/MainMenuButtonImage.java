@@ -23,7 +23,7 @@ public class MainMenuButtonImage extends GLImage {
     public MainMenuButtonImage(final MainMenuActivity mainMenuActivity) {
         addTouchEventHandler(new TouchEventHandler() {
             @Override
-            public boolean onDown(int pointerId, float x, float y, int width, int height) {
+            public boolean onDown(int pointerId, float x, float y) {
                 float[] projection = new float[16];
                 float[] m = new float[16];
                 float[] v = new float[4];
@@ -38,7 +38,7 @@ public class MainMenuButtonImage extends GLImage {
                     Matrix.scaleM(m, 0, 0.5f, 0.5f, 1f);
                     Matrix.scaleM(m, 0, 1f, 0.216f, 1f);
                     Matrix.invertM(m, 0, m, 0);
-                    Matrix.multiplyMV(v, 0, m, 0, new float[]{getGLX(x, width), getGLY(y, height), 0f, 1f}, 0);
+                    Matrix.multiplyMV(v, 0, m, 0, new float[]{getGLX(x, getWidth()), getGLY(y, getHeight()), 0f, 1f}, 0);
                     if (-1 <= v[0] & v[0] <= 1 & -1 <= v[1] & v[1] <= 1) {
                         float[] color = button.getFloats("color");
                         if (0f == color[1]) {
