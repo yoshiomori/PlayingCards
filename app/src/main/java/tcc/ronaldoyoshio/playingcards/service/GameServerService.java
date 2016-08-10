@@ -10,11 +10,8 @@ import tcc.ronaldoyoshio.playingcards.model.web.server.ServerInterface;
 
 public class GameServerService extends IntentService {
 
-    /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     *
-     * @param name Used to name the worker thread, important only for debugging.
-     */
+    public static final String SERVER_ACTION = "tcc.ronaldoyoshio.playingcards.SERVER_ACTION";
+
     public GameServerService(String name) {
         super(name);
     }

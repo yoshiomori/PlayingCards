@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.model.web;
+package tcc.ronaldoyoshio.playingcards.BroadcastReceiver;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -9,21 +9,18 @@ import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager;
 
 
-/**
- * A BroadcastReceiver that notifies of important Wi-Fi p2p events.
- */
 public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
     private WifiP2pManager mManager;
     private Channel mChannel;
-    private Activity mActivity;
+    private Activity activity;
 
     public WiFiDirectBroadcastReceiver(WifiP2pManager manager, Channel channel, Activity activity) {
         super();
         this.turnOnWifi(activity.getApplicationContext());
         this.mManager = manager;
         this.mChannel = channel;
-        this.mActivity = activity;
+        this.activity = activity;
     }
 
     private void turnOnWifi(Context context) {

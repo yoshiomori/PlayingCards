@@ -5,11 +5,8 @@ import android.content.Intent;
 
 public class GamePlayerService extends IntentService {
 
-    /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     *
-     * @param name Used to name the worker thread, important only for debugging.
-     */
+    public static final String CLIENT_ACTION = "tcc.ronaldoyoshio.playingcards.CLIENT_ACTION";
+
     public GamePlayerService(String name) {
         super(name);
     }
