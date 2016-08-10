@@ -18,7 +18,9 @@ import tcc.ronaldoyoshio.playingcards.gl.GLObject;
  * Created by mori on 15/07/16.
  */
 public class DeckCardImage extends CardImage {
-    public ArrayList<GLObject> activeCards = new ArrayList<>();
+    public List<GLObject> activeCards = Collections.synchronizedList(new ArrayList<GLObject>());
+    public List<Integer> activeCardsIndex = Collections.synchronizedList(new ArrayList<Integer>());
+    public List<String> activeCardsNames = Collections.synchronizedList(new ArrayList<String>());
 
     public DeckCardImage() {
         addTouchEventHandler(new TouchEventHandler() {
@@ -75,6 +77,8 @@ public class DeckCardImage extends CardImage {
                     card.set("blue_tone", 0);
                 }
                 activeCards.clear();
+                activeCardsIndex.clear();
+                activeCardsNames.clear();
             }
 
             @Override
@@ -111,6 +115,8 @@ public class DeckCardImage extends CardImage {
                     // e o laço é quebrado.
                     if (cardHit()) {
                         activeCards.add(card);
+                        activeCardsIndex.add(index);
+                        activeCardsNames.add(cards.get(index));
                         float[] position = card.getFloats("position");
                         System.arraycopy(lastCardPosition, 0, position, 0, position.length);
                         card.set("blue_tone", 0.2f);
@@ -271,54 +277,67 @@ public class DeckCardImage extends CardImage {
                 if (pointerCards.isEmpty()) {
                     return false;
                 }
-                int index, sampleIndex = 0;
-                for (index = 0; index < mins.length; index++) {
-                    mins[index] = Double.POSITIVE_INFINITY;
-                    neighborhoods[index] = N;
-                }
-
-                traceData[0] = trace.size();
-                traceData[1] = trace.get(0);
-                traceData[2] = trace.get(1);
-                traceData[3] = 0;
-                traceData[4] = 0;
-                for (index = 2; index < trace.size(); index+=4) {
-                    traceData[1] += trace.get(index);
-                    traceData[2] += trace.get(index+1);
-                    traceData[3] += trace.get(index+2);
-                    traceData[4] += trace.get(index+3);
-                }
-
-                for (int[] sample :
-                        samples) {
-                    double distance = 0;
-                    System.out.println("======== " + sampleIndex + " ========");
-                    distance += Math.abs(sample[0] - traceData[0]);
-                    System.out.println(Math.abs(sample[0] - traceData[0]));
-                    distance += Math.abs(sample[1] - traceData[1]);
-                    System.out.println(Math.abs(sample[1] - traceData[1]));
-                    distance += Math.abs(sample[2] - traceData[2]);
-                    System.out.println(Math.abs(sample[2] - traceData[2]));
-                    distance += Math.abs(sample[3] - traceData[3]);
-                    System.out.println(Math.abs(sample[3] - traceData[3]));
-                    distance += Math.abs(sample[4] - traceData[4]);
-                    System.out.println(Math.abs(sample[4] - traceData[4]));
+                if (!activeCards.isEmpty()) {
+                    int index, sampleIndex = 0;
                     for (index = 0; index < mins.length; index++) {
-                        if (distance < mins[index]) {
-                            mins[index] = distance;
-                            neighborhoods[index] = types[sampleIndex];
-                            break;
-                        }
+                        mins[index] = Double.POSITIVE_INFINITY;
+                        neighborhoods[index] = N;
                     }
-                    sampleIndex++;
+
+                    traceData[0] = trace.size();
+                    traceData[1] = trace.get(0);
+                    traceData[2] = trace.get(1);
+                    traceData[3] = 0;
+                    traceData[4] = 0;
+                    for (index = 2; index < trace.size(); index += 4) {
+                        traceData[1] += trace.get(index);
+                        traceData[2] += trace.get(index + 1);
+                        traceData[3] += trace.get(index + 2);
+                        traceData[4] += trace.get(index + 3);
+                    }
+
+                    for (int[] sample :
+                            samples) {
+                        double distance = 0;
+                        System.out.println("======== " + sampleIndex + " ========");
+                        distance += Math.abs(sample[0] - traceData[0]);
+                        System.out.println(Math.abs(sample[0] - traceData[0]));
+                        distance += Math.abs(sample[1] - traceData[1]);
+                        System.out.println(Math.abs(sample[1] - traceData[1]));
+                        distance += Math.abs(sample[2] - traceData[2]);
+                        System.out.println(Math.abs(sample[2] - traceData[2]));
+                        distance += Math.abs(sample[3] - traceData[3]);
+                        System.out.println(Math.abs(sample[3] - traceData[3]));
+                        distance += Math.abs(sample[4] - traceData[4]);
+                        System.out.println(Math.abs(sample[4] - traceData[4]));
+                        for (index = 0; index < mins.length; index++) {
+                            if (distance < mins[index]) {
+                                mins[index] = distance;
+                                neighborhoods[index] = types[sampleIndex];
+                                break;
+                            }
+                        }
+                        sampleIndex++;
+                    }
+                    if (isShuffle()) {
+                        System.out.println("É shuffle");
+                        Collections.shuffle(activeCardsIndex);
+                        for (index = 0; index < activeCardsIndex.size(); index++) {
+                            getObjects().set(activeCardsIndex.get(index), activeCards.get(index));
+                            cards.set(activeCardsIndex.get(index), activeCardsNames.get(index));
+                        }
+                        activeCards.clear();
+                        activeCardsNames.clear();
+                        for (index = 0; index < activeCardsIndex.size(); index++) {
+                            activeCards.add(getObjects().get(index));
+                            activeCardsNames.add(cards.get(index));
+                        }
+                        requestRender();
+                    } else {
+                        System.out.println("Não é shuffle");
+                    }
+                    System.out.println(Arrays.toString(traceData));
                 }
-                if (isShuffle()) {
-                    System.out.println("É shuffle");
-                }
-                else {
-                    System.out.println("Não é shuffle");
-                }
-                System.out.println(Arrays.toString(traceData));
                 pointerCards.clear();
                 return false;
             }
