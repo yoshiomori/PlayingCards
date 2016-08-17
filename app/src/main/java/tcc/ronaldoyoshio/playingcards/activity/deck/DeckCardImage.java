@@ -280,7 +280,7 @@ public class DeckCardImage extends CardImage {
                 if (pointerCards.isEmpty()) {
                     return false;
                 }
-                if (!activeCards.isEmpty()) {
+                if (activeCards.size() == totalCards) {
                     int index, sampleIndex = 0;
                     for (index = 0; index < mins.length; index++) {
                         mins[index] = Double.POSITIVE_INFINITY;
