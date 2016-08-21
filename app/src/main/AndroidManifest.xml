@@ -23,8 +23,8 @@
         android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
-            android:name=".activity.main.MainMenuActivity"
-            android:label="@string/app_name">
+            android:name=".activity.MockServerConfigActivity"
+            android:label="@string/title_activity_mock">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,9 +34,6 @@
         <activity android:name=".activity.deck.DeckActivity" />
         <activity android:name=".activity.select.SelectCardsActivity" />
         <activity android:name=".activity.hand.HandActivity" />
-        <activity
-            android:name=".activity.MockActivity"
-            android:label="@string/title_activity_mock"></activity>
     </application>
 
 </manifest>
