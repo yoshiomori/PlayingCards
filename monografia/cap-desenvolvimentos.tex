@@ -1,23 +1,25 @@
+\usepackage{amsmath}
+
 %% ------------------------------------------------------------------------- %%
-\chapter{Desenvolvimentos}
-\label{cap:desenvolvimentos}
-
-Embora neste exemplo tenhamos apenas um capítulo,  entre a introdução
-e a conclusão de uma monografia podemos ter uma sequência de capítulos
-descrevendo o trabalho e os resultados. Estes podem descrever
-fundamentos, trabalhos relacionados, método/modelo/algoritmo proposto,
-experimentos realizados, resulatdos obtidos.
-
-Cada capítulo pode ser organizado em seções, que por sua vez pode
-conter subseções.
-
-Um exemplo de figura está na figura~\ref{fig:graph}.
-\begin{figure}[htb]
-\includegraphics[width=5cm]{figuras/graph}
-\caption{\label{fig:graph}Exemplo de uma figura.}
-\end{figure}
-%\chapter{Gerando imagens de cartas no android}
+%\chapter{Desenvolvimentos}
 %\label{cap:desenvolvimentos}
+%
+%Embora neste exemplo tenhamos apenas um capítulo,  entre a introdução
+%e a conclusão de uma monografia podemos ter uma sequência de capítulos
+%descrevendo o trabalho e os resultados. Estes podem descrever
+%fundamentos, trabalhos relacionados, método/modelo/algoritmo proposto,
+%experimentos realizados, resulatdos obtidos.
+%
+%Cada capítulo pode ser organizado em seções, que por sua vez pode
+%conter subseções.
+%
+%Um exemplo de figura está na figura~\ref{fig:graph}.
+%\begin{figure}[htb]
+%\includegraphics[width=5cm]{figuras/graph}
+%\caption{\label{fig:graph}Exemplo de uma figura.}
+%\end{figure}
+\chapter{Gerenciador de geração de imagens}
+\label{cap:desenvolvimentos}
 % O objetivo deste capítulo é expor as técnicas e decisões para gerar as imagens das cartas no
 % celular
 
@@ -29,3 +31,16 @@ Um exemplo de figura está na figura~\ref{fig:graph}.
 % as abstrações que foram feitas para obter o GL.
 
 % Mostras testes de experimento de tempo durante o processo de otimização.
+
+O desenvolvimento do gerenciador de geração de images foi feita com auxílio da biblioteca gráfica
+openGL, que é um ambiente de desenvolvimento para aplicações gráficas 2D e 3D e especifica uma
+interface de software padrão para hardware de processamento gráfico.
+
+Chamaremos de vértices os pares ordenados
+$$
+    \(x, y\) \in \mathbb{R}
+$$
+
+Para desenhar uma imagem na tela usando o openGL, é necessário especificar o tipo de entidade
+geométrica, isto é, pontos, segmentos de linha ou triângulos que consistem de vértices. As
+entidades geométricas

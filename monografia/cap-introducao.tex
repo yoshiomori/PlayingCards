@@ -2,40 +2,59 @@
 \chapter{Introdução}
 \label{cap:introducao}
 
-Uma monografia deve ter um capítulo inicial que é a Introdução e um
-capítulo final que é a Conclusão. Entre esses dois capítulos poderá
-ter uma sequência de capítulos que descrevem o trabalho em detalhes.
-Após o capítulo de conclusão, poderá ter apêndices e ao final deverá
-ter as referências bibliográficas.
+%Uma monografia deve ter um capítulo inicial que é a Introdução e um
+%capítulo final que é a Conclusão. Entre esses dois capítulos poderá
+%ter uma sequência de capítulos que descrevem o trabalho em detalhes.
+%Após o capítulo de conclusão, poderá ter apêndices e ao final deverá
+%ter as referências bibliográficas.
+%
+%
+%Para a escrita de textos em Ciência da Computação, o livro de Justin Zobel,
+%\emph{Writing for Computer Science} \citep{zobel:04} é uma leitura obrigatória.
+%O livro \emph{Metodologia de Pesquisa para Ciência da Computação} de
+%\citet{waz:09} também merece uma boa lida.
+%
+%O uso desnecessário de termos em lingua estrangeira deve ser evitado. No entanto,
+%quando isso for necessário, os termos devem aparecer \emph{em itálico}.
+%
+%\begin{small}
+%\begin{verbatim}
+%Modos de citação:
+%indesejável: [AF83] introduziu o algoritmo ótimo.
+%indesejável: (Andrew e Foster, 1983) introduziram o algoritmo ótimo.
+%certo : Andrew e Foster introduziram o algoritmo ótimo [AF83].
+%certo : Andrew e Foster introduziram o algoritmo ótimo (Andrew e Foster, 1983).
+%certo : Andrew e Foster (1983) introduziram o algoritmo ótimo.
+%\end{verbatim}
+%\end{small}
+%
+%Uma prática recomendável na escrita de textos é descrever as legendas das
+%figuras e tabelas em forma auto-contida: as legendas devem ser razoavelmente
+%completas, de modo que o leitor possa entender a figura sem ler o texto onde a
+%figura ou tabela é citada.
+%
+%Apresentar os resultados de forma simples, clara e completa é uma tarefa que
+%requer inspiração. Nesse sentido, o livro de \citet{tufte01:visualDisplay},
+%\emph{The Visual Display of Quantitative Information}, serve de ajuda na
+%criação de figuras que permitam entender e interpretar dados/resultados de forma
+%eficiente.
 
+% Contextualização e objetivo
+O desenvolvimento de um aplicativo android nos remete aos computadores dos anos 90 com modem de
+internet, cpu e memória limitados e tudo isso sendo alimentado por uma pequena bateria. Neste
+projeto iremos desenvolver um aplicativo android de um baralho virtual para ser usado em rede local
+como um substitudo de um baralho real e iremos analisar a variação da quantidade de dados sendo
+transferidos pela rede, processados pela cpu e armazenados na memória resultante das decisões de
+implementação.
 
-Para a escrita de textos em Ciência da Computação, o livro de Justin Zobel, 
-\emph{Writing for Computer Science} \citep{zobel:04} é uma leitura obrigatória. 
-O livro \emph{Metodologia de Pesquisa para Ciência da Computação} de 
-\citet{waz:09} também merece uma boa lida.
+Com um baralho real, podemos misturar, virar, desvirar e distribuir as cartas e serão essas as
+ações que nosso aplicativo deve fazer. Em adicional, queremos especificar uma linguagem para
+possibilitar o aplicativo executar essas ações de forma automática e também queremos implementar a
+detecção automática da direção entre os dispositivos para que as cartas sejam passadas de um
+dispositivo para outro com um toque e arrastar dos dedos.
 
-O uso desnecessário de termos em lingua estrangeira deve ser evitado. No entanto,
-quando isso for necessário, os termos devem aparecer \emph{em itálico}.
-
-\begin{small}
-\begin{verbatim}
-Modos de citação:
-indesejável: [AF83] introduziu o algoritmo ótimo.
-indesejável: (Andrew e Foster, 1983) introduziram o algoritmo ótimo.
-certo : Andrew e Foster introduziram o algoritmo ótimo [AF83].
-certo : Andrew e Foster introduziram o algoritmo ótimo (Andrew e Foster, 1983).
-certo : Andrew e Foster (1983) introduziram o algoritmo ótimo.
-\end{verbatim}
-\end{small}
-
-Uma prática recomendável na escrita de textos é descrever as legendas das
-figuras e tabelas em forma auto-contida: as legendas devem ser razoavelmente
-completas, de modo que o leitor possa entender a figura sem ler o texto onde a
-figura ou tabela é citada.  
-
-Apresentar os resultados de forma simples, clara e completa é uma tarefa que
-requer inspiração. Nesse sentido, o livro de \citet{tufte01:visualDisplay},
-\emph{The Visual Display of Quantitative Information}, serve de ajuda na
-criação de figuras que permitam entender e interpretar dados/resultados de forma
-eficiente.
-
+O aplicativo pode ser definido nas seguintes partes principais: gerenciador de geração de imagem,
+gerenciador dos eventos de toques e gerenciador de transferência de dados. Tudo que o usuário pode
+ver no aplicativo é resultado do gerenciador de geração de imagem. O gerenciador dos eventos de
+toques trata do precionar dos botões e toque e arrastar das cartas. A transferência das cartas entre
+os dispositivos é feita pelo gerenciador de transferência de dados.

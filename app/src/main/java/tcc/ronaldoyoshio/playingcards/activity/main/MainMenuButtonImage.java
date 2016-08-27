@@ -5,13 +5,13 @@ import android.opengl.Matrix;
 
 import java.util.ArrayList;
 
+import tcc.ronaldoyoshio.playingcards.R;
+import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
+import tcc.ronaldoyoshio.playingcards.activity.serverConfig.ClientConfig;
+import tcc.ronaldoyoshio.playingcards.activity.serverConfig.ServerConfig;
 import tcc.ronaldoyoshio.playingcards.gl.GL;
 import tcc.ronaldoyoshio.playingcards.gl.GLImage;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
-import tcc.ronaldoyoshio.playingcards.R;
-import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
-import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
-import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
 
 /**
  * Dados para criar um botão usando opengl e tratar eventos de toque.
@@ -42,11 +42,11 @@ public class MainMenuButtonImage extends GLImage {
                     if (-1 <= v[0] & v[0] <= 1 & -1 <= v[1] & v[1] <= 1) {
                         float[] color = button.getFloats("color");
                         if (0f == color[1]) {
-                            Intent intent = new Intent(mainMenuActivity, SelectCardsActivity.class);
+                            Intent intent = new Intent(mainMenuActivity, ServerConfig.class);
                             mainMenuActivity.startActivity(intent);
                         }
                         else if (0.5f == color[1]) {
-                            Intent intent = new Intent(mainMenuActivity, HandActivity.class);
+                            Intent intent = new Intent(mainMenuActivity, ClientConfig.class);
                             mainMenuActivity.startActivity(intent);
                         }
                     }
