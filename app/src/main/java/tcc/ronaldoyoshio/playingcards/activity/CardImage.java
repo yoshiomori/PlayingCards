@@ -5,9 +5,9 @@ import android.opengl.Matrix;
 import java.util.HashMap;
 import java.util.List;
 
-import tcc.ronaldoyoshio.playingcards.GL.GL;
-import tcc.ronaldoyoshio.playingcards.GL.GLImage;
-import tcc.ronaldoyoshio.playingcards.GL.GLObject;
+import tcc.ronaldoyoshio.playingcards.gl.GL;
+import tcc.ronaldoyoshio.playingcards.gl.GLImage;
+import tcc.ronaldoyoshio.playingcards.gl.GLObject;
 import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.model.Hand;
 
@@ -16,6 +16,7 @@ import tcc.ronaldoyoshio.playingcards.model.Hand;
  * Created by mori on 30/07/16.
  */
 public class CardImage extends GLImage {
+    public int totalCards;
     public static final int SIDEBYSIDE = 1;
     public static final int CENTERED = 0;
     protected CardData cardData = new CardData();
@@ -139,6 +140,7 @@ public class CardImage extends GLImage {
 
     public void setCards(Hand cards) {
         this.cards = cards;
+        totalCards = cards.size();
     }
 
     public void setMode(int mode) {

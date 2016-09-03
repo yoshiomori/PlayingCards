@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.GL;
+package tcc.ronaldoyoshio.playingcards.gl;
 
 import android.opengl.GLES20;
 import android.util.Log;

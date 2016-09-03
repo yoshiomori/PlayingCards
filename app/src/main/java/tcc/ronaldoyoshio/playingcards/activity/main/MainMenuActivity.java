@@ -1,7 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.activity.main;
 
-import tcc.ronaldoyoshio.playingcards.GL.GLActivity;
-import tcc.ronaldoyoshio.playingcards.GL.GLImage;
+import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
+import tcc.ronaldoyoshio.playingcards.gl.GLImage;
 import tcc.ronaldoyoshio.playingcards.activity.BackGround;
 
 /**

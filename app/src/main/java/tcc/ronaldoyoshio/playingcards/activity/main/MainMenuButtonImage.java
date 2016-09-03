@@ -5,13 +5,13 @@ import android.opengl.Matrix;
 
 import java.util.ArrayList;
 
-import tcc.ronaldoyoshio.playingcards.GL.GL;
-import tcc.ronaldoyoshio.playingcards.GL.GLImage;
-import tcc.ronaldoyoshio.playingcards.GL.GLObject;
 import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
-import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
-import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
+import tcc.ronaldoyoshio.playingcards.activity.serverConfig.ClientConfig;
+import tcc.ronaldoyoshio.playingcards.activity.serverConfig.ServerConfig;
+import tcc.ronaldoyoshio.playingcards.gl.GL;
+import tcc.ronaldoyoshio.playingcards.gl.GLImage;
+import tcc.ronaldoyoshio.playingcards.gl.GLObject;
 
 /**
  * Dados para criar um botão usando opengl e tratar eventos de toque.
@@ -23,7 +23,7 @@ public class MainMenuButtonImage extends GLImage {
     public MainMenuButtonImage(final MainMenuActivity mainMenuActivity) {
         addTouchEventHandler(new TouchEventHandler() {
             @Override
-            public boolean onDown(int pointerId, float x, float y, int width, int height) {
+            public boolean onDown(int pointerId, float x, float y) {
                 float[] projection = new float[16];
                 float[] m = new float[16];
                 float[] v = new float[4];
@@ -38,15 +38,15 @@ public class MainMenuButtonImage extends GLImage {
                     Matrix.scaleM(m, 0, 0.5f, 0.5f, 1f);
                     Matrix.scaleM(m, 0, 1f, 0.216f, 1f);
                     Matrix.invertM(m, 0, m, 0);
-                    Matrix.multiplyMV(v, 0, m, 0, new float[]{getGLX(x, width), getGLY(y, height), 0f, 1f}, 0);
+                    Matrix.multiplyMV(v, 0, m, 0, new float[]{getGLX(x, getWidth()), getGLY(y, getHeight()), 0f, 1f}, 0);
                     if (-1 <= v[0] & v[0] <= 1 & -1 <= v[1] & v[1] <= 1) {
                         float[] color = button.getFloats("color");
                         if (0f == color[1]) {
-                            Intent intent = new Intent(mainMenuActivity, SelectCardsActivity.class);
+                            Intent intent = new Intent(mainMenuActivity, ServerConfig.class);
                             mainMenuActivity.startActivity(intent);
                         }
                         else if (0.5f == color[1]) {
-                            Intent intent = new Intent(mainMenuActivity, HandActivity.class);
+                            Intent intent = new Intent(mainMenuActivity, ClientConfig.class);
                             mainMenuActivity.startActivity(intent);
                         }
                     }
