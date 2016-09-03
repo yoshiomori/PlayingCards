@@ -20,5 +20,16 @@
         android:layout_marginLeft="76dp"
         android:layout_marginStart="76dp"
         android:layout_marginTop="105dp"
-        android:onClick="findPeers"/>
+        android:onClick="connectToServer"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:id="@+id/button2"
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/button"
+        android:layout_alignStart="@+id/button"
+        android:onClick="createGroup" />
+
 </RelativeLayout>

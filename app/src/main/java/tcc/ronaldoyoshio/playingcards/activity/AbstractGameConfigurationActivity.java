@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
@@ -22,11 +23,12 @@ import tcc.ronaldoyoshio.playingcards.R;
 
 public abstract class AbstractGameConfigurationActivity extends Activity implements ChannelListener, PeerListListener {
 
-    private static final String TAG = "GameConfigActivity";
+    protected static final String TAG = "GameConfigActivity";
     protected WifiP2pManager manager;
-    protected WifiP2pManager.Channel channel;
-    private List<WifiP2pDevice> peers = new ArrayList<WifiP2pDevice>();
+    protected Channel channel;
+    protected List<WifiP2pDevice> peers = new ArrayList<WifiP2pDevice>();
 
+    protected WifiP2pDevice thisDevice;
     private boolean isWifiP2pEnabled = false;
     private boolean retryChannel = false;
     protected BroadcastReceiver receiver = null;
@@ -50,6 +52,7 @@ public abstract class AbstractGameConfigurationActivity extends Activity impleme
         super.onResume();
         receiver = new WiFiDirectBroadcastReceiver(manager, channel, this);
         registerReceiver(receiver, intentFilter);
+        findPeers();
     }
 
     @Override
@@ -104,5 +107,13 @@ public abstract class AbstractGameConfigurationActivity extends Activity impleme
                 Log.d(TAG, "Descoberta Iniciada sem sucesso");
             }
         });
+    }
+
+    public String getThisDeviceName() {
+        return thisDevice.deviceName;
+    }
+
+    public void setThisDevice(WifiP2pDevice thisDevice) {
+        this.thisDevice = thisDevice;
     }
 }
