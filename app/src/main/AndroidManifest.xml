@@ -5,6 +5,12 @@
     <!-- Tell the system this app requires OpenGL ES 2.0. -->
     <uses-feature android:glEsVersion="0x00020000" android:required="true" />
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.UPDATE_DEVICE_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -24,8 +30,8 @@
         <activity android:name=".activity.deck.DeckActivity" />
         <activity android:name=".activity.select.SelectCardsActivity" />
         <activity android:name=".activity.hand.HandActivity" />
-        <activity android:name=".activity.serverConfig.ServerConfig" />
-        <activity android:name=".activity.serverConfig.ClientConfig" />
+        <activity android:name=".activity.config.ServerConfig" />
+        <activity android:name=".activity.config.ClientConfig" />
 
     </application>
 

@@ -13,13 +13,11 @@ import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import tcc.ronaldoyoshio.playingcards.BroadcastReceiver.WiFiDirectBroadcastReceiver;
-import tcc.ronaldoyoshio.playingcards.R;
+import tcc.ronaldoyoshio.playingcards.broadcastReceiver.WiFiDirectBroadcastReceiver;
 
 public abstract class AbstractGameConfigurationActivity extends Activity implements ChannelListener, PeerListListener {
 

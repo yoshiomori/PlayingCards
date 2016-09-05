@@ -17,6 +17,7 @@ import android.net.wifi.p2p.WifiP2pManager.DnsSdServiceResponseListener;
 import android.net.wifi.p2p.WifiP2pManager.DnsSdTxtRecordListener;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
+import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -30,35 +31,12 @@ import java.util.Map;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 import tcc.ronaldoyoshio.playingcards.model.web.server.ServerInterface;
 
-public class GameServerService extends Service {
-
-    public static final String SERVER_ACTION = "tcc.ronaldoyoshio.playingcards.SERVER_ACTION";
-    public static final String SERVICE_INSTANCE = "_gameServer";
-    public static final String SERVICE_REG_TYPE = "_presence._tcp";
+public class GameServerService extends GameService {
+    private static final String SERVICE_INSTANCE = "_gameServer";
     private static final String TAG = "GameServerService";
-    private static final String SERVER_PORT = "4545";
-    private WifiP2pManager manager;
-    private WifiP2pDnsSdServiceRequest serviceRequest;
-    private final IntentFilter intentFilter = new IntentFilter();
-    private Channel channel;
-    private BroadcastReceiver receiver = null;
-    private List<WiFiP2pDiscoveredService> discoveredServices = new ArrayList<>();
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
-        intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
-        intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
-        intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
-        manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
-        channel = manager.initialize(this, getMainLooper(), null);
-        startRegistration();
-        startDiscoverService();
-
-        return START_STICKY;
-    }
-
-    private void startRegistration() {
+    protected void startRegistration() {
         Map<String, String> record = new HashMap<String, String>();
         record.put("LISTEN_PORT", String.valueOf(SERVER_PORT));
         record.put("NAME", "Servidor");
@@ -80,7 +58,7 @@ public class GameServerService extends Service {
         });
     }
 
-    private void startDiscoverService() {
+    protected void startDiscoverService() {
         DnsSdTxtRecordListener txtListener = new DnsSdTxtRecordListener() {
             @Override
             public void onDnsSdTxtRecordAvailable(
@@ -132,11 +110,5 @@ public class GameServerService extends Service {
 
             }
         });
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
     }
 }

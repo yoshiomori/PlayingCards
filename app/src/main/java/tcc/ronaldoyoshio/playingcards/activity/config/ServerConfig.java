@@ -1,9 +1,12 @@
-package tcc.ronaldoyoshio.playingcards.activity.serverConfig;
+package tcc.ronaldoyoshio.playingcards.activity.config;
 
+import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 
 import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
+import tcc.ronaldoyoshio.playingcards.service.GameServerService;
+import tcc.ronaldoyoshio.playingcards.service.GameService;
 
 /**
  * Activity para configurar o servidor
@@ -19,5 +22,12 @@ public class ServerConfig extends Config {
                 serverConfig.startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this, GameServerService.class), mConnection,
+                Context.BIND_AUTO_CREATE);
     }
 }

@@ -1,9 +1,11 @@
-package tcc.ronaldoyoshio.playingcards.activity.serverConfig;
+package tcc.ronaldoyoshio.playingcards.activity.config;
 
+import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 
 import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
+import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
 
 /**
  * Configuração do cliente.
@@ -19,5 +21,12 @@ public class ClientConfig extends Config {
                 clientConfig.startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this, GamePlayerService.class), mConnection,
+                Context.BIND_AUTO_CREATE);
     }
 }

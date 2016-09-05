@@ -1,4 +1,3 @@
 <resources>
     <string name="app_name">PlayingCards</string>
-    <string name="title_activity_mock">MockActivity</string>
 </resources>
