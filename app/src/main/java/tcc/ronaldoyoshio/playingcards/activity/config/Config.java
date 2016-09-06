@@ -5,7 +5,9 @@ import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.Messenger;
+import android.os.RemoteException;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -59,4 +61,15 @@ public abstract class Config extends ListActivity {
             mBound = false;
         }
     };
+
+    public void sendMessageToService(int messageCode) {
+        if (!mBound) return;
+        Message msg = Message.obtain();
+        msg.arg1 = messageCode;
+        try {
+            mService.send(msg);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 }

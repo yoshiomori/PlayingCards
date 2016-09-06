@@ -2,11 +2,12 @@ package tcc.ronaldoyoshio.playingcards.activity.config;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Message;
+import android.os.RemoteException;
 import android.view.View;
 
 import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
 import tcc.ronaldoyoshio.playingcards.service.GameServerService;
-import tcc.ronaldoyoshio.playingcards.service.GameService;
 
 /**
  * Activity para configurar o servidor

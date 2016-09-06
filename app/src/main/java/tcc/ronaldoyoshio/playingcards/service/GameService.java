@@ -20,8 +20,11 @@ import java.util.List;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 
 public abstract class GameService extends Service {
+    public static final int MSG_CLIENT = 0;
+
     protected static final String SERVICE_REG_TYPE = "_presence._tcp";
     protected static final String SERVER_PORT = "4545";
+
     protected WifiP2pManager manager;
     protected WifiP2pDnsSdServiceRequest serviceRequest;
     protected final IntentFilter intentFilter = new IntentFilter();
@@ -55,7 +58,14 @@ public abstract class GameService extends Service {
     class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
-
+            switch (msg.arg1) {
+                case MSG_CLIENT:
+                    activity = msg.replyTo;
+                    sendMessageToUI(1);
+                    break;
+                default:
+                    super.handleMessage(msg);
+            }
         }
     }
 
@@ -66,7 +76,14 @@ public abstract class GameService extends Service {
         return mMessenger.getBinder();
     }
 
-    protected void sendMessageToUI(String message) {
-        
+    protected void sendMessageToUI(int message) {
+        if (activity == null) return;
+        Message msg = Message.obtain();
+        msg.arg1 = message;
+        try {
+            activity.send(msg);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }

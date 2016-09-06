@@ -33,6 +33,10 @@
         <activity android:name=".activity.config.ServerConfig" />
         <activity android:name=".activity.config.ClientConfig" />
 
+        <service android:name=".service.GamePlayerService"
+            android:process=":remotePlayerService" />
+        <service android:name=".service.GameServerService"
+            android:process=":remoteServerService" />
     </application>
 
 </manifest>
