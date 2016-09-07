@@ -9,10 +9,6 @@ import android.view.View;
 import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
 import tcc.ronaldoyoshio.playingcards.service.GameServerService;
 
-/**
- * Activity para configurar o servidor
- * Created by mori on 26/08/16.
- */
 public class ServerConfig extends Config {
     public ServerConfig() {
         final ServerConfig serverConfig = this;

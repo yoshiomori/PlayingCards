@@ -13,10 +13,12 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import tcc.ronaldoyoshio.playingcards.activity.config.Config;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 
 public abstract class GameService extends Service {
@@ -32,7 +34,7 @@ public abstract class GameService extends Service {
     protected BroadcastReceiver receiver = null;
     protected List<WiFiP2pDiscoveredService> discoveredServices = new ArrayList<>();
     private boolean wifiP2pEnabled = false;
-    protected Messenger activity = null;
+    protected Messenger mActivity = null;
 
     public void setIsWifiP2pEnabled(boolean b) {
         this.wifiP2pEnabled = b;
@@ -60,8 +62,10 @@ public abstract class GameService extends Service {
         public void handleMessage(Message msg) {
             switch (msg.arg1) {
                 case MSG_CLIENT:
-                    activity = msg.replyTo;
-                    sendMessageToUI(1);
+                    mActivity = msg.replyTo;
+                    Message message = Message.obtain();
+                    message.arg1 = Config.MSG_SERVICECONNECTED;
+                    sendMessageToActivity(message);
                     break;
                 default:
                     super.handleMessage(msg);
@@ -76,12 +80,10 @@ public abstract class GameService extends Service {
         return mMessenger.getBinder();
     }
 
-    protected void sendMessageToUI(int message) {
-        if (activity == null) return;
-        Message msg = Message.obtain();
-        msg.arg1 = message;
+    protected void sendMessageToActivity(Message msg) {
+        if (mActivity == null) return;
         try {
-            activity.send(msg);
+            mActivity.send(msg);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

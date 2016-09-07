@@ -4,6 +4,7 @@ import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
@@ -12,18 +13,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
 import java.util.ArrayList;
-
 import tcc.ronaldoyoshio.playingcards.service.GameService;
 
-/**
- * Activity para configuração
- * Created by mori on 27/08/16.
- */
 public abstract class Config extends ListActivity {
     protected boolean mBound = false;
     protected Messenger mService = null;
+    public static final int MSG_SERVICECONNECTED = 0;
 
     ArrayList<String> items = new ArrayList<>();
     ArrayList<View.OnClickListener> actions = new ArrayList<>();
@@ -54,6 +50,10 @@ public abstract class Config extends ListActivity {
         public void onServiceConnected(ComponentName className, IBinder service) {
             mService = new Messenger(service);
             mBound = true;
+            Message msg = Message.obtain();
+            msg.arg1 = GameService.MSG_CLIENT;
+            msg.replyTo = mMessenger;
+            sendMessageToService(msg);
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -62,10 +62,23 @@ public abstract class Config extends ListActivity {
         }
     };
 
-    public void sendMessageToService(int messageCode) {
+    class IncomingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.arg1) {
+                case MSG_SERVICECONNECTED:
+                    System.out.println("Activity conectada");
+                    break;
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+    }
+
+    final Messenger mMessenger = new Messenger(new IncomingHandler());
+
+    public void sendMessageToService(Message msg) {
         if (!mBound) return;
-        Message msg = Message.obtain();
-        msg.arg1 = messageCode;
         try {
             mService.send(msg);
         } catch (RemoteException e) {

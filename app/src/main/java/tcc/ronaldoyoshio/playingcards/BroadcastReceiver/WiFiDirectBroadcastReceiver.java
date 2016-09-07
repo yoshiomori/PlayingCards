@@ -28,6 +28,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
     private void turnOnWifi(Context context) {
         WifiManager wifiManager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
         wifiManager.setWifiEnabled(true);
+        Log.d(TAG, "Wifi Ligado");
     }
 
     @Override

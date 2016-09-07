@@ -7,10 +7,6 @@ import android.view.View;
 import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
 import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
 
-/**
- * Configuração do cliente.
- * Created by mori on 27/08/16.
- */
 public class ClientConfig extends Config {
     public ClientConfig() {
         final ClientConfig clientConfig = this;
