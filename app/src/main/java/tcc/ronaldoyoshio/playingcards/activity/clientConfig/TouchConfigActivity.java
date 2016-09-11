@@ -5,7 +5,10 @@ import android.os.Bundle;
 import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.activity.BackGround;
+import tcc.ronaldoyoshio.playingcards.activity.CardImage;
+import tcc.ronaldoyoshio.playingcards.activity.deck.MotionCardImage;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
+import tcc.ronaldoyoshio.playingcards.model.Hand;
 
 /**
  * Configura para onde a carta será enviada.
@@ -18,6 +21,11 @@ public class TouchConfigActivity extends GLActivity{
 
         /* AddImage deve ser chamado antes do onCreate */
         addImage(new BackGround());
+        CardImage card = new MotionCardImage(this);
+        Hand hand = new Hand();
+        hand.add("Back");
+        card.setCards(hand);
+        addImage(card);
 
         Bundle extras = getIntent().getExtras();
         ArrayList<String> playersName;
@@ -25,7 +33,9 @@ public class TouchConfigActivity extends GLActivity{
             playersName = extras.getStringArrayList("playersName");
             System.out.println(playersName);
             if (playersName != null && !playersName.isEmpty()) {
-                addImage(new TextureImage(playersName.get(2), 100));
+                addImage(new TextureImage("Arraste a carta até a borda.", 100, 0, 2f / 3f));
+                addImage(new TextureImage("Em direção:", 100, 0, 0));
+                addImage(new TextureImage(playersName.get(2), 100, 0, -2f / 3f));
             }
         }
 

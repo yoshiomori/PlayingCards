@@ -15,7 +15,7 @@ import tcc.ronaldoyoshio.playingcards.gl.GLImage;
 public class TextureImage extends GLImage {
     Bitmap texture;
 
-    public TextureImage(String text, int size) {
+    public TextureImage(String text, int size, float x, float y) {
         TextPaint paint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
         paint.setTextSize(size);
         paint.setColor(Color.WHITE);
@@ -26,6 +26,8 @@ public class TextureImage extends GLImage {
         texture = Bitmap.createBitmap(w * 2, h, Bitmap.Config.ARGB_8888);
         Canvas c = new Canvas(texture);
         c.drawText(text, w, - paint.ascent(), paint);
+
+        setUniform("position", x, y);
     }
 
     @Override
@@ -41,21 +43,19 @@ public class TextureImage extends GLImage {
                 "/* Vertex Shader */" +
                         "attribute vec2 vertex;" +
                         "varying vec2 tex_coord;" +
+                        "uniform vec2 position;" +
                         "uniform float h, w;" +
                         "void main() {" +
                         "   tex_coord = vertex;" +
                         "   vec2 v = mat2(w, 0.0, 0.0, h) * vertex;" +
-                        "   gl_Position = vec4(v, 0, 1);" +
+                        "   gl_Position = vec4(v + position, 0, 1);" +
                         "}",
                 "/* Fragment Shader */" +
                         "precision mediump float;" +
                         "varying vec2 tex_coord;" +
-                        "uniform float ratio;" +
                         "uniform sampler2D texture;" +
                         "void main() {" +
-                        "   float width = ratio < 1.0 ? ratio : 1.0;" +
-                        "   float height = ratio >= 1.0 ? 1.0 / ratio : 1.0;" +
-                        "   vec2 v = mat2(0.5 * width, 0.0, 0.0, - 0.5 * height) * tex_coord;" +
+                        "   vec2 v =  mat2(0.5, 0.0, 0.0, -0.5) * tex_coord;" +
                         "   v += vec2(0.5, 0.5);" +
                         "   gl_FragColor = texture2D(texture, v);" +
                         "}",
@@ -69,7 +69,6 @@ public class TextureImage extends GLImage {
 
     @Override
     protected void onSurfaceChanged(int width, int height) {
-        setUniform("ratio", (float) width / height);
         float h = (float) texture.getHeight() / height;
         float w = (float) texture.getWidth() / width;
         setUniform("h", h);

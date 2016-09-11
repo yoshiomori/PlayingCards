@@ -96,7 +96,7 @@ public class GLRenderer implements GLSurfaceView.Renderer{
             }
             image.render(buffers, textures);
             if (image.IsBlendEnable()) {
-                GLES20.glEnable(GLES20.GL_BLEND);
+                GLES20.glDisable(GLES20.GL_BLEND);
             }
         }
     }
