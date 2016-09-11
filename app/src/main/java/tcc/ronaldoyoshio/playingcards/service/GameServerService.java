@@ -34,81 +34,25 @@ import tcc.ronaldoyoshio.playingcards.model.web.server.ServerInterface;
 public class GameServerService extends GameService {
     private static final String SERVICE_INSTANCE = "_gameServer";
     private static final String TAG = "GameServerService";
+    private String name = "Server";
 
     @Override
-    protected void startRegistration() {
-        Map<String, String> record = new HashMap<String, String>();
-        record.put("LISTEN_PORT", String.valueOf(SERVER_PORT));
-        record.put("NAME", "Servidor");
-        record.put("AVALIABLE", "visible");
-
-        WifiP2pDnsSdServiceInfo service = WifiP2pDnsSdServiceInfo.newInstance(
-                SERVICE_INSTANCE, SERVICE_REG_TYPE, record);
-        manager.addLocalService(channel, service, new WifiP2pManager.ActionListener() {
-
-            @Override
-            public void onSuccess() {
-                Log.d(TAG, "Serviço Local Adicionado");
-            }
-
-            @Override
-            public void onFailure(int error) {
-                Log.d(TAG, "Falha ao adicionar o serviço");
-            }
-        });
+    public void onCreate() {
+        super.onCreate();
     }
 
-    protected void startDiscoverService() {
-        DnsSdTxtRecordListener txtListener = new DnsSdTxtRecordListener() {
-            @Override
-            public void onDnsSdTxtRecordAvailable(
-                    String fullDomainName, Map<String, String> record,
-                    WifiP2pDevice device) {
+    @Override
+    protected String getName() {
+        return this.name;
+    }
 
-            }
-        };
+    @Override
+    protected String getServiceInstance() {
+        return this.SERVICE_INSTANCE;
+    }
 
-        DnsSdServiceResponseListener servListener = new DnsSdServiceResponseListener() {
-            @Override
-            public void onDnsSdServiceAvailable(String instanceName,
-                                                String registrationType, WifiP2pDevice srcDevice) {
-
-                if (instanceName.equalsIgnoreCase(SERVICE_INSTANCE)) {
-                    WiFiP2pDiscoveredService service = new WiFiP2pDiscoveredService(srcDevice, instanceName, registrationType);
-                    discoveredServices.add(service);
-                }
-
-            }
-        };
-        manager.setDnsSdResponseListeners(channel, servListener, txtListener);
-
-        serviceRequest = WifiP2pDnsSdServiceRequest.newInstance();
-
-        manager.addServiceRequest(channel, serviceRequest,
-                new ActionListener() {
-
-                    @Override
-                    public void onSuccess() {
-                        Log.d(TAG, "Serviço Local Adicionado");
-                    }
-
-                    @Override
-                    public void onFailure(int arg0) {
-                        Log.d(TAG, "Serviço Local Adicionado");
-                    }
-                });
-        manager.discoverServices(channel, new ActionListener() {
-
-            @Override
-            public void onSuccess() {
-                Log.d(TAG, "Serviço Local Adicionado");
-            }
-
-            @Override
-            public void onFailure(int arg0) {
-                Log.d(TAG, "Serviço Local Adicionado");
-
-            }
-        });
+    @Override
+    protected String getTag() {
+        return this.TAG;
     }
 }

@@ -7,13 +7,13 @@ public class WiFiP2pDiscoveredService {
     private WifiP2pDevice device;
     private String instanceName = null;
     private String serviceRegistrationType = null;
-
+    private int port;
     private String name = null;
 
-    public WiFiP2pDiscoveredService(WifiP2pDevice device, String instanceName, String serviceRegistrationType ) {
-        this.device = device;
+    public WiFiP2pDiscoveredService(String name, int port) {
         this.instanceName = instanceName;
-        this.serviceRegistrationType = serviceRegistrationType;
+        this.port = port;
+        this.name = name;
     }
 
     public WifiP2pDevice getDevice() {
@@ -46,5 +46,13 @@ public class WiFiP2pDiscoveredService {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 }
