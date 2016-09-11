@@ -32,12 +32,14 @@ public class TouchConfigActivity extends GLActivity{
             paint.setTextSize(100);
             paint.setColor(Color.WHITE);
             paint.setTextAlign(TextPaint.Align.CENTER);
-            int w = 500;
-            int h = 200;
-            Bitmap b = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-            Canvas c = new Canvas(b);
+            paint.setTextScaleX(0.5f);
             if (playersName != null && !playersName.isEmpty()) {
-                c.drawText(playersName.get(0), w / 2, 2 * h / 3, paint);
+                int index = 2;
+                int w = (int) paint.measureText(playersName.get(index));
+                int h = (int) (paint.descent() - paint.ascent());
+                Bitmap b = Bitmap.createBitmap(w * 2, h, Bitmap.Config.ARGB_8888);
+                Canvas c = new Canvas(b);
+                c.drawText(playersName.get(index), w, - paint.ascent(), paint);
                 addImage(new TextureImage(b, this));
             }
         }

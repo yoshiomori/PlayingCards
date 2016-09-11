@@ -49,7 +49,7 @@ public class TextureImage extends GLImage {
                         "void main() {" +
                         "   float width = ratio < 1.0 ? ratio : 1.0;" +
                         "   float height = ratio >= 1.0 ? 1.0 / ratio : 1.0;" +
-                        "   vec2 v = mat2(0.5 * width, 0.0, 0.0, 0.5 * height) * tex_coord;" +
+                        "   vec2 v = mat2(0.5 * width, 0.0, 0.0, - 0.5 * height) * tex_coord;" +
                         "   v += vec2(0.5, 0.5);" +
                         "   gl_FragColor = texture2D(texture, v);" +
                         "}",
@@ -64,8 +64,8 @@ public class TextureImage extends GLImage {
     @Override
     protected void onSurfaceChanged(int width, int height) {
         setUniform("ratio", (float) width / height);
-        float h = (float) texture.getHeight() / height / 2;
-        float w = (float) texture.getWidth() / width / 2;
+        float h = (float) texture.getHeight() / height;
+        float w = (float) texture.getWidth() / width;
         setUniform("h", h);
         setUniform("w", w);
     }
