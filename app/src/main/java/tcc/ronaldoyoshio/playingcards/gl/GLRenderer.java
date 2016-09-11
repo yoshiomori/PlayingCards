@@ -90,7 +90,9 @@ public class GLRenderer implements GLSurfaceView.Renderer{
         for (GLImage image : images) {
             if (image.IsBlendEnable()) {
                 GLES20.glEnable(GLES20.GL_BLEND);
-                GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE);
+
+                /* Isso não funciona para letras pretas */
+                GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE);
             }
             image.render(buffers, textures);
             if (image.IsBlendEnable()) {
