@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
-import tcc.ronaldoyoshio.playingcards.activity.serverConfig.ClientConfig;
+import tcc.ronaldoyoshio.playingcards.activity.clientConfig.ClientConfig;
 import tcc.ronaldoyoshio.playingcards.activity.serverConfig.ServerConfig;
 import tcc.ronaldoyoshio.playingcards.gl.GL;
 import tcc.ronaldoyoshio.playingcards.gl.GLImage;

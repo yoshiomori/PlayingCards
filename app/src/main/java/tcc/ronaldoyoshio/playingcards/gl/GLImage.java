@@ -63,6 +63,13 @@ public abstract class GLImage {
         bitmapId = id;
     }
 
+
+
+    public void setTexture(String name, Bitmap bitmap) {
+        setUniform(name, 0);
+        this.bitmap = bitmap;
+    }
+
     protected void setAttribute(String name, Boolean normalized, int stride, int offset){
         GLAttribute attribute;
         if (attributes.containsKey(name)) {
@@ -349,7 +356,9 @@ public abstract class GLImage {
     public void loadDatas() {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;	// No pre-scaling
-        this.bitmap = bitmapId < 0 ? null : BitmapFactory.decodeResource(resources, bitmapId, options);
+        if (bitmapId >= 0) {
+            this.bitmap = BitmapFactory.decodeResource(resources, bitmapId, options);
+        }
     }
 
     public int getBitmapId() {

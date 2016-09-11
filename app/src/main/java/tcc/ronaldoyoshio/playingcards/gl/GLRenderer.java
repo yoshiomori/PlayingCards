@@ -33,7 +33,7 @@ public class GLRenderer implements GLSurfaceView.Renderer{
             if (image.getElementArray() != null) {
                 image.setElementArrayIndex(bufferSize++);
             }
-            if (image.getBitmapId() >= 0) {
+            if (image.getBitmapId() >= 0 || image.getBitmap() != null) {
                 image.setTextureIndex(texturesSize++);
             }
             if (image.getVertexShaderCode() == null | image.getFragmentShaderCode() == null) {

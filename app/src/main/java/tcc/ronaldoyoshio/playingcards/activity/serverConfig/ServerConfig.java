@@ -3,6 +3,7 @@ package tcc.ronaldoyoshio.playingcards.activity.serverConfig;
 import android.content.Intent;
 import android.view.View;
 
+import tcc.ronaldoyoshio.playingcards.activity.Config;
 import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
 
 /**

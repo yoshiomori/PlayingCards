@@ -1,9 +1,12 @@
-package tcc.ronaldoyoshio.playingcards.activity.serverConfig;
+package tcc.ronaldoyoshio.playingcards.activity.clientConfig;
 
 import android.content.Intent;
 import android.view.View;
 
-import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import tcc.ronaldoyoshio.playingcards.activity.Config;
 
 /**
  * Configuração do cliente.
@@ -15,7 +18,9 @@ public class ClientConfig extends Config {
         putItem("Pronto", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(clientConfig, HandActivity.class);
+                Intent intent = new Intent(clientConfig, TouchConfigActivity.class);
+                intent.putStringArrayListExtra("playersName",
+                        new ArrayList<>(Arrays.asList(new String[]{"João", "Maria", "Bruxa"})));
                 clientConfig.startActivity(intent);
             }
         });

@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.activity.serverConfig;
+package tcc.ronaldoyoshio.playingcards.activity;
 
 import android.app.ListActivity;
 import android.os.Bundle;
