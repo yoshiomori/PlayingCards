@@ -1,5 +1,6 @@
 package tcc.ronaldoyoshio.playingcards.gl;
 
+import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
 import java.util.ArrayList;
@@ -87,7 +88,14 @@ public class GLRenderer implements GLSurfaceView.Renderer{
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
         for (GLImage image : images) {
+            if (image.IsBlendEnable()) {
+                GLES20.glEnable(GLES20.GL_BLEND);
+                GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE);
+            }
             image.render(buffers, textures);
+            if (image.IsBlendEnable()) {
+                GLES20.glEnable(GLES20.GL_BLEND);
+            }
         }
     }
 }

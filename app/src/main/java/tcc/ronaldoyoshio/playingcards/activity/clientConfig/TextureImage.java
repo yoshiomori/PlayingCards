@@ -59,6 +59,8 @@ public class TextureImage extends GLImage {
         setTexture("texture", texture);
         setUniform("h", h);
         setUniform("w", w);
+
+        setBlendEnable(true);
     }
 
     @Override

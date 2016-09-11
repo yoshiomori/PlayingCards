@@ -37,6 +37,7 @@ public abstract class GLImage {
     private ArrayList<String> objectUniformNames = new ArrayList<>();
     private List<GLObject> objects = Collections.synchronizedList(new ArrayList<GLObject>());
     private ArrayList<TouchEventHandler> touchEventHandlers = new ArrayList<>();
+    private boolean isBlendEnable;
 
     protected void addTouchEventHandler(TouchEventHandler touchEventHandler) {
         touchEventHandlers.add(touchEventHandler);
@@ -386,5 +387,13 @@ public abstract class GLImage {
 
     public ArrayList<TouchEventHandler> getTouchEventHandlers() {
         return touchEventHandlers;
+    }
+
+    public boolean IsBlendEnable() {
+        return isBlendEnable;
+    }
+
+    public void setBlendEnable(boolean blendEnable) {
+        isBlendEnable = blendEnable;
     }
 }
