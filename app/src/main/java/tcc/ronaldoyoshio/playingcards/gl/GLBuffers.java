@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
 
 /**
  * Abstração de objeto buffer
@@ -14,7 +15,7 @@ public class GLBuffers {
     private int[] buffers;
     private int[] params;
 
-    public GLBuffers(GLImage[] arrays, int bufferSize) {
+    public GLBuffers(ArrayList<GLImage> arrays, int bufferSize) {
         buffers = new int[bufferSize];
         GL.glGenBuffers(bufferSize, buffers, 0);
         for (GLImage image :

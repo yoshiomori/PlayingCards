@@ -2,10 +2,9 @@ package tcc.ronaldoyoshio.playingcards.activity.deck;
 
 import android.os.Bundle;
 
-import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
-import tcc.ronaldoyoshio.playingcards.gl.GLImage;
 import tcc.ronaldoyoshio.playingcards.activity.BackGround;
 import tcc.ronaldoyoshio.playingcards.activity.CardImage;
+import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.model.Hand;
 import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
 
@@ -14,13 +13,14 @@ public class DeckActivity extends GLActivity {
     CardImage cardImage = new DeckCardImage(this);
 
     @Override
-    protected GLImage[] getImages() {
-        return new GLImage[]{new BackGround(), cardImage};
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        /* AddImage  deve Ser chamando antes de onCreate */
+        addImage(new BackGround());
+        addImage(cardImage);
+
         super.onCreate(savedInstanceState);
+
         Bundle extras = getIntent().getExtras();
 
         if (savedInstanceState != null) {

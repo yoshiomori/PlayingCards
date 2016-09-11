@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 /**
  * Abstração de unidade de textura.
@@ -13,7 +14,7 @@ public class GLTextures {
     int[] textures;
     private int[] params;
 
-    public GLTextures(GLImage[] images, int texturesSize) {
+    public GLTextures(ArrayList<GLImage> images, int texturesSize) {
         textures = new int[texturesSize];
         GL.glGenTextures(texturesSize, textures, 0);
         for (GLImage image :

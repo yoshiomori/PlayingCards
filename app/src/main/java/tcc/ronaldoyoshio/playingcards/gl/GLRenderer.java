@@ -2,6 +2,8 @@ package tcc.ronaldoyoshio.playingcards.gl;
 
 import android.opengl.GLSurfaceView;
 
+import java.util.ArrayList;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -10,13 +12,13 @@ import javax.microedition.khronos.opengles.GL10;
  * Created by mori on 06/07/16.
  */
 public class GLRenderer implements GLSurfaceView.Renderer{
-    private GLImage[] images;
+    private ArrayList<GLImage> images;
     private int bufferSize = 0;
     private int texturesSize = 0;
     private GLBuffers buffers = null;
     private GLTextures textures;
 
-    public void setImages(GLImage... images) {
+    public void setImages(ArrayList<GLImage> images) {
         this.images = images;
     }
 
