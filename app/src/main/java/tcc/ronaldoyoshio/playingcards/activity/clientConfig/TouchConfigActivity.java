@@ -63,13 +63,14 @@ public class TouchConfigActivity extends GLActivity{
                         /* Verificando se a direção de todos os jogadores já foi configurado */
                         if (nameImageQueue.isEmpty()) {
                             /*
-                            TODO Se todos os nomes já foram configurados, então iremos chamar a
-                            próxima activity.
+                            TODO Se todos os nomes já foram configurados, então iremos chamar a próxima activity.
                              */
                         }
                         else {
                             currentNameImage[0] = nameImageQueue.remove(0);
                             currentNameImage[0].enable();
+
+
                         }
                     }
                 });

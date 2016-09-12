@@ -402,6 +402,7 @@ public abstract class GLImage {
         isEnable = false;
     }
 
+    /* Mostrando o objeto */
     public void enable() {
         isEnable = true;
     }
