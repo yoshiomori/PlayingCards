@@ -16,6 +16,7 @@ import tcc.ronaldoyoshio.playingcards.activity.CardImage;
 import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
+import tcc.ronaldoyoshio.playingcards.gl.GLScreen;
 
 /**
  * Abstração de carta que se move.
@@ -27,6 +28,20 @@ public class MotionCardImage extends CardImage {
     public List<String> activeCardsNames = Collections.synchronizedList(new ArrayList<String>());
 
     public MotionCardImage(final GLActivity glActivity) {
+
+        /* Tratamento de toque na borda */
+        addTouchEventHandler(new TouchEventHandler(){
+            @Override
+            public boolean onMove(int pointerId, float x, float y, float dx, float dy) {
+                GLScreen screen = glActivity.getScreen();
+                if(screen.getHeight() - y < 50 || y < 50 || screen.getWidth() - x < 50 || x < 50) {
+                    System.out.println("houve toque na borda");
+                }
+                return super.onMove(pointerId, x, y, dx, dy);
+            }
+        });
+
+        /* Tratamento de toque na carta */
         addTouchEventHandler(new TouchEventHandler() {
             public float downY;
             public float downX;
@@ -130,6 +145,7 @@ public class MotionCardImage extends CardImage {
             }
         });
 
+        /* Tratamento de movimento */
         addTouchEventHandler(new TouchEventHandler(){
             public int[] neighborhoods = new int[3];
             public double[] mins = new double[neighborhoods.length];
