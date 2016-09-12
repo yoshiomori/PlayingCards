@@ -26,6 +26,8 @@ public class MotionCardImage extends CardImage {
     public List<GLObject> activeCards = Collections.synchronizedList(new ArrayList<GLObject>());
     public List<Integer> activeCardsIndex = Collections.synchronizedList(new ArrayList<Integer>());
     public List<String> activeCardsNames = Collections.synchronizedList(new ArrayList<String>());
+    public HashMap<Integer, GLObject> pointerCards = new HashMap<>();
+    private OnSendCard onSendCard;
 
     public MotionCardImage(final GLActivity glActivity) {
 
@@ -35,7 +37,12 @@ public class MotionCardImage extends CardImage {
             public boolean onMove(int pointerId, float x, float y, float dx, float dy) {
                 GLScreen screen = glActivity.getScreen();
                 if(screen.getHeight() - y < 50 || y < 50 || screen.getWidth() - x < 50 || x < 50) {
-                    System.out.println("houve toque na borda");
+                    /* Se a carta for empurrada rápido o suficiente para a borda, então a carta será enviada */
+                    System.out.println(dx * dx + dy * dy);
+                    if (!pointerCards.isEmpty() && dx * dx + dy * dy > 420f) {
+                        System.out.println("Carta deve ser enviada!");
+                        onSendCard.onSendCard((int)x, (int)y);
+                    }
                 }
                 return super.onMove(pointerId, x, y, dx, dy);
             }
@@ -197,7 +204,6 @@ public class MotionCardImage extends CardImage {
                     N // 20
             };
             private Vector<Integer> trace = new Vector<>();
-            private HashMap<Integer, GLObject> pointerCards = new HashMap<>();
             @Override
             public boolean onDown(int pointerId, float x, float y) {
                 if (!activeCards.isEmpty()) {
@@ -377,5 +383,9 @@ public class MotionCardImage extends CardImage {
             Collections.swap(objects, i, i+1);
             Collections.swap(cards, i, i+1);
         }
+    }
+
+    public void setOnSendCard(OnSendCard onSendCard) {
+        this.onSendCard = onSendCard;
     }
 }

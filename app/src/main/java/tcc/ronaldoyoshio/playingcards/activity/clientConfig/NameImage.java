@@ -12,10 +12,10 @@ import tcc.ronaldoyoshio.playingcards.gl.GLImage;
  * Responsável por desenhar texturas
  * Created by mori on 10/09/16.
  */
-public class TextureImage extends GLImage {
+public class NameImage extends GLImage {
     Bitmap texture;
 
-    public TextureImage(String text, int size, float x, float y) {
+    public NameImage(String text, int size, float x, float y) {
         TextPaint paint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
         paint.setTextSize(size);
         paint.setColor(Color.WHITE);
