@@ -23,66 +23,16 @@ public class GamePlayerService extends GameService {
     private static final String SERVICE_INSTANCE = "_gamePlayer";
     private static final String TAG = "GamePlayerService";
     private String name = "Client";
-    protected Map<String, WiFiP2pDiscoveredService> discoveredServices = new HashMap<>();
-    protected WifiP2pDnsSdServiceRequest serviceRequest;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        startDiscoverService();
     }
 
-    protected void startDiscoverService() {
-        WifiP2pManager.DnsSdTxtRecordListener txtListener = new WifiP2pManager.DnsSdTxtRecordListener() {
-            @Override
-            public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> record, WifiP2pDevice device) {
-                Log.d(getTag(), fullDomainName);
-                discoveredServices.put(device.deviceAddress, new WiFiP2pDiscoveredService(record.get("NAME"), Integer.parseInt(record.get("LISTEN_PORT"))));
-            }
-        };
-
-        WifiP2pManager.DnsSdServiceResponseListener servListener = new WifiP2pManager.DnsSdServiceResponseListener() {
-            @Override
-            public void onDnsSdServiceAvailable(String instanceName, String registrationType, WifiP2pDevice srcDevice) {
-                Log.d(getTag(), instanceName);
-                if (discoveredServices.containsKey(srcDevice.deviceAddress)) {
-                    WiFiP2pDiscoveredService serv = discoveredServices.get(srcDevice.deviceAddress);
-                    serv.setDevice(srcDevice);
-                    serv.setInstanceName(instanceName);
-                    serv.setServiceRegistrationType(registrationType);
-                    connectP2p(serv);
-                }
-            }
-        };
-        manager.setDnsSdResponseListeners(channel, servListener, txtListener);
-        serviceRequest = WifiP2pDnsSdServiceRequest.newInstance();
-        manager.addServiceRequest(channel, serviceRequest,
-                new WifiP2pManager.ActionListener() {
-
-                    @Override
-                    public void onSuccess() {
-                        Log.d(getTag(), "Requisição adicionado com sucesso");
-                    }
-
-                    @Override
-                    public void onFailure(int arg0) {
-                        Log.d(getTag(), "Requisição adicionado sem sucesso");
-                    }
-                });
-        manager.discoverServices(channel, new WifiP2pManager.ActionListener() {
-
-            @Override
-            public void onSuccess() {
-                Log.d(getTag(), "Iniciando procura de serviços");
-            }
-
-            @Override
-            public void onFailure(int arg0) {
-                Log.d(getTag(), "Falha na procura de serviços");
-            }
-        });
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
-
 
     public void connectP2p(WiFiP2pDiscoveredService service) {
         WifiP2pConfig config = new WifiP2pConfig();

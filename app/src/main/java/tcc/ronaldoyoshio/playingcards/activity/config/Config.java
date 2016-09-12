@@ -20,6 +20,8 @@ public abstract class Config extends ListActivity {
     protected boolean mBound = false;
     protected Messenger mService = null;
     public static final int MSG_SERVICECONNECTED = 0;
+    public static final int MSG_WIFIDIRECTOK = 1;
+    public static final int MSG_WIFIDIRECTNOK = 2;
 
     ArrayList<String> items = new ArrayList<>();
     ArrayList<View.OnClickListener> actions = new ArrayList<>();
@@ -68,6 +70,18 @@ public abstract class Config extends ListActivity {
             switch (msg.arg1) {
                 case MSG_SERVICECONNECTED:
                     System.out.println("Activity conectada");
+                    Message msgWifiDirect = Message.obtain();
+                    msgWifiDirect.arg1 = GameService.MSG_WIFI_DIRECT_SERVICE;
+                    sendMessageToService(msgWifiDirect);
+                    break;
+                case MSG_WIFIDIRECTOK:
+                    System.out.println("WifiDirect OK");
+                    break;
+                case MSG_WIFIDIRECTNOK:
+                    Message msgWifiDirectAgain = Message.obtain();
+                    msgWifiDirectAgain.arg1 = GameService.MSG_WIFI_DIRECT_SERVICE;
+                    sendMessageToService(msgWifiDirectAgain);
+                    System.out.println("WifiDirect NOK");
                     break;
                 default:
                     super.handleMessage(msg);

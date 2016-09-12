@@ -42,6 +42,11 @@ public class GameServerService extends GameService {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
     protected String getName() {
         return this.name;
     }

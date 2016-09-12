@@ -40,10 +40,10 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
                 Log.d(TAG, "WifiDirect Ligado");
-                service.setIsWifiP2pEnabled(true);
+                service.setIsiWfiDirectEnabled(true);
             } else {
                 Log.d(TAG, "WifiDirect Desligado");
-                service.setIsWifiP2pEnabled(false);
+                service.setIsiWfiDirectEnabled(false);
             }
         } else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
             // TODO - Implementar o que acontece se a conexão cair
