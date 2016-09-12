@@ -11,6 +11,8 @@ public class DeckCardImage extends MotionCardImage {
 
     public DeckCardImage(final DeckActivity deckActivity) {
         super(deckActivity);
+
+        /* Quando der duplo taps a carta vira */
         addTouchEventHandler(new TouchEventHandler() {
             public long previousDownTime = Long.MIN_VALUE;
             public float previousX = Float.POSITIVE_INFINITY;
