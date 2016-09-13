@@ -23,11 +23,17 @@ public class SendCardTouchEventHandler extends TouchEventHandler{
         if(screen.getHeight() - y < 50 || y < 50 || screen.getWidth() - x < 50 || x < 50) {
                     /* Se a carta for empurrada rápido o suficiente para a borda, então a carta será enviada */
             System.out.println(dx * dx + dy * dy);
-            if (!motionCardImage.getPointerCards().isEmpty() && dx * dx + dy * dy > 420f) {
+            if (!motionCardImage.getPointerCards().isEmpty() && dx * dx + dy * dy > 400f) {
                 System.out.println("Carta deve ser enviada!");
                 motionCardImage.getOnSendCard().onSendCard((int)x, (int)y);
 
-                motionCardImage.getMotionTouchEventHandler().movePointerCard(pointerId, (float) getWidth() / 2 - x, (float) getHeight() / 2 - y);
+                motionCardImage.getMotionTouchEventHandler().movePointerCard(
+                        pointerId,
+                        (float) getWidth() / 2 - x,
+                        (float) getHeight() / 2 - y
+                );
+
+                motionCardImage.getMotionTouchEventHandler().deactivateCards();
             }
         }
         return super.onMove(pointerId, x, y, dx, dy);

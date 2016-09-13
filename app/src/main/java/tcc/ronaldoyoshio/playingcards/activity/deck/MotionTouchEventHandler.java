@@ -125,7 +125,6 @@ public class MotionTouchEventHandler extends TouchEventHandler {
         }
         movePointerCard(pointerId, dx, dy);
 
-
         return true;
     }
 
@@ -277,5 +276,15 @@ public class MotionTouchEventHandler extends TouchEventHandler {
             Collections.swap(objects, i, i+1);
             Collections.swap(motionCardImage.getCards(), i, i+1);
         }
+    }
+
+    public void deactivateCards() {
+        for (GLObject card :
+                motionCardImage.getObjects()) {
+            card.set("blue_tone", 0);
+        }
+        motionCardImage.getActiveCards().clear();
+        motionCardImage.getActiveCardsIndex().clear();
+        motionCardImage.getActiveCardsNames().clear();
     }
 }

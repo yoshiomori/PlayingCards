@@ -69,8 +69,6 @@ public class TouchConfigActivity extends GLActivity{
                         else {
                             currentNameImage[0] = nameImageQueue.remove(0);
                             currentNameImage[0].enable();
-
-
                         }
                     }
                 });

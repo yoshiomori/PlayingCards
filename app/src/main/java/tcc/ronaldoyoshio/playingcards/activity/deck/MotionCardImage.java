@@ -41,7 +41,7 @@ public class MotionCardImage extends CardImage {
             public boolean onDown(int pointerId, float x, float y) {
                 final int cardIndex = findFirstCardIndexAt(x, getWidth(), y, getHeight(), getObjects());
                 if (cardIndex < 0) {
-                    deactivateCards();
+                    motionTouchEventHandler.deactivateCards();
                     return true;
                 }
 
@@ -75,16 +75,6 @@ public class MotionCardImage extends CardImage {
                     activateCards(x, getWidth(), y, getHeight());
                     return true;
                 }
-            }
-
-            private void deactivateCards() {
-                for (GLObject card :
-                        getObjects()) {
-                    card.set("blue_tone", 0);
-                }
-                activeCards.clear();
-                activeCardsIndex.clear();
-                activeCardsNames.clear();
             }
 
             @Override
