@@ -25,6 +25,10 @@ public class SendCardTouchEventHandler extends TouchEventHandler{
             System.out.println(dx * dx + dy * dy);
             if (!motionCardImage.getPointerCards().isEmpty()) {
                 System.out.println("Carta deve ser enviada!");
+                if (motionCardImage.getOnSendCard() == null) {
+                    throw new RuntimeException("onSendCard deve ser configurado com o método" +
+                            " SetOnSendCard");
+                }
                 motionCardImage.getOnSendCard().onSendCard((int)x, (int)y);
 
                 motionCardImage.getMotionTouchEventHandler().movePointerCard(
