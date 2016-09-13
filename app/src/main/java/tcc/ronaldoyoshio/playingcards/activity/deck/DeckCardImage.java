@@ -1,12 +1,8 @@
 package tcc.ronaldoyoshio.playingcards.activity.deck;
 
-import java.util.ArrayList;
-
-import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
-import tcc.ronaldoyoshio.playingcards.touchEventHandler.OnSendCard;
-import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCardTouchEventHandler;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 
 /**
  * Desenhando uma carta de baralho
@@ -15,43 +11,9 @@ import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCardTouchEventHandle
 public class DeckCardImage extends MotionCardImage {
 
     public DeckCardImage(
-            final DeckActivity deckActivity,
-            final ArrayList<String> playersName,
-            final ArrayList<Integer> directions
+            final DeckActivity deckActivity
     ) {
         super(deckActivity);
-
-        setOnSendCard(new OnSendCard() {
-            @Override
-            public void onSendCard(int pointerId, int x, int y) {
-                SendCardTouchEventHandler sendCardTouchEventHandler = getSendCardTouchEventHandler();
-                String targetPlayerName = sendCardTouchEventHandler.computeNearestPlayerName(
-                        playersName,
-                        directions,
-                        x,
-                        y
-                );
-
-                System.out.println("Enviando para :" + targetPlayerName);
-
-                for (GLObject card : getActiveCards()) {
-                    if (card == getPointerCards().get(pointerId)) {
-                        System.out.println("Active Cards contém pointer Cards");
-                    }
-                }
-                if (getActiveCards().isEmpty()) {
-                    getCards().remove(getObjects().indexOf(getPointerCards().get(pointerId)));
-                    getObjects().remove(getPointerCards().get(pointerId));
-                }
-                else {
-                    for (GLObject card : getActiveCards()) {
-                        getCards().remove(getObjects().indexOf(card));
-                    }
-                    getObjects().removeAll(getActiveCards());
-                }
-                getMotionTouchEventHandler().deactivateCards();
-            }
-        });
 
         /* Quando der duplo taps a carta vira */
         addTouchEventHandler(new TouchEventHandler() {

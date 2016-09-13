@@ -5,9 +5,9 @@ import android.view.KeyEvent;
 
 import java.util.ArrayList;
 
+import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.images.BackGround;
 import tcc.ronaldoyoshio.playingcards.images.CardImage;
-import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.model.Hand;
 import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
 
@@ -15,7 +15,7 @@ public class DeckActivity extends GLActivity {
     Hand cards;
     private ArrayList<String> playersName;
     private ArrayList<Integer> directions;
-    CardImage cardImage;
+    DeckCardImage cardImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +47,8 @@ public class DeckActivity extends GLActivity {
             }
         }
 
-        cardImage = new DeckCardImage(this, playersName, directions);
+        cardImage = new DeckCardImage(this);
+        cardImage.setOnSendCard(new SendCard(cardImage, playersName, directions));
         addImage(cardImage);
 
         super.onCreate(savedInstanceState);
