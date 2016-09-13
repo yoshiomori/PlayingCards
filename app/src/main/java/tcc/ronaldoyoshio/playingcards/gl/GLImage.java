@@ -44,22 +44,6 @@ public abstract class GLImage {
         touchEventHandlers.add(touchEventHandler);
     }
 
-    public float getGLDy(float dy, int height) {
-        return  - 2 * dy / height;
-    }
-
-    public float getGLDx(float dy, int width) {
-        return 2 * dy / width;
-    }
-
-    public float getGLX(float x, int width) {
-        return (2 * x - width) / width;
-    }
-
-    public float getGLY(float y, int height) {
-        return (height - 2 * y) / height;
-    }
-
     public void setTexture(String name, int id) {
         setUniform(name, 0);
         bitmapId = id;

@@ -23,7 +23,7 @@ public class DeckCardImage extends MotionCardImage {
             public boolean onDown(int pointerId, float x, float y) {
                 // Verificando se é double tap
                 long downTime = System.currentTimeMillis();
-                int index = findFirstCardIndexAt(getGLX(x, getWidth()), getGLY(y, getHeight()));
+                int index = findFirstCardIndexAt(x, getWidth(), y, getHeight(), getObjects());
                 if (index >= 0) {
                     GLObject currentCard = getObjects().get(index);
                     doubleTap = isDoubleTap(downTime - previousDownTime, x - previousX, y - previousY, currentCard);
@@ -34,12 +34,12 @@ public class DeckCardImage extends MotionCardImage {
 
                     if (doubleTap) {
                         doubleTap = false;
-                        if (activeCards.isEmpty()) {
+                        if (getActiveCards().isEmpty()) {
                             flipCard(getObjects().get(index), index);
                         } else {
-                            if (activeCards.contains(getObjects().get(index))) {
+                            if (getActiveCards().contains(getObjects().get(index))) {
                                 for (GLObject card :
-                                        activeCards) {
+                                        getActiveCards()) {
                                     flipCard(card, getObjects().indexOf(card));
                                 }
 

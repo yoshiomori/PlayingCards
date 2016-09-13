@@ -12,7 +12,7 @@ public class SelectCardImage extends CardImage {
         addTouchEventHandler(new TouchEventHandler(){
             @Override
             public boolean onDown(int pointerId, float x, float y) {
-                int index = findFirstCardIndexAt(getGLX(x, getWidth()), getGLY(y, getHeight()));
+                int index = findFirstCardIndexAt(x, getWidth(), y, getHeight(), getObjects());
                 if (index>=0) {
                     getCards().remove(index);
                     getObjects().remove(index);
