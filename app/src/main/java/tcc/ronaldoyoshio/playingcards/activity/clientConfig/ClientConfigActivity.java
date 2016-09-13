@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import tcc.ronaldoyoshio.playingcards.activity.ConfigActivity;
+import tcc.ronaldoyoshio.playingcards.activity.touchConfig.TouchConfigActivity;
 
 /**
  * Configuração do cliente.

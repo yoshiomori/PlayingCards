@@ -26,7 +26,7 @@
         <activity android:name=".activity.hand.HandActivity" />
         <activity android:name=".activity.serverConfig.ServerConfigActivity" />
         <activity android:name=".activity.clientConfig.ClientConfigActivity" />
-        <activity android:name=".activity.clientConfig.TouchConfigActivity" android:noHistory="true"/>
+        <activity android:name=".activity.touchConfig.TouchConfigActivity" android:noHistory="true"/>
 
     </application>
 

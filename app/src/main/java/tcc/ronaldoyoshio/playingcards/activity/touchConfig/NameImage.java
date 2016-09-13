@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.activity.clientConfig;
+package tcc.ronaldoyoshio.playingcards.activity.touchConfig;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
