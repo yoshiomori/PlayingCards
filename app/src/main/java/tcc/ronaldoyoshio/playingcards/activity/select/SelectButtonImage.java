@@ -1,6 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.activity.select;
 
 import android.content.Intent;
+import android.os.Bundle;
 
 import tcc.ronaldoyoshio.playingcards.gl.GL;
 import tcc.ronaldoyoshio.playingcards.gl.GLImage;
@@ -15,7 +16,7 @@ import tcc.ronaldoyoshio.playingcards.model.Hand;
  */
 public class SelectButtonImage extends GLImage {
 
-    public SelectButtonImage(final SelectCardsActivity selectCardsActivity, final Hand cards) {
+    public SelectButtonImage(final SelectCardsActivity selectCardsActivity, final Hand cards, final Bundle extras) {
         addTouchEventHandler(new TouchEventHandler() {
             @Override
             public boolean onDown(int pointerId, float x, float y) {
@@ -24,6 +25,14 @@ public class SelectButtonImage extends GLImage {
                 if (-1 < glx && glx < 1 && -0.294 < gly && gly < 0.294) {
                     Intent intent = new Intent(selectCardsActivity, DeckActivity.class);
                     intent.putExtra("cards", cards);
+                    intent.putIntegerArrayListExtra(
+                            "directions",
+                            extras.getIntegerArrayList("directions")
+                    );
+                    intent.putStringArrayListExtra(
+                            "playersName",
+                            extras.getStringArrayList("playersName")
+                    );
                     selectCardsActivity.startActivity(intent);
                 }
                 return super.onDown(pointerId, x, y);

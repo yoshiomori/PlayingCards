@@ -22,7 +22,7 @@ public class SelectCardsActivity extends GLActivity {
         /* AddImage  deve Ser chamando antes de onCreate */
         addImage(new BackGround());
         addImage(selectCardImage);
-        addImage(new SelectButtonImage(this, playingCards));
+        addImage(new SelectButtonImage(this, playingCards, getIntent().getExtras()));
 
         super.onCreate(savedInstanceState);
         print(playingCards);
