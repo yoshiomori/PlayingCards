@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import tcc.ronaldoyoshio.playingcards.activity.BackGround;
@@ -31,10 +30,9 @@ public class TouchConfigActivity extends GLActivity{
         addImage(card);
 
         Bundle extras = getIntent().getExtras();
-        ArrayList<String> playersName;
+        final ArrayList<String> playersName;
         if (extras.containsKey("playersName")) {
             playersName = extras.getStringArrayList("playersName");
-            System.out.println(playersName);
             if (playersName != null && !playersName.isEmpty()) {
                 /* Configurando a direção para cada jogador */
                 addImage(new NameImage("Arraste a carta até a borda.", 100, 0, 2f / 3f));
@@ -60,13 +58,11 @@ public class TouchConfigActivity extends GLActivity{
                     public void onSendCard(int x, int y) {
                         directions.add(x);
                         directions.add(y);
-                        System.out.println("Carta sendo configurada: " + x + ", " + y);
                         currentNameImage[0].disable();
 
                         /* Verificando se a direção de todos os jogadores já foi configurado */
                         if (nameImageQueue.isEmpty()) {
                             /*
-                            TODO
                              Se todos os nomes já foram configurados, então iremos chamar a
                              próxima activity.
                              */
@@ -74,12 +70,7 @@ public class TouchConfigActivity extends GLActivity{
                                     TouchConfigActivity.this,
                                     DeckActivity.class
                             );
-                            intent.putStringArrayListExtra(
-                                    "playersName",
-                                    new ArrayList<>(
-                                            Arrays.asList(new String[]{"João", "Maria", "Bruxa"})
-                                    )
-                            );
+                            intent.putStringArrayListExtra("playersName", playersName);
                             intent.putIntegerArrayListExtra("directions", directions);
                             TouchConfigActivity.this.startActivity(intent);
                             finish();

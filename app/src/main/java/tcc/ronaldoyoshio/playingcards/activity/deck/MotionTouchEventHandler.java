@@ -175,17 +175,11 @@ public class MotionTouchEventHandler extends TouchEventHandler {
             for (int[] sample :
                     samples) {
                 double distance = 0;
-                System.out.println("======== " + sampleIndex + " ========");
                 distance += Math.abs(sample[0] - traceData[0]);
-                System.out.println(Math.abs(sample[0] - traceData[0]));
                 distance += Math.abs(sample[1] - traceData[1]);
-                System.out.println(Math.abs(sample[1] - traceData[1]));
                 distance += Math.abs(sample[2] - traceData[2]);
-                System.out.println(Math.abs(sample[2] - traceData[2]));
                 distance += Math.abs(sample[3] - traceData[3]);
-                System.out.println(Math.abs(sample[3] - traceData[3]));
                 distance += Math.abs(sample[4] - traceData[4]);
-                System.out.println(Math.abs(sample[4] - traceData[4]));
                 for (index = 0; index < mins.length; index++) {
                     if (distance < mins[index]) {
                         mins[index] = distance;
@@ -196,7 +190,6 @@ public class MotionTouchEventHandler extends TouchEventHandler {
                 sampleIndex++;
             }
             if (isShuffle()) {
-                System.out.println("É shuffle");
                 Collections.shuffle(motionCardImage.getActiveCardsIndex());
                 for (index = 0; index < motionCardImage.getActiveCardsIndex().size(); index++) {
                     motionCardImage.getObjects().set(motionCardImage.getActiveCardsIndex().get(index), activeCards.get(index));
@@ -211,10 +204,7 @@ public class MotionTouchEventHandler extends TouchEventHandler {
                 requestRender();
                 Vibrator v = (Vibrator) glActivity.getSystemService(Context.VIBRATOR_SERVICE);
                 v.vibrate(500);
-            } else {
-                System.out.println("Não é shuffle");
             }
-            System.out.println(Arrays.toString(traceData));
         }
         motionCardImage.getPointerCards().clear();
         return false;
@@ -228,7 +218,6 @@ public class MotionTouchEventHandler extends TouchEventHandler {
                 count++;
             }
         }
-        System.out.println(count);
         return count > neighborhoods.length / 2;
     }
 
