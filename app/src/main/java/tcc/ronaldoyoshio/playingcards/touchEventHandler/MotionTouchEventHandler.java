@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.activity.deck;
+package tcc.ronaldoyoshio.playingcards.touchEventHandler;
 
 import android.content.Context;
 import android.os.Vibrator;
@@ -9,9 +9,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
-import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
+import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
 
 /**
  * Trata dos eventos de toque de movimento

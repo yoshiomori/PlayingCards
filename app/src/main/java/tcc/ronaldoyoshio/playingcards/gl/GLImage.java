@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 
 /**
  * Abstração de dados usados para renderizar com a biblioteca gráfica.

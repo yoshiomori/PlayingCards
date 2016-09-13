@@ -6,9 +6,9 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import tcc.ronaldoyoshio.playingcards.activity.BackGround;
-import tcc.ronaldoyoshio.playingcards.activity.deck.MotionCardImage;
-import tcc.ronaldoyoshio.playingcards.activity.deck.OnSendCard;
+import tcc.ronaldoyoshio.playingcards.images.BackGround;
+import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.OnSendCard;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
 import tcc.ronaldoyoshio.playingcards.model.Hand;

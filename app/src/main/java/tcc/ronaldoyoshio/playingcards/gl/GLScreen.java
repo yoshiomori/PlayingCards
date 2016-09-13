@@ -6,7 +6,7 @@ import android.view.MotionEvent;
 
 import java.util.ArrayList;
 
-import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 
 public class GLScreen extends GLSurfaceView {
     private final GLRenderer renderer;

@@ -6,7 +6,7 @@ import android.opengl.Matrix;
 import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.R;
-import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 import tcc.ronaldoyoshio.playingcards.activity.clientConfig.ClientConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.serverConfig.ServerConfigActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GL;

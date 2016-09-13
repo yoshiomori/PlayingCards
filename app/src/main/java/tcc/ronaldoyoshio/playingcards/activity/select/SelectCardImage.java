@@ -1,7 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.activity.select;
 
-import tcc.ronaldoyoshio.playingcards.activity.CardImage;
-import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
+import tcc.ronaldoyoshio.playingcards.images.CardImage;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 
 /**
  * CardImage usado na seleção de cartas.

@@ -2,8 +2,11 @@ package tcc.ronaldoyoshio.playingcards.activity.deck;
 
 import java.util.ArrayList;
 
-import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
+import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.OnSendCard;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCardTouchEventHandler;
 
 /**
  * Desenhando uma carta de baralho

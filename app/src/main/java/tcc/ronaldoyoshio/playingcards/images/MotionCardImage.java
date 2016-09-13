@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.activity.deck;
+package tcc.ronaldoyoshio.playingcards.images;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import tcc.ronaldoyoshio.playingcards.activity.CardImage;
-import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.MotionTouchEventHandler;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.OnSendCard;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCardTouchEventHandler;
 
 /**
  * Abstração de carta que se move.

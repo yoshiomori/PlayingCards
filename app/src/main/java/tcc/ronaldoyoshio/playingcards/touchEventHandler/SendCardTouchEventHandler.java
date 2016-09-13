@@ -1,10 +1,10 @@
-package tcc.ronaldoyoshio.playingcards.activity.deck;
+package tcc.ronaldoyoshio.playingcards.touchEventHandler;
 
 import java.util.ArrayList;
 
-import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GLScreen;
+import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
 
 /**
  * Classe que lida com o evento de toque para enviar carta para outros jogadores.

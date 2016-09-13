@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.activity;
+package tcc.ronaldoyoshio.playingcards.touchEventHandler;
 
 import android.opengl.Matrix;
 import android.view.MotionEvent;

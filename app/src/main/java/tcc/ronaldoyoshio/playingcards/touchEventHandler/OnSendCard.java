@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.activity.deck;
+package tcc.ronaldoyoshio.playingcards.touchEventHandler;
 
 /**
  * Interface que possui o método que será chamado quando ocorrer o evento de enviar uma carta.

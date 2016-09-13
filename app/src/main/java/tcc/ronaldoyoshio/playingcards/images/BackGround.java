@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.activity;
+package tcc.ronaldoyoshio.playingcards.images;
 
 import tcc.ronaldoyoshio.playingcards.gl.GL;
 import tcc.ronaldoyoshio.playingcards.gl.GLImage;

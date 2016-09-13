@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.activity;
+package tcc.ronaldoyoshio.playingcards.images;
 
 import java.util.HashMap;
 import java.util.List;

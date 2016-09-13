@@ -2,7 +2,7 @@ package tcc.ronaldoyoshio.playingcards.activity.main;
 
 import android.os.Bundle;
 
-import tcc.ronaldoyoshio.playingcards.activity.BackGround;
+import tcc.ronaldoyoshio.playingcards.images.BackGround;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 
 /**
