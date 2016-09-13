@@ -1,5 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.activity.deck;
 
+import java.util.ArrayList;
+
 import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
 
@@ -9,8 +11,27 @@ import tcc.ronaldoyoshio.playingcards.gl.GLObject;
  */
 public class DeckCardImage extends MotionCardImage {
 
-    public DeckCardImage(final DeckActivity deckActivity) {
+    public DeckCardImage(
+            final DeckActivity deckActivity,
+            final ArrayList<String> playersName,
+            final ArrayList<Integer> directions
+    ) {
         super(deckActivity);
+
+        setOnSendCard(new OnSendCard() {
+            @Override
+            public void onSendCard(int pointerId, int x, int y) {
+                System.out.println(x + ", " + y);
+                SendCardTouchEventHandler sendCardTouchEventHandler = getSendCardTouchEventHandler();
+                String targetPlayerName = sendCardTouchEventHandler.computeNearestPlayerName(
+                        playersName,
+                        directions,
+                        x,
+                        y
+                );
+                System.out.println("Enviando para :" + targetPlayerName);
+            }
+        });
 
         /* Quando der duplo taps a carta vira */
         addTouchEventHandler(new TouchEventHandler() {

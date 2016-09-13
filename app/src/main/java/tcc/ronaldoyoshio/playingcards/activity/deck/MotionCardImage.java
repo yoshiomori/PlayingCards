@@ -17,7 +17,8 @@ import tcc.ronaldoyoshio.playingcards.gl.GLObject;
  * Created by mori on 11/09/16.
  */
 public class MotionCardImage extends CardImage {
-    private final MotionTouchEventHandler motionTouchEventHandler;
+    private MotionTouchEventHandler motionTouchEventHandler;
+    private SendCardTouchEventHandler sendCardTouchEventHandler;
     private List<GLObject> activeCards = Collections.synchronizedList(new ArrayList<GLObject>());
     private List<Integer> activeCardsIndex = Collections.synchronizedList(new ArrayList<Integer>());
     private List<String> activeCardsNames = Collections.synchronizedList(new ArrayList<String>());
@@ -27,7 +28,7 @@ public class MotionCardImage extends CardImage {
     public MotionCardImage(final GLActivity glActivity) {
 
         /* Tratamento de toque na borda */
-        SendCardTouchEventHandler sendCardTouchEventHandler = new SendCardTouchEventHandler(this, glActivity);
+        sendCardTouchEventHandler = new SendCardTouchEventHandler(this, glActivity);
         addTouchEventHandler(sendCardTouchEventHandler);
 
         /* Tratamento de toque na carta */
@@ -153,5 +154,9 @@ public class MotionCardImage extends CardImage {
 
     public MotionTouchEventHandler getMotionTouchEventHandler() {
         return motionTouchEventHandler;
+    }
+
+    public SendCardTouchEventHandler getSendCardTouchEventHandler() {
+        return sendCardTouchEventHandler;
     }
 }

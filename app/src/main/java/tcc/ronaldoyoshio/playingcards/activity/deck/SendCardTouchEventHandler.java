@@ -1,5 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.activity.deck;
 
+import java.util.ArrayList;
+
 import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GLScreen;
@@ -27,17 +29,35 @@ public class SendCardTouchEventHandler extends TouchEventHandler{
                     throw new RuntimeException("onSendCard deve ser configurado com o método" +
                             " SetOnSendCard");
                 }
-                motionCardImage.getOnSendCard().onSendCard((int)x, (int)y);
-
-                motionCardImage.getMotionTouchEventHandler().movePointerCard(
-                        pointerId,
-                        (float) getWidth() / 2 - x,
-                        (float) getHeight() / 2 - y
-                );
-
-                motionCardImage.getMotionTouchEventHandler().deactivateCards();
+                System.out.println("I will call onSendCard method");
+                motionCardImage.getOnSendCard().onSendCard(pointerId, (int)x, (int)y);
             }
         }
         return true;
+    }
+
+    public String computeNearestPlayerName(
+            ArrayList<String> playersName,
+            ArrayList<Integer> directions,
+            int x,
+            int y
+    ) {
+        float nearestDirection = Float.POSITIVE_INFINITY;
+        int bestIndex = -1;
+        System.out.println(directions);
+        System.out.println(x + ", " + y);
+        for (int index = 0; index < playersName.size(); index++) {
+            float direction = Math.abs(directions.get(index * 2) - x)
+                    + Math.abs(directions.get(index * 2 + 1) - y);
+            System.out.println(direction);
+            if (nearestDirection > direction) {
+                nearestDirection = direction;
+                bestIndex = index;
+            }
+        }
+        if (bestIndex == -1) {
+            return "";
+        }
+        return playersName.get(bestIndex);
     }
 }

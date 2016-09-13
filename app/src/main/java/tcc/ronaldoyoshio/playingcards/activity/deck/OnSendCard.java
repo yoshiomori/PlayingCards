@@ -5,5 +5,5 @@ package tcc.ronaldoyoshio.playingcards.activity.deck;
  * Created by mori on 11/09/16.
  */
 public interface OnSendCard {
-    void onSendCard(int x, int y);
+    void onSendCard(int pointerId, int x, int y);
 }

@@ -13,18 +13,15 @@ import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
 
 public class DeckActivity extends GLActivity {
     Hand cards;
-    CardImage cardImage = new DeckCardImage(this);
     private ArrayList<String> playersName;
     private ArrayList<Integer> directions;
+    CardImage cardImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         /* AddImage  deve Ser chamando antes de onCreate */
         addImage(new BackGround());
-        addImage(cardImage);
-
-        super.onCreate(savedInstanceState);
 
         Bundle extras = getIntent().getExtras();
 
@@ -42,16 +39,29 @@ public class DeckActivity extends GLActivity {
             }
             if (extras.containsKey("cards")) {
                 cards = new PlayingCards(extras.getStringArrayList("cards"));
+                System.out.println("Tem Cards");
+            }
+            else {
+                cards = new PlayingCards();
+                System.out.println("Não tem Cards");
+                System.out.println(cards != null ? "cards não é null" : "cards é null");
             }
         }
 
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey("cards")) {
                 cards = new PlayingCards(savedInstanceState.getStringArrayList("cards"));
+                System.out.println("Nem um nem outro Cards");
             }
-        } else {
-            cards = new PlayingCards();
         }
+
+        cardImage = new DeckCardImage(this, playersName, directions);
+        addImage(cardImage);
+
+        super.onCreate(savedInstanceState);
+
+
+        System.out.println(cards != null ? "cards não é null" : "cards é null");
         print(cards);
 //        cards.shuffle();
 //        deckCardImage.print(cards);

@@ -11,6 +11,7 @@ import tcc.ronaldoyoshio.playingcards.activity.deck.DeckActivity;
 import tcc.ronaldoyoshio.playingcards.activity.deck.MotionCardImage;
 import tcc.ronaldoyoshio.playingcards.activity.deck.OnSendCard;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
+import tcc.ronaldoyoshio.playingcards.gl.GLObject;
 import tcc.ronaldoyoshio.playingcards.model.Hand;
 
 /**
@@ -23,11 +24,11 @@ public class TouchConfigActivity extends GLActivity{
     protected void onCreate(Bundle savedInstanceState) {
         /* AddImage deve ser chamado antes do onCreate */
         addImage(new BackGround());
-        MotionCardImage card = new MotionCardImage(this);
+        final MotionCardImage motionCardImage = new MotionCardImage(this);
         Hand hand = new Hand();
         hand.add("Back");
-        card.setCards(hand);
-        addImage(card);
+        motionCardImage.setCards(hand);
+        addImage(motionCardImage);
 
         Bundle extras = getIntent().getExtras();
         final ArrayList<String> playersName;
@@ -53,9 +54,11 @@ public class TouchConfigActivity extends GLActivity{
                 /* Quando o usuário especifica a direção, empurrando a carta para a borda, o método
                  * onSendCard é chamado */
                 final ArrayList<Integer> directions = new ArrayList<>();
-                card.setOnSendCard(new OnSendCard(){
+                motionCardImage.setOnSendCard(new OnSendCard(){
                     @Override
-                    public void onSendCard(int x, int y) {
+                    public void onSendCard(int pointerId, int x, int y) {
+                        System.out.println("onSendCard");
+
                         directions.add(x);
                         directions.add(y);
                         currentNameImage[0].disable();
@@ -78,6 +81,11 @@ public class TouchConfigActivity extends GLActivity{
                         else {
                             currentNameImage[0] = nameImageQueue.remove(0);
                             currentNameImage[0].enable();
+
+
+                            GLObject card = motionCardImage.getPointerCards().get(pointerId);
+                            card.set("position", 0, 0);
+                            motionCardImage.getMotionTouchEventHandler().deactivateCards();
                         }
                     }
                 });
