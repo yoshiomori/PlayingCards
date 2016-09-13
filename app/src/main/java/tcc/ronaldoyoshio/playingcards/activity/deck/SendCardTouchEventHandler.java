@@ -26,6 +26,8 @@ public class SendCardTouchEventHandler extends TouchEventHandler{
             if (!motionCardImage.getPointerCards().isEmpty() && dx * dx + dy * dy > 420f) {
                 System.out.println("Carta deve ser enviada!");
                 motionCardImage.getOnSendCard().onSendCard((int)x, (int)y);
+
+                motionCardImage.getMotionTouchEventHandler().movePointerCard(pointerId, (float) getWidth() / 2 - x, (float) getHeight() / 2 - y);
             }
         }
         return super.onMove(pointerId, x, y, dx, dy);
