@@ -29,29 +29,21 @@ public class DeckActivity extends GLActivity {
             if (extras.containsKey("playersName")) {
             /* Recuperando a configuração do TouchConfigActivity, activity anterior */
                 playersName = extras.getStringArrayList("playersName");
-
-                System.out.println(playersName);
             }
             if (extras.containsKey("directions")) {
                 directions = extras.getIntegerArrayList("directions");
-
-                System.out.println(directions);
             }
             if (extras.containsKey("cards")) {
                 cards = new PlayingCards(extras.getStringArrayList("cards"));
-                System.out.println("Tem Cards");
             }
             else {
                 cards = new PlayingCards();
-                System.out.println("Não tem Cards");
-                System.out.println(cards != null ? "cards não é null" : "cards é null");
             }
         }
 
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey("cards")) {
                 cards = new PlayingCards(savedInstanceState.getStringArrayList("cards"));
-                System.out.println("Nem um nem outro Cards");
             }
         }
 
@@ -60,8 +52,6 @@ public class DeckActivity extends GLActivity {
 
         super.onCreate(savedInstanceState);
 
-
-        System.out.println(cards != null ? "cards não é null" : "cards é null");
         print(cards);
 //        cards.shuffle();
 //        deckCardImage.print(cards);

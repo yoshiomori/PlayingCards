@@ -38,7 +38,7 @@ public class TouchConfigActivity extends GLActivity{
                 /* Configurando a direção para cada jogador */
                 addImage(new NameImage("Arraste a carta até a borda.", 100, 0, 2f / 3f));
                 addImage(new NameImage("Em direção:", 100, 0, 0));
-                Iterator<String> playerName = playersName.iterator();
+                final Iterator<String> playerName = playersName.iterator();
                 final NameImage[] currentNameImage = {
                         new NameImage(playerName.next(), 100, 0, -2f / 3f)
                 };
@@ -57,11 +57,11 @@ public class TouchConfigActivity extends GLActivity{
                 motionCardImage.setOnSendCard(new OnSendCard(){
                     @Override
                     public void onSendCard(int pointerId, int x, int y) {
-                        System.out.println("onSendCard");
-
-                        directions.add(x);
-                        directions.add(y);
-                        currentNameImage[0].disable();
+                        if (directions.size() < playersName.size() * 2) {
+                            directions.add(x);
+                            directions.add(y);
+                            currentNameImage[0].disable();
+                        }
 
                         /* Verificando se a direção de todos os jogadores já foi configurado */
                         if (nameImageQueue.isEmpty()) {
@@ -79,6 +79,7 @@ public class TouchConfigActivity extends GLActivity{
                             finish();
                         }
                         else {
+
                             currentNameImage[0] = nameImageQueue.remove(0);
                             currentNameImage[0].enable();
 

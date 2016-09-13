@@ -29,7 +29,6 @@ public class SendCardTouchEventHandler extends TouchEventHandler{
                     throw new RuntimeException("onSendCard deve ser configurado com o método" +
                             " SetOnSendCard");
                 }
-                System.out.println("I will call onSendCard method");
                 motionCardImage.getOnSendCard().onSendCard(pointerId, (int)x, (int)y);
             }
         }
@@ -44,12 +43,9 @@ public class SendCardTouchEventHandler extends TouchEventHandler{
     ) {
         float nearestDirection = Float.POSITIVE_INFINITY;
         int bestIndex = -1;
-        System.out.println(directions);
-        System.out.println(x + ", " + y);
         for (int index = 0; index < playersName.size(); index++) {
             float direction = Math.abs(directions.get(index * 2) - x)
                     + Math.abs(directions.get(index * 2 + 1) - y);
-            System.out.println(direction);
             if (nearestDirection > direction) {
                 nearestDirection = direction;
                 bestIndex = index;

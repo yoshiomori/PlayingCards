@@ -21,7 +21,6 @@ public class DeckCardImage extends MotionCardImage {
         setOnSendCard(new OnSendCard() {
             @Override
             public void onSendCard(int pointerId, int x, int y) {
-                System.out.println(x + ", " + y);
                 SendCardTouchEventHandler sendCardTouchEventHandler = getSendCardTouchEventHandler();
                 String targetPlayerName = sendCardTouchEventHandler.computeNearestPlayerName(
                         playersName,
@@ -29,7 +28,25 @@ public class DeckCardImage extends MotionCardImage {
                         x,
                         y
                 );
+
                 System.out.println("Enviando para :" + targetPlayerName);
+
+                for (GLObject card : getActiveCards()) {
+                    if (card == getPointerCards().get(pointerId)) {
+                        System.out.println("Active Cards contém pointer Cards");
+                    }
+                }
+                if (getActiveCards().isEmpty()) {
+                    getCards().remove(getObjects().indexOf(getPointerCards().get(pointerId)));
+                    getObjects().remove(getPointerCards().get(pointerId));
+                }
+                else {
+                    for (GLObject card : getActiveCards()) {
+                        getCards().remove(getObjects().indexOf(card));
+                    }
+                    getObjects().removeAll(getActiveCards());
+                }
+                getMotionTouchEventHandler().deactivateCards();
             }
         });
 
