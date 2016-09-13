@@ -1,6 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.activity.deck;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 
 import tcc.ronaldoyoshio.playingcards.activity.BackGround;
 import tcc.ronaldoyoshio.playingcards.activity.CardImage;
@@ -52,5 +53,14 @@ public class DeckActivity extends GLActivity {
     protected void onSaveInstanceState(Bundle outState) {
         outState.putStringArrayList("cards", cards);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK))
+        {
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

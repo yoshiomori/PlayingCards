@@ -1,11 +1,14 @@
 package tcc.ronaldoyoshio.playingcards.activity.clientConfig;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import tcc.ronaldoyoshio.playingcards.activity.BackGround;
+import tcc.ronaldoyoshio.playingcards.activity.deck.DeckActivity;
 import tcc.ronaldoyoshio.playingcards.activity.deck.MotionCardImage;
 import tcc.ronaldoyoshio.playingcards.activity.deck.OnSendCard;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
@@ -63,8 +66,23 @@ public class TouchConfigActivity extends GLActivity{
                         /* Verificando se a direção de todos os jogadores já foi configurado */
                         if (nameImageQueue.isEmpty()) {
                             /*
-                            TODO Se todos os nomes já foram configurados, então iremos chamar a próxima activity.
+                            TODO
+                             Se todos os nomes já foram configurados, então iremos chamar a
+                             próxima activity.
                              */
+                            Intent intent = new Intent(
+                                    TouchConfigActivity.this,
+                                    DeckActivity.class
+                            );
+                            intent.putStringArrayListExtra(
+                                    "playersName",
+                                    new ArrayList<>(
+                                            Arrays.asList(new String[]{"João", "Maria", "Bruxa"})
+                                    )
+                            );
+                            intent.putIntegerArrayListExtra("directions", directions);
+                            TouchConfigActivity.this.startActivity(intent);
+                            finish();
                         }
                         else {
                             currentNameImage[0] = nameImageQueue.remove(0);

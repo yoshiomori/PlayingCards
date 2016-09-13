@@ -6,15 +6,15 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import tcc.ronaldoyoshio.playingcards.activity.Config;
+import tcc.ronaldoyoshio.playingcards.activity.ConfigActivity;
 
 /**
  * Configuração do cliente.
  * Created by mori on 27/08/16.
  */
-public class ClientConfig extends Config {
-    public ClientConfig() {
-        final ClientConfig clientConfig = this;
+public class ClientConfigActivity extends ConfigActivity {
+    public ClientConfigActivity() {
+        final ClientConfigActivity clientConfig = this;
         putItem("Pronto", new View.OnClickListener() {
             @Override
             public void onClick(View v) {

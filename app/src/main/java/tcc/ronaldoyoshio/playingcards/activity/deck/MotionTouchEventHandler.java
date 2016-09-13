@@ -286,5 +286,6 @@ public class MotionTouchEventHandler extends TouchEventHandler {
         motionCardImage.getActiveCards().clear();
         motionCardImage.getActiveCardsIndex().clear();
         motionCardImage.getActiveCardsNames().clear();
+        motionCardImage.getPointerCards().clear();
     }
 }

@@ -21,9 +21,9 @@ public class SendCardTouchEventHandler extends TouchEventHandler{
     public boolean onMove(int pointerId, float x, float y, float dx, float dy) {
         GLScreen screen = glActivity.getScreen();
         if(screen.getHeight() - y < 50 || y < 50 || screen.getWidth() - x < 50 || x < 50) {
-                    /* Se a carta for empurrada rápido o suficiente para a borda, então a carta será enviada */
+            /* Se a carta for empurrada rápido o suficiente para a borda, então a carta será enviada */
             System.out.println(dx * dx + dy * dy);
-            if (!motionCardImage.getPointerCards().isEmpty() && dx * dx + dy * dy > 400f) {
+            if (!motionCardImage.getPointerCards().isEmpty()) {
                 System.out.println("Carta deve ser enviada!");
                 motionCardImage.getOnSendCard().onSendCard((int)x, (int)y);
 
@@ -36,6 +36,6 @@ public class SendCardTouchEventHandler extends TouchEventHandler{
                 motionCardImage.getMotionTouchEventHandler().deactivateCards();
             }
         }
-        return super.onMove(pointerId, x, y, dx, dy);
+        return true;
     }
 }

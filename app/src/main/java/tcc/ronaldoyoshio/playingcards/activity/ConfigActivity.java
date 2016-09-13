@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * Activity para configuração
  * Created by mori on 27/08/16.
  */
-public class Config extends ListActivity {
+public class ConfigActivity extends ListActivity {
     ArrayList<String> items = new ArrayList<>();
     ArrayList<View.OnClickListener> actions = new ArrayList<>();
     @Override

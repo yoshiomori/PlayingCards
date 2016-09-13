@@ -24,9 +24,9 @@
         <activity android:name=".activity.deck.DeckActivity" />
         <activity android:name=".activity.select.SelectCardsActivity" />
         <activity android:name=".activity.hand.HandActivity" />
-        <activity android:name=".activity.serverConfig.ServerConfig" />
-        <activity android:name=".activity.clientConfig.ClientConfig" />
-        <activity android:name=".activity.clientConfig.TouchConfigActivity" />
+        <activity android:name=".activity.serverConfig.ServerConfigActivity" />
+        <activity android:name=".activity.clientConfig.ClientConfigActivity" />
+        <activity android:name=".activity.clientConfig.TouchConfigActivity" android:noHistory="true"/>
 
     </application>
 
