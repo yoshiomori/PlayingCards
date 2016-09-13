@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import tcc.ronaldoyoshio.playingcards.activity.ConfigActivity;
+import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
 import tcc.ronaldoyoshio.playingcards.activity.touchConfig.TouchConfigActivity;
 
 /**
@@ -20,8 +21,13 @@ public class ClientConfigActivity extends ConfigActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(clientConfig, TouchConfigActivity.class);
-                intent.putStringArrayListExtra("playersName",
-                        new ArrayList<>(Arrays.asList(new String[]{"João", "Maria", "Bruxa", "servidor(mesa)"})));
+                intent.putStringArrayListExtra(
+                        "playersName",
+                        new ArrayList<>(Arrays.asList(
+                                new String[]{"Maria", "Bruxa", "servidor(mesa)"}
+                        ))
+                );
+                intent.putExtra("nextActivity", HandActivity.class);
                 clientConfig.startActivity(intent);
             }
         });

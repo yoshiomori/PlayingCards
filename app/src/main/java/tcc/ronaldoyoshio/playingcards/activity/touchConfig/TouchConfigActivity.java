@@ -9,7 +9,6 @@ import java.util.Iterator;
 import tcc.ronaldoyoshio.playingcards.activity.BackGround;
 import tcc.ronaldoyoshio.playingcards.activity.deck.MotionCardImage;
 import tcc.ronaldoyoshio.playingcards.activity.deck.OnSendCard;
-import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
 import tcc.ronaldoyoshio.playingcards.model.Hand;
@@ -19,6 +18,7 @@ import tcc.ronaldoyoshio.playingcards.model.Hand;
  * Created by mori on 10/09/16.
  */
 public class TouchConfigActivity extends GLActivity{
+    Class nextActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +31,10 @@ public class TouchConfigActivity extends GLActivity{
         addImage(motionCardImage);
 
         Bundle extras = getIntent().getExtras();
+        if (extras.containsKey("nextActivity")) {
+            nextActivity = (Class) extras.get("nextActivity");
+        }
+
         final ArrayList<String> playersName;
         if (extras.containsKey("playersName")) {
             playersName = extras.getStringArrayList("playersName");
@@ -70,7 +74,7 @@ public class TouchConfigActivity extends GLActivity{
                              */
                                 Intent intent = new Intent(
                                         TouchConfigActivity.this,
-                                        HandActivity.class
+                                        nextActivity
                                 );
                                 intent.putStringArrayListExtra("playersName", playersName);
                                 intent.putIntegerArrayListExtra("directions", directions);
