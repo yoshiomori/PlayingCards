@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import tcc.ronaldoyoshio.playingcards.activity.BackGround;
-import tcc.ronaldoyoshio.playingcards.activity.deck.DeckActivity;
 import tcc.ronaldoyoshio.playingcards.activity.deck.MotionCardImage;
 import tcc.ronaldoyoshio.playingcards.activity.deck.OnSendCard;
+import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
 import tcc.ronaldoyoshio.playingcards.model.Hand;
@@ -70,7 +70,7 @@ public class TouchConfigActivity extends GLActivity{
                              */
                                 Intent intent = new Intent(
                                         TouchConfigActivity.this,
-                                        DeckActivity.class
+                                        HandActivity.class
                                 );
                                 intent.putStringArrayListExtra("playersName", playersName);
                                 intent.putIntegerArrayListExtra("directions", directions);
@@ -78,7 +78,6 @@ public class TouchConfigActivity extends GLActivity{
                                 finish();
                             }
                             else {
-
                                 currentNameImage[0] = nameImageQueue.remove(0);
                                 currentNameImage[0].enable();
 

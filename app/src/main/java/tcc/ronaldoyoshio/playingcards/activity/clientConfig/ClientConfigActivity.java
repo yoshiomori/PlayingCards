@@ -20,7 +20,7 @@ public class ClientConfigActivity extends ConfigActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(clientConfig, TouchConfigActivity.class);
                 intent.putStringArrayListExtra("playersName",
-                        new ArrayList<>(Arrays.asList(new String[]{"João", "Maria", "Bruxa"})));
+                        new ArrayList<>(Arrays.asList(new String[]{"João", "Maria", "Bruxa", "servidor(mesa)"})));
                 clientConfig.startActivity(intent);
             }
         });
