@@ -11,7 +11,6 @@ import tcc.ronaldoyoshio.playingcards.activity.CardImage;
 import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
-import tcc.ronaldoyoshio.playingcards.gl.GLScreen;
 
 /**
  * Abstração de carta que se move.
@@ -27,21 +26,8 @@ public class MotionCardImage extends CardImage {
     public MotionCardImage(final GLActivity glActivity) {
 
         /* Tratamento de toque na borda */
-        addTouchEventHandler(new TouchEventHandler(){
-            @Override
-            public boolean onMove(int pointerId, float x, float y, float dx, float dy) {
-                GLScreen screen = glActivity.getScreen();
-                if(screen.getHeight() - y < 50 || y < 50 || screen.getWidth() - x < 50 || x < 50) {
-                    /* Se a carta for empurrada rápido o suficiente para a borda, então a carta será enviada */
-                    System.out.println(dx * dx + dy * dy);
-                    if (!pointerCards.isEmpty() && dx * dx + dy * dy > 420f) {
-                        System.out.println("Carta deve ser enviada!");
-                        onSendCard.onSendCard((int)x, (int)y);
-                    }
-                }
-                return super.onMove(pointerId, x, y, dx, dy);
-            }
-        });
+        SendCardTouchEventHandler sendCardTouchEventHandler = new SendCardTouchEventHandler(this, glActivity);
+        addTouchEventHandler(sendCardTouchEventHandler);
 
         /* Tratamento de toque na carta */
         addTouchEventHandler(new TouchEventHandler() {
@@ -167,5 +153,9 @@ public class MotionCardImage extends CardImage {
 
     public List<String> getActiveCardsNames() {
         return activeCardsNames;
+    }
+
+    public OnSendCard getOnSendCard() {
+        return onSendCard;
     }
 }
