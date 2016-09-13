@@ -14,7 +14,7 @@ import tcc.ronaldoyoshio.playingcards.model.Hand;
  * Created by mori on 30/07/16.
  */
 public class CardImage extends GLImage {
-    public int totalCards;
+    public int totalCards; /* Número total de cartas necessário para poder embaralhar */
     public static final int SIDEBYSIDE = 1;
     public static final int CENTERED = 0;
     protected CardData cardData = new CardData();
