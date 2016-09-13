@@ -61,32 +61,32 @@ public class TouchConfigActivity extends GLActivity{
                             directions.add(x);
                             directions.add(y);
                             currentNameImage[0].disable();
-                        }
 
                         /* Verificando se a direção de todos os jogadores já foi configurado */
-                        if (nameImageQueue.isEmpty()) {
+                            if (nameImageQueue.isEmpty()) {
                             /*
                              Se todos os nomes já foram configurados, então iremos chamar a
                              próxima activity.
                              */
-                            Intent intent = new Intent(
-                                    TouchConfigActivity.this,
-                                    DeckActivity.class
-                            );
-                            intent.putStringArrayListExtra("playersName", playersName);
-                            intent.putIntegerArrayListExtra("directions", directions);
-                            TouchConfigActivity.this.startActivity(intent);
-                            finish();
-                        }
-                        else {
+                                Intent intent = new Intent(
+                                        TouchConfigActivity.this,
+                                        DeckActivity.class
+                                );
+                                intent.putStringArrayListExtra("playersName", playersName);
+                                intent.putIntegerArrayListExtra("directions", directions);
+                                TouchConfigActivity.this.startActivity(intent);
+                                finish();
+                            }
+                            else {
 
-                            currentNameImage[0] = nameImageQueue.remove(0);
-                            currentNameImage[0].enable();
+                                currentNameImage[0] = nameImageQueue.remove(0);
+                                currentNameImage[0].enable();
 
 
-                            GLObject card = motionCardImage.getPointerCards().get(pointerId);
-                            card.set("position", 0, 0);
-                            motionCardImage.getMotionTouchEventHandler().deactivateCards();
+                                GLObject card = motionCardImage.getPointerCards().get(pointerId);
+                                card.set("position", 0, 0);
+                                motionCardImage.getMotionTouchEventHandler().deactivateCards();
+                            }
                         }
                     }
                 });
