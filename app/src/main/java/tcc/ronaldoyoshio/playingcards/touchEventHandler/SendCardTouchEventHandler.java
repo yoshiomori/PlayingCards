@@ -24,7 +24,7 @@ public class SendCardTouchEventHandler extends TouchEventHandler{
         GLScreen screen = glActivity.getScreen();
         if(screen.getHeight() - y < 50 || y < 50 || screen.getWidth() - x < 50 || x < 50) {
             /* Se a carta for empurrada rápido o suficiente para a borda, então a carta será enviada */
-            if (!motionCardImage.getPointerCards().isEmpty()) {
+            if (motionCardImage.getPointerCards().containsKey(pointerId)) {
                 if (motionCardImage.getOnSendCard() == null) {
                     throw new RuntimeException("onSendCard deve ser configurado com o método" +
                             " SetOnSendCard");
