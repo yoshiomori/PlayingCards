@@ -161,4 +161,13 @@ public class MotionCardImage extends CardImage {
     public SendCardTouchEventHandler getSendCardTouchEventHandler() {
         return sendCardTouchEventHandler;
     }
+
+    public void removeCardsAtPointer(int pointerId) {
+        if (getActiveCards().isEmpty()) {
+            removeCard(getPointerCards().get(pointerId));
+        }
+        else {
+            removeAllCards(getActiveCards());
+        }
+    }
 }

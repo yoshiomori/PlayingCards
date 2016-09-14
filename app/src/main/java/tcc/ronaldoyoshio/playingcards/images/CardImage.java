@@ -200,6 +200,18 @@ public class CardImage extends GLImage {
         return totalCards;
     }
 
+    public void removeAllCards(List<GLObject> cards) {
+        for (GLObject card : cards) {
+            getCards().remove(getObjects().indexOf(card));
+        }
+        getObjects().removeAll(cards);
+    }
+
+    public void removeCard(GLObject card) {
+        getCards().remove(getObjects().indexOf(card));
+        getObjects().remove(card);
+    }
+
     public class CardData {
         private HashMap<String, float[]> cardImage = new HashMap<>();
         private float[] array;

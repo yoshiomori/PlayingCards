@@ -35,7 +35,7 @@ public abstract class GLImage {
     private Resources resources = null;
     private int bitmapId = -1;
     private ArrayList<String> objectUniformNames = new ArrayList<>();
-    private List<GLObject> objects = Collections.synchronizedList(new ArrayList<GLObject>());
+    private final List<GLObject> objects = Collections.synchronizedList(new ArrayList<GLObject>());
     private ArrayList<TouchEventHandler> touchEventHandlers = new ArrayList<>();
     private boolean isBlendEnable = false;
     private boolean isEnable = true;
@@ -287,13 +287,15 @@ public abstract class GLImage {
         textures.bindTextures(textureIndex);
         defineAttributes();
         defineUniforms();
-        for (GLObject object :
-                objects) {
-            object.bind(uniforms, objectUniformNames);
-            draw();
-        }
-        if (objects.isEmpty() && objectUniformNames.isEmpty()) {
-            draw();
+        synchronized (objects) {
+            for (GLObject object :
+                    objects) {
+                object.bind(uniforms, objectUniformNames);
+                draw();
+            }
+            if (objects.isEmpty() && objectUniformNames.isEmpty()) {
+                draw();
+            }
         }
     }
 
