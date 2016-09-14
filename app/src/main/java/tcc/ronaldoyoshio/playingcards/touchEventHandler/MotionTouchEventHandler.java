@@ -100,6 +100,18 @@ public class MotionTouchEventHandler extends TouchEventHandler {
 
     @Override
     public boolean onMove(int pointerId, float x, float y, float dx, float dy) {
+        if (motionCardImage.getPointerCards().isEmpty()
+                && motionCardImage.getActiveCards().isEmpty()) {
+            return false;
+        }
+
+        if (motionCardImage.getPointerCards().containsKey(pointerId)
+                && motionCardImage.getActiveCards().isEmpty()) {
+            movePointerCard(pointerId, dx, dy);
+            return true;
+        }
+
+        synchronized (motionCardImage.getActiveCards()) {
         List<GLObject> activeCards = motionCardImage.getActiveCards();
         // Movendo todas as cartas ativas
         if (!activeCards.isEmpty() && pointerId == 0
@@ -112,18 +124,13 @@ public class MotionTouchEventHandler extends TouchEventHandler {
             trace.add((int) dy);
 
             // Cada uma das cartas ativas está sendo atualizado
-            for (GLObject card :
-                    activeCards) {
-                setProjectionCoords(dx, dy, getWidth(), getHeight());
-                positionUpdate(card.getFloats("position"));
+                for (GLObject card :
+                        activeCards) {
+                    setProjectionCoords(dx, dy, getWidth(), getHeight());
+                    positionUpdate(card.getFloats("position"));
+                }
             }
-            return true;
         }
-
-        if (motionCardImage.getPointerCards().isEmpty()) {
-            return false;
-        }
-        movePointerCard(pointerId, dx, dy);
 
         return true;
     }
