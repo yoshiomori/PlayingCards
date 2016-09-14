@@ -201,15 +201,21 @@ public class CardImage extends GLImage {
     }
 
     public void removeAllCards(List<GLObject> cards) {
-        for (GLObject card : cards) {
-            getCards().remove(getObjects().indexOf(card));
+        final List<GLObject> objects = getObjects();
+        if (objects.containsAll(cards)) {
+            for (GLObject card : cards) {
+                getCards().remove(objects.indexOf(card));
+            }
+            objects.removeAll(cards);
         }
-        getObjects().removeAll(cards);
     }
 
     public void removeCard(GLObject card) {
-        getCards().remove(getObjects().indexOf(card));
-        getObjects().remove(card);
+        final List<GLObject> cards = getObjects();
+        if (cards.contains(card)) {
+            getCards().remove(cards.indexOf(card));
+            cards.remove(card);
+        }
     }
 
     public class CardData {
