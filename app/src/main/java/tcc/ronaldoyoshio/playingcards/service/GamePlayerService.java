@@ -9,6 +9,8 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -80,5 +82,33 @@ public class GamePlayerService extends GameService {
     @Override
     protected String getTag() {
         return this.TAG;
+    }
+
+    class GamePlayerIncomingHandler extends GameService.IncomingHandler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.arg1) {
+                case MSG_CONNECT_TO_DEVICE:
+                    String address = (String) msg.obj;
+                    if (discoveredServices.containsKey(address)) {
+                        WiFiP2pDiscoveredService service = discoveredServices.get(address);
+                        Log.d(getTag(), "Conectando com " + service.getName());
+                        connectP2p(service);
+                    }
+                    else {
+
+                    }
+                    break;
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+    }
+
+    final Messenger mMessenger = new Messenger(new GamePlayerIncomingHandler());
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return mMessenger.getBinder();
     }
 }

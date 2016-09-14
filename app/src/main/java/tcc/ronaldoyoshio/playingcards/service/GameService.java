@@ -34,6 +34,7 @@ import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 public abstract class GameService extends Service implements ConnectionInfoListener {
     public static final int MSG_CLIENT = 0;
     public static final int MSG_WIFI_DIRECT_SERVICE = 1;
+    public static final int MSG_CONNECT_TO_DEVICE = 2;
     protected static final String SERVICE_REG_TYPE = "_presence._tcp";
     protected static final String LISTEN_PORT = "4545";
 
@@ -177,13 +178,6 @@ public abstract class GameService extends Service implements ConnectionInfoListe
                     super.handleMessage(msg);
             }
         }
-    }
-
-    final Messenger mMessenger = new Messenger(new IncomingHandler());
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mMessenger.getBinder();
     }
 
     protected void sendMessageToActivity(Message msg) {

@@ -43,6 +43,8 @@ public abstract class Config extends ListActivity {
         super.onStart();
     }
 
+    protected abstract Messenger getThisMessenger();
+
     protected void putItem(String item, View.OnClickListener action){
         items.add(item);
         actions.add(action);
@@ -54,7 +56,7 @@ public abstract class Config extends ListActivity {
             mBound = true;
             Message msg = Message.obtain();
             msg.arg1 = GameService.MSG_CLIENT;
-            msg.replyTo = mMessenger;
+            msg.replyTo = getThisMessenger();
             sendMessageToService(msg);
         }
 
@@ -88,8 +90,6 @@ public abstract class Config extends ListActivity {
             }
         }
     }
-
-    final Messenger mMessenger = new Messenger(new IncomingHandler());
 
     public void sendMessageToService(Message msg) {
         if (!mBound) return;
