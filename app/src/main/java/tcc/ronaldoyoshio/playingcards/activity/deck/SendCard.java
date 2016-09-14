@@ -34,6 +34,5 @@ public class SendCard implements OnSendCard {
 
         System.out.println("Enviando para :" + targetPlayerName);
         cardImage.removeCardsAtPointer(pointerId);
-        cardImage.getMotionTouchEventHandler().deactivateCards();
     }
 }

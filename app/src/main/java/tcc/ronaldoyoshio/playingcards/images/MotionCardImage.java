@@ -169,5 +169,6 @@ public class MotionCardImage extends CardImage {
         else {
             removeAllCards(getActiveCards());
         }
+        getMotionTouchEventHandler().deactivateCards();
     }
 }
