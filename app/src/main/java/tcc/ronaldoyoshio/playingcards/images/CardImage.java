@@ -297,4 +297,13 @@ public class CardImage extends GLImage {
             return cardImage.get(cardName);
         }
     }
+
+    public void addCard(String cardName) {
+        cards.add(cardName);
+        GLObject object = new GLObject();
+        object.set("position", 0, 0);
+        object.set("card_coord", cardData.getCardCoord(cardName));
+        object.set("blue_tone", 0);
+        getObjects().add(object);
+    }
 }
