@@ -2,7 +2,7 @@ package tcc.ronaldoyoshio.playingcards.activity.select;
 
 import android.os.Bundle;
 
-import tcc.ronaldoyoshio.playingcards.images.BackGround;
+import tcc.ronaldoyoshio.playingcards.images.BackGroundImage;
 import tcc.ronaldoyoshio.playingcards.images.CardImage;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.model.Hand;
@@ -20,7 +20,7 @@ public class SelectCardsActivity extends GLActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         /* AddImage  deve Ser chamando antes de onCreate */
-        addImage(new BackGround());
+        addImage(new BackGroundImage());
         addImage(selectCardImage);
         addImage(new SelectButtonImage(this, playingCards, getIntent().getExtras()));
 

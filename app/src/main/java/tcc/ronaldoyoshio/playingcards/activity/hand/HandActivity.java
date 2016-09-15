@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.activity.deck.SendCard;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
-import tcc.ronaldoyoshio.playingcards.images.BackGround;
+import tcc.ronaldoyoshio.playingcards.images.BackGroundImage;
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
 
 public class HandActivity extends GLActivity {
@@ -16,7 +16,7 @@ public class HandActivity extends GLActivity {
         ArrayList<Integer> directions = null;
 
         /* AddImage  deve Ser chamando antes de onCreate */
-        addImage(new BackGround());
+        addImage(new BackGroundImage());
 
         Bundle extras = getIntent().getExtras();
 

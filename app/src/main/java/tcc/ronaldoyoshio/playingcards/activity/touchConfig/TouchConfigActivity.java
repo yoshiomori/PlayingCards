@@ -6,7 +6,7 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import tcc.ronaldoyoshio.playingcards.images.BackGround;
+import tcc.ronaldoyoshio.playingcards.images.BackGroundImage;
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.OnSendCard;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
@@ -23,7 +23,7 @@ public class TouchConfigActivity extends GLActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         /* AddImage deve ser chamado antes do onCreate */
-        addImage(new BackGround());
+        addImage(new BackGroundImage());
         final MotionCardImage motionCardImage = new MotionCardImage(this);
         Hand hand = new Hand();
         hand.add("Back");

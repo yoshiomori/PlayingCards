@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
-import tcc.ronaldoyoshio.playingcards.images.BackGround;
+import tcc.ronaldoyoshio.playingcards.images.BackGroundImage;
 import tcc.ronaldoyoshio.playingcards.images.CardImage;
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
 import tcc.ronaldoyoshio.playingcards.model.Hand;
@@ -24,7 +24,7 @@ public class DeckActivity extends GLActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         /* AddImage  deve Ser chamando antes de onCreate */
-        addImage(new BackGround());
+        addImage(new BackGroundImage());
 
         Bundle extras = getIntent().getExtras();
 
