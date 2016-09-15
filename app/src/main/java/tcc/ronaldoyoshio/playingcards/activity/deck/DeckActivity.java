@@ -125,6 +125,7 @@ public class DeckActivity extends GLActivity {
 
     private void print(Hand cards) {
         cardImage.setCards(cards);
+        cardImage.setTotalCards(cards.size());
         cardImage.setMode(CardImage.CENTERED);
         getScreen().requestRender();
     }

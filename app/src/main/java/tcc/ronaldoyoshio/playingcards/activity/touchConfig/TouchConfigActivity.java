@@ -28,6 +28,7 @@ public class TouchConfigActivity extends GLActivity{
         Hand hand = new Hand();
         hand.add("Back");
         motionCardImage.setCards(hand);
+        motionCardImage.setTotalCards(hand.size());
         addImage(motionCardImage);
 
         Bundle extras = getIntent().getExtras();

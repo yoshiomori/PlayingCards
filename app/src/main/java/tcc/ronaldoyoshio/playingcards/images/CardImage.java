@@ -126,7 +126,6 @@ public class CardImage extends GLImage {
 
     public void setCards(Hand cards) {
         this.cards = cards;
-        totalCards = cards.size();
     }
 
     public void setMode(int mode) {
@@ -220,6 +219,10 @@ public class CardImage extends GLImage {
 
     public CardData getCardData() {
         return cardData;
+    }
+
+    public void setTotalCards(int totalCards) {
+        this.totalCards = totalCards;
     }
 
     public class CardData {

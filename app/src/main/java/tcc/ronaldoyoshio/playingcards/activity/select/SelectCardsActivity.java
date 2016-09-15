@@ -30,6 +30,7 @@ public class SelectCardsActivity extends GLActivity {
 
     private void print(Hand playingCards) {
         selectCardImage.setCards(playingCards);
+        selectCardImage.setTotalCards(playingCards.size());
         selectCardImage.setMode(CardImage.SIDEBYSIDE);
         getScreen().requestRender();
     }
