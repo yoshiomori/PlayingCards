@@ -1,0 +1,59 @@
+package tcc.ronaldoyoshio.playingcards.activity.config.server;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Message;
+import android.os.Messenger;
+import android.view.View;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
+import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
+import tcc.ronaldoyoshio.playingcards.activity.config.touch.TouchConfigActivity;
+import tcc.ronaldoyoshio.playingcards.service.GameServerService;
+
+/**
+ * Activity para configurar o servidor
+ * Created by mori on 26/08/16.
+ */
+public class ServerConfigActivity extends ConfigActivity {
+    final Messenger mMessenger = new Messenger(new ServerConfigIncomingHandler());
+
+    public ServerConfigActivity() {
+        putItem("Pronto", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ServerConfigActivity.this, TouchConfigActivity.class);
+                intent.putStringArrayListExtra(
+                        "playersName",
+                        new ArrayList<>(Arrays.asList(
+                                new String[]{"João", "Maria", "Bruxa"}
+                        ))
+                );
+                intent.putExtra("nextActivity", SelectCardsActivity.class);
+                ServerConfigActivity.this.startActivity(intent);
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(new Intent(this, GameServerService.class), mConnection,
+                Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected Messenger getThisMessenger() {
+        return mMessenger;
+    }
+
+    class ServerConfigIncomingHandler extends ConfigActivity.IncomingHandler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+        }
+    }
+}

@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import tcc.ronaldoyoshio.playingcards.activity.config.Config;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 import tcc.ronaldoyoshio.playingcards.model.web.server.ServerInterface;
 

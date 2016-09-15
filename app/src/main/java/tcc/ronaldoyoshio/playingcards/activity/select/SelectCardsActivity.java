@@ -2,10 +2,9 @@ package tcc.ronaldoyoshio.playingcards.activity.select;
 
 import android.os.Bundle;
 
+import tcc.ronaldoyoshio.playingcards.images.BackGround;
+import tcc.ronaldoyoshio.playingcards.images.CardImage;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
-import tcc.ronaldoyoshio.playingcards.gl.GLImage;
-import tcc.ronaldoyoshio.playingcards.activity.BackGround;
-import tcc.ronaldoyoshio.playingcards.activity.CardImage;
 import tcc.ronaldoyoshio.playingcards.model.Hand;
 import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
 
@@ -16,15 +15,15 @@ import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
 public class SelectCardsActivity extends GLActivity {
     SelectCardImage selectCardImage = new SelectCardImage();
     Hand playingCards = new PlayingCards();
-    @Override
-    protected GLImage[] getImages() {
-        return new GLImage[]{
-                new BackGround(), selectCardImage, new SelectButtonImage(this, playingCards)
-        };
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        /* AddImage  deve Ser chamando antes de onCreate */
+        addImage(new BackGround());
+        addImage(selectCardImage);
+        addImage(new SelectButtonImage(this, playingCards, getIntent().getExtras()));
+
         super.onCreate(savedInstanceState);
         print(playingCards);
     }

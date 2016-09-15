@@ -6,9 +6,9 @@ import android.opengl.Matrix;
 import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.R;
-import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
-import tcc.ronaldoyoshio.playingcards.activity.config.ClientConfig;
-import tcc.ronaldoyoshio.playingcards.activity.config.ServerConfig;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
+import tcc.ronaldoyoshio.playingcards.activity.config.client.ClientConfigActivity;
+import tcc.ronaldoyoshio.playingcards.activity.config.server.ServerConfigActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GL;
 import tcc.ronaldoyoshio.playingcards.gl.GLImage;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
@@ -42,11 +42,11 @@ public class MainMenuButtonImage extends GLImage {
                     if (-1 <= v[0] & v[0] <= 1 & -1 <= v[1] & v[1] <= 1) {
                         float[] color = button.getFloats("color");
                         if (0f == color[1]) {
-                            Intent intent = new Intent(mainMenuActivity, ServerConfig.class);
+                            Intent intent = new Intent(mainMenuActivity, ServerConfigActivity.class);
                             mainMenuActivity.startActivity(intent);
                         }
                         else if (0.5f == color[1]) {
-                            Intent intent = new Intent(mainMenuActivity, ClientConfig.class);
+                            Intent intent = new Intent(mainMenuActivity, ClientConfigActivity.class);
                             mainMenuActivity.startActivity(intent);
                         }
                     }

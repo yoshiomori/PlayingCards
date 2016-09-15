@@ -13,10 +13,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
 import java.util.ArrayList;
+
 import tcc.ronaldoyoshio.playingcards.service.GameService;
 
-public abstract class Config extends ListActivity {
+/**
+ * Activity para configuracao
+ * Created by mori on 27/08/16.
+ */
+public abstract class ConfigActivity extends ListActivity {
     protected boolean mBound = false;
     protected Messenger mService = null;
     public static final int MSG_SERVICECONNECTED = 0;
@@ -37,6 +43,10 @@ public abstract class Config extends ListActivity {
             }
         });
     }
+    protected void putItem(String item, View.OnClickListener action){
+        items.add(item);
+        actions.add(action);
+    }
 
     @Override
     protected void onStart() {
@@ -44,11 +54,6 @@ public abstract class Config extends ListActivity {
     }
 
     protected abstract Messenger getThisMessenger();
-
-    protected void putItem(String item, View.OnClickListener action){
-        items.add(item);
-        actions.add(action);
-    }
 
     protected ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -66,7 +71,7 @@ public abstract class Config extends ListActivity {
         }
     };
 
-    class IncomingHandler extends Handler {
+    protected class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.arg1) {

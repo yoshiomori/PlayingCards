@@ -1,37 +1,58 @@
 package tcc.ronaldoyoshio.playingcards.activity.deck;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
+
+import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
-import tcc.ronaldoyoshio.playingcards.gl.GLImage;
-import tcc.ronaldoyoshio.playingcards.activity.BackGround;
-import tcc.ronaldoyoshio.playingcards.activity.CardImage;
+import tcc.ronaldoyoshio.playingcards.images.BackGround;
+import tcc.ronaldoyoshio.playingcards.images.CardImage;
 import tcc.ronaldoyoshio.playingcards.model.Hand;
 import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
 
 public class DeckActivity extends GLActivity {
     Hand cards;
-    CardImage cardImage = new DeckCardImage(this);
-
-    @Override
-    protected GLImage[] getImages() {
-        return new GLImage[]{new BackGround(), cardImage};
-    }
+    private ArrayList<String> playersName;
+    private ArrayList<Integer> directions;
+    DeckCardImage cardImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+
+        /* AddImage  deve Ser chamando antes de onCreate */
+        addImage(new BackGround());
+
         Bundle extras = getIntent().getExtras();
+
+        if (extras != null) {
+            if (extras.containsKey("playersName")) {
+            /* Recuperando a configuração do TouchConfigActivity, activity anterior */
+                playersName = extras.getStringArrayList("playersName");
+            }
+            if (extras.containsKey("directions")) {
+                directions = extras.getIntegerArrayList("directions");
+            }
+            if (extras.containsKey("cards")) {
+                cards = new PlayingCards(extras.getStringArrayList("cards"));
+            }
+            else {
+                cards = new PlayingCards();
+            }
+        }
 
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey("cards")) {
                 cards = new PlayingCards(savedInstanceState.getStringArrayList("cards"));
             }
-        } else if (extras.containsKey("cards")) {
-            cards = new PlayingCards(extras.getStringArrayList("cards"));
-        } else {
-            cards = new PlayingCards();
         }
+
+        cardImage = new DeckCardImage(this);
+        cardImage.setOnSendCard(new SendCard(cardImage, playersName, directions));
+        addImage(cardImage);
+
+        super.onCreate(savedInstanceState);
+
         print(cards);
 //        cards.shuffle();
 //        deckCardImage.print(cards);
@@ -51,6 +72,17 @@ public class DeckActivity extends GLActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putStringArrayList("cards", cards);
+        outState.putStringArrayList("playersName", playersName);
+        outState.putIntegerArrayList("directions", directions);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK))
+        {
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import tcc.ronaldoyoshio.playingcards.activity.config.Config;
+import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
 import tcc.ronaldoyoshio.playingcards.broadcastReceiver.WiFiDirectBroadcastReceiver;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 
@@ -152,7 +152,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
                 case MSG_CLIENT:
                     mActivity = msg.replyTo;
                     Message msgClient = Message.obtain();
-                    msgClient.arg1 = Config.MSG_SERVICECONNECTED;
+                    msgClient.arg1 = ConfigActivity.MSG_SERVICECONNECTED;
                     sendMessageToActivity(msgClient);
                     Log.d(getTag(), "Activity adicionada");
                     wifiP2pInit();
@@ -163,13 +163,13 @@ public abstract class GameService extends Service implements ConnectionInfoListe
                         startRegistration();
                         startDiscoverService();
                         Message msgWifiDirectEnable = Message.obtain();
-                        msgWifiDirectEnable.arg1 = Config.MSG_WIFIDIRECTOK;
+                        msgWifiDirectEnable.arg1 = ConfigActivity.MSG_WIFIDIRECTOK;
                         sendMessageToActivity(msgWifiDirectEnable);
                         Log.d(getTag(), "WifiDirect OK");
                     }
                     else {
                         Message msgWifiDirectEnable = Message.obtain();
-                        msgWifiDirectEnable.arg1 = Config.MSG_WIFIDIRECTNOK;
+                        msgWifiDirectEnable.arg1 = ConfigActivity.MSG_WIFIDIRECTNOK;
                         sendMessageToActivity(msgWifiDirectEnable);
                         Log.d(getTag(), "WifiDirect NOK");
                     }

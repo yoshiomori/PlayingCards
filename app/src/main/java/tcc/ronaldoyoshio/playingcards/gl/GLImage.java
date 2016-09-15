@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import tcc.ronaldoyoshio.playingcards.activity.TouchEventHandler;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 
 /**
  * Abstração de dados usados para renderizar com a biblioteca gráfica.
@@ -35,32 +35,25 @@ public abstract class GLImage {
     private Resources resources = null;
     private int bitmapId = -1;
     private ArrayList<String> objectUniformNames = new ArrayList<>();
-    private List<GLObject> objects = Collections.synchronizedList(new ArrayList<GLObject>());
+    private final List<GLObject> objects = Collections.synchronizedList(new ArrayList<GLObject>());
     private ArrayList<TouchEventHandler> touchEventHandlers = new ArrayList<>();
+    private boolean isBlendEnable = false;
+    private boolean isEnable = true;
 
     protected void addTouchEventHandler(TouchEventHandler touchEventHandler) {
         touchEventHandlers.add(touchEventHandler);
     }
 
-    public float getGLDy(float dy, int height) {
-        return  - 2 * dy / height;
-    }
-
-    public float getGLDx(float dy, int width) {
-        return 2 * dy / width;
-    }
-
-    public float getGLX(float x, int width) {
-        return (2 * x - width) / width;
-    }
-
-    public float getGLY(float y, int height) {
-        return (height - 2 * y) / height;
-    }
-
     public void setTexture(String name, int id) {
         setUniform(name, 0);
         bitmapId = id;
+    }
+
+
+
+    public void setTexture(String name, Bitmap bitmap) {
+        setUniform(name, 0);
+        this.bitmap = bitmap;
     }
 
     protected void setAttribute(String name, Boolean normalized, int stride, int offset){
@@ -294,13 +287,15 @@ public abstract class GLImage {
         textures.bindTextures(textureIndex);
         defineAttributes();
         defineUniforms();
-        for (GLObject object :
-                objects) {
-            object.bind(uniforms, objectUniformNames);
-            draw();
-        }
-        if (objects.isEmpty() && objectUniformNames.isEmpty()) {
-            draw();
+        synchronized (objects) {
+            for (GLObject object :
+                    objects) {
+                object.bind(uniforms, objectUniformNames);
+                draw();
+            }
+            if (objects.isEmpty() && objectUniformNames.isEmpty()) {
+                draw();
+            }
         }
     }
 
@@ -349,7 +344,9 @@ public abstract class GLImage {
     public void loadDatas() {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;	// No pre-scaling
-        this.bitmap = bitmapId < 0 ? null : BitmapFactory.decodeResource(resources, bitmapId, options);
+        if (bitmapId >= 0) {
+            this.bitmap = BitmapFactory.decodeResource(resources, bitmapId, options);
+        }
     }
 
     public int getBitmapId() {
@@ -377,5 +374,26 @@ public abstract class GLImage {
 
     public ArrayList<TouchEventHandler> getTouchEventHandlers() {
         return touchEventHandlers;
+    }
+
+    public boolean IsBlendEnable() {
+        return isBlendEnable;
+    }
+
+    public void setBlendEnable(boolean blendEnable) {
+        isBlendEnable = blendEnable;
+    }
+
+    public void disable() {
+        isEnable = false;
+    }
+
+    /* Mostrando o objeto */
+    public void enable() {
+        isEnable = true;
+    }
+
+    public boolean isEnable() {
+        return isEnable;
     }
 }

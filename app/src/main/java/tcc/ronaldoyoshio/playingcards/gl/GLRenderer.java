@@ -1,6 +1,9 @@
 package tcc.ronaldoyoshio.playingcards.gl;
 
+import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+
+import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -10,13 +13,13 @@ import javax.microedition.khronos.opengles.GL10;
  * Created by mori on 06/07/16.
  */
 public class GLRenderer implements GLSurfaceView.Renderer{
-    private GLImage[] images;
+    private ArrayList<GLImage> images;
     private int bufferSize = 0;
     private int texturesSize = 0;
     private GLBuffers buffers = null;
     private GLTextures textures;
 
-    public void setImages(GLImage... images) {
+    public void setImages(ArrayList<GLImage> images) {
         this.images = images;
     }
 
@@ -31,7 +34,7 @@ public class GLRenderer implements GLSurfaceView.Renderer{
             if (image.getElementArray() != null) {
                 image.setElementArrayIndex(bufferSize++);
             }
-            if (image.getBitmapId() >= 0) {
+            if (image.getBitmapId() >= 0 || image.getBitmap() != null) {
                 image.setTextureIndex(texturesSize++);
             }
             if (image.getVertexShaderCode() == null | image.getFragmentShaderCode() == null) {
@@ -85,7 +88,18 @@ public class GLRenderer implements GLSurfaceView.Renderer{
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
         for (GLImage image : images) {
-            image.render(buffers, textures);
+            if (image.isEnable()) {
+                if (image.IsBlendEnable()) {
+                    GLES20.glEnable(GLES20.GL_BLEND);
+
+                   /* Isso não funciona para letras pretas */
+                    GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE);
+                }
+                image.render(buffers, textures);
+                if (image.IsBlendEnable()) {
+                    GLES20.glDisable(GLES20.GL_BLEND);
+                }
+            }
         }
     }
 }
