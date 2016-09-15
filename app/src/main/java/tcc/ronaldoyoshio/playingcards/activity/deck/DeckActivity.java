@@ -10,12 +10,11 @@ import tcc.ronaldoyoshio.playingcards.gl.GLObject;
 import tcc.ronaldoyoshio.playingcards.images.BackGroundImage;
 import tcc.ronaldoyoshio.playingcards.images.CardImage;
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
-import tcc.ronaldoyoshio.playingcards.model.Hand;
-import tcc.ronaldoyoshio.playingcards.model.PlayingCards;
+import tcc.ronaldoyoshio.playingcards.model.Cards;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 
 public class DeckActivity extends GLActivity {
-    Hand cards;
+    Cards cards;
     private ArrayList<String> playersName;
     private ArrayList<Integer> directions;
     MotionCardImage cardImage;
@@ -37,16 +36,16 @@ public class DeckActivity extends GLActivity {
                 directions = extras.getIntegerArrayList("directions");
             }
             if (extras.containsKey("cards")) {
-                cards = new PlayingCards(extras.getStringArrayList("cards"));
+                cards = new Cards(extras.getStringArrayList("cards"));
             }
             else {
-                cards = new PlayingCards();
+                cards = new Cards();
             }
         }
 
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey("cards")) {
-                cards = new PlayingCards(savedInstanceState.getStringArrayList("cards"));
+                cards = new Cards(savedInstanceState.getStringArrayList("cards"));
             }
         }
 
@@ -123,7 +122,7 @@ public class DeckActivity extends GLActivity {
 //        deckCardImage.print(cards);
     }
 
-    private void print(Hand cards) {
+    private void print(Cards cards) {
         cardImage.setCards(cards);
         cardImage.setTotalCards(cards.size());
         cardImage.setMode(CardImage.CENTERED);

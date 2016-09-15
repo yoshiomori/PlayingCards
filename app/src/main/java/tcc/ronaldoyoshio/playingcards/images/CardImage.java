@@ -7,7 +7,7 @@ import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.gl.GL;
 import tcc.ronaldoyoshio.playingcards.gl.GLImage;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
-import tcc.ronaldoyoshio.playingcards.model.Hand;
+import tcc.ronaldoyoshio.playingcards.model.Cards;
 
 /**
  * Imagem de carta sem o tratamento de eventos.
@@ -18,7 +18,7 @@ public class CardImage extends GLImage {
     public static final int SIDEBYSIDE = 1;
     public static final int CENTERED = 0;
     protected CardData cardData = new CardData();
-    protected Hand cards = new Hand();
+    protected Cards cards = new Cards();
     private int mode;
     private float r_width;
     private float r_height;
@@ -124,7 +124,7 @@ public class CardImage extends GLImage {
         setObjectUniformNames("position", "card_coord", "blue_tone");
     }
 
-    public void setCards(Hand cards) {
+    public void setCards(Cards cards) {
         this.cards = cards;
     }
 
@@ -132,7 +132,7 @@ public class CardImage extends GLImage {
         this.mode = mode;
     }
 
-    public Hand getCards() {
+    public Cards getCards() {
         return cards;
     }
 
