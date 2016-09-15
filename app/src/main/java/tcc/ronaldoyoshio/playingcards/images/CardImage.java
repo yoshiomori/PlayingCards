@@ -218,6 +218,10 @@ public class CardImage extends GLImage {
         }
     }
 
+    public CardData getCardData() {
+        return cardData;
+    }
+
     public class CardData {
         private HashMap<String, float[]> cardImage = new HashMap<>();
         private float[] array;
