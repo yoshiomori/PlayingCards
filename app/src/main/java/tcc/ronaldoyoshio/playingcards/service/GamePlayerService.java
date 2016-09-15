@@ -19,9 +19,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
+import tcc.ronaldoyoshio.playingcards.activity.config.client.ClientConfigActivity;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 
 public class GamePlayerService extends GameService {
+    public static final int MSG_CONNECT_TO_DEVICE = 4;
+    public static final int MSG_REQUEST_DEVICES = 5;
     private static final String SERVICE_INSTANCE = "_gamePlayer";
     private static final String TAG = "GamePlayerService";
     private String name = "Client";
@@ -60,11 +64,19 @@ public class GamePlayerService extends GameService {
             @Override
             public void onSuccess() {
                 Log.d(getTag(), "Conectando ao serviço");
+                Message response = Message.obtain();
+                response.arg1 = ConfigActivity.MSG_SUCCESS;
+                response.obj = new String("Conectado com Servidor");
+                sendMessageToActivity(response);
             }
 
             @Override
             public void onFailure(int errorCode) {
                 Log.d(getTag(), "Falha na conexão com serviço");
+                Message response = Message.obtain();
+                response.arg1 = ConfigActivity.MSG_FAILED;
+                response.obj = new String("Falha ao conectar");
+                sendMessageToActivity(response);
             }
         });
     }
@@ -96,8 +108,17 @@ public class GamePlayerService extends GameService {
                         connectP2p(service);
                     }
                     else {
-
+                        Message response = Message.obtain();
+                        response.arg1 = ConfigActivity.MSG_FAILED;
+                        response.obj = new String("Servidor não encontrado");
+                        sendMessageToActivity(response);
                     }
+                    break;
+                case MSG_REQUEST_DEVICES:
+                    Message response = Message.obtain();
+                    response.obj = discoveredServices;
+                    response.arg1 = ClientConfigActivity.MSG_DEVICES;
+                    sendMessageToActivity(response);
                     break;
                 default:
                     super.handleMessage(msg);

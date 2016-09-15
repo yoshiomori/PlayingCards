@@ -19,6 +19,7 @@ import tcc.ronaldoyoshio.playingcards.service.GameServerService;
  * Created by mori on 26/08/16.
  */
 public class ServerConfigActivity extends ConfigActivity {
+    private static final String TAG = "ServerConfigActivity";
     final Messenger mMessenger = new Messenger(new ServerConfigIncomingHandler());
 
     public ServerConfigActivity() {
@@ -48,6 +49,11 @@ public class ServerConfigActivity extends ConfigActivity {
     @Override
     protected Messenger getThisMessenger() {
         return mMessenger;
+    }
+
+    @Override
+    protected String getTag() {
+        return TAG;
     }
 
     class ServerConfigIncomingHandler extends ConfigActivity.IncomingHandler {

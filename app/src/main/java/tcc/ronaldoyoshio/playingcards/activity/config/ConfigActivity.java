@@ -9,12 +9,15 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import tcc.ronaldoyoshio.playingcards.service.GameService;
 
@@ -25,9 +28,11 @@ import tcc.ronaldoyoshio.playingcards.service.GameService;
 public abstract class ConfigActivity extends ListActivity {
     protected boolean mBound = false;
     protected Messenger mService = null;
-    public static final int MSG_SERVICECONNECTED = 0;
-    public static final int MSG_WIFIDIRECTOK = 1;
-    public static final int MSG_WIFIDIRECTNOK = 2;
+    public static final int MSG_SERVICE_CONNECTED = 0;
+    public static final int MSG_WIFI_DIRECT_NOK = 1;
+    public static final int MSG_SUCCESS = 2;
+    public static final int MSG_FAILED = 3;
+    protected Map<String, String> discoveredDevices = new HashMap<>();
 
     ArrayList<String> items = new ArrayList<>();
     ArrayList<View.OnClickListener> actions = new ArrayList<>();
@@ -71,20 +76,25 @@ public abstract class ConfigActivity extends ListActivity {
         }
     };
 
+    protected abstract String getTag();
+
     protected class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.arg1) {
-                case MSG_SERVICECONNECTED:
+                case MSG_SERVICE_CONNECTED:
                     System.out.println("Activity conectada");
                     Message msgWifiDirect = Message.obtain();
                     msgWifiDirect.arg1 = GameService.MSG_WIFI_DIRECT_SERVICE;
                     sendMessageToService(msgWifiDirect);
                     break;
-                case MSG_WIFIDIRECTOK:
-                    System.out.println("WifiDirect OK");
+                case MSG_SUCCESS:
+                    Log.d(getTag(), (String) msg.obj);
                     break;
-                case MSG_WIFIDIRECTNOK:
+                case MSG_FAILED:
+                    Log.d(getTag(), (String) msg.obj);
+                    break;
+                case MSG_WIFI_DIRECT_NOK:
                     Message msgWifiDirectAgain = Message.obtain();
                     msgWifiDirectAgain.arg1 = GameService.MSG_WIFI_DIRECT_SERVICE;
                     sendMessageToService(msgWifiDirectAgain);

@@ -8,10 +8,12 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
 import tcc.ronaldoyoshio.playingcards.activity.config.touch.TouchConfigActivity;
+import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
 
 /**
@@ -19,6 +21,8 @@ import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
  * Created by mori on 27/08/16.
  */
 public class ClientConfigActivity extends ConfigActivity {
+    public static final int MSG_DEVICES = 4;
+    private static final String TAG = "ClientConfigActivity";
     final Messenger mMessenger = new Messenger(new PlayerConfigIncomingHandler());
 
     public ClientConfigActivity() {
@@ -51,10 +55,33 @@ public class ClientConfigActivity extends ConfigActivity {
         return mMessenger;
     }
 
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
+
     class PlayerConfigIncomingHandler extends ConfigActivity.IncomingHandler {
         @Override
         public void handleMessage(Message msg) {
-            super.handleMessage(msg);
+            switch (msg.arg1) {
+                case MSG_DEVICES:
+                    HashMap<String, WiFiP2pDiscoveredService> map = (HashMap) msg.obj;
+                    for (String address : map.keySet()) {
+                        if (!discoveredDevices.containsKey(address)) {
+                            String name = map.get(address).getName();
+                            discoveredDevices.put(address, name);
+                            putItem(name, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                }
+                            });
+                        }
+                    }
+                    break;
+                default:
+                    super.handleMessage(msg);
+            }
         }
     }
 }

@@ -34,7 +34,8 @@ import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 public abstract class GameService extends Service implements ConnectionInfoListener {
     public static final int MSG_CLIENT = 0;
     public static final int MSG_WIFI_DIRECT_SERVICE = 1;
-    public static final int MSG_CONNECT_TO_DEVICE = 2;
+    public static final int MSG_SUCCESS = 2;
+    public static final int MSG_FAILED = 3;
     protected static final String SERVICE_REG_TYPE = "_presence._tcp";
     protected static final String LISTEN_PORT = "4545";
 
@@ -149,10 +150,16 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         @Override
         public void handleMessage(Message msg) {
             switch (msg.arg1) {
+                case MSG_SUCCESS:
+                    Log.d(getTag(), (String) msg.obj);
+                    break;
+                case MSG_FAILED:
+                    Log.d(getTag(), (String) msg.obj);
+                    break;
                 case MSG_CLIENT:
                     mActivity = msg.replyTo;
                     Message msgClient = Message.obtain();
-                    msgClient.arg1 = ConfigActivity.MSG_SERVICECONNECTED;
+                    msgClient.arg1 = ConfigActivity.MSG_SERVICE_CONNECTED;
                     sendMessageToActivity(msgClient);
                     Log.d(getTag(), "Activity adicionada");
                     wifiP2pInit();
@@ -163,13 +170,14 @@ public abstract class GameService extends Service implements ConnectionInfoListe
                         startRegistration();
                         startDiscoverService();
                         Message msgWifiDirectEnable = Message.obtain();
-                        msgWifiDirectEnable.arg1 = ConfigActivity.MSG_WIFIDIRECTOK;
+                        msgWifiDirectEnable.obj = new String("WifiDirect OK");
+                        msgWifiDirectEnable.arg1 = ConfigActivity.MSG_SUCCESS;
                         sendMessageToActivity(msgWifiDirectEnable);
                         Log.d(getTag(), "WifiDirect OK");
                     }
                     else {
                         Message msgWifiDirectEnable = Message.obtain();
-                        msgWifiDirectEnable.arg1 = ConfigActivity.MSG_WIFIDIRECTNOK;
+                        msgWifiDirectEnable.arg1 = ConfigActivity.MSG_WIFI_DIRECT_NOK;
                         sendMessageToActivity(msgWifiDirectEnable);
                         Log.d(getTag(), "WifiDirect NOK");
                     }
