@@ -34,19 +34,22 @@ public abstract class ConfigActivity extends ListActivity {
     public static final int MSG_FAILED = 3;
     protected Map<String, String> discoveredDevices = new HashMap<>();
 
+    protected ArrayAdapter adapter;
     ArrayList<String> items = new ArrayList<>();
     ArrayList<View.OnClickListener> actions = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items) {
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items) {
             @Override
             public View getView(final int position, View convertView, ViewGroup parent) {
                 TextView textView = (TextView) super.getView(position, convertView, parent);
                 textView.setOnClickListener(actions.get(position));
                 return textView;
             }
-        });
+        };
+        setListAdapter(adapter);
     }
     protected void putItem(String item, View.OnClickListener action){
         items.add(item);
@@ -81,24 +84,22 @@ public abstract class ConfigActivity extends ListActivity {
     protected class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
+            Message response;
             switch (msg.arg1) {
                 case MSG_SERVICE_CONNECTED:
-                    System.out.println("Activity conectada");
-                    Message msgWifiDirect = Message.obtain();
-                    msgWifiDirect.arg1 = GameService.MSG_WIFI_DIRECT_SERVICE;
-                    sendMessageToService(msgWifiDirect);
-                    break;
-                case MSG_SUCCESS:
-                    Log.d(getTag(), (String) msg.obj);
+                    response = Message.obtain();
+                    Log.d(getTag(), "Activity conectada");
+                    response.arg1 = GameService.MSG_WIFI_DIRECT_SERVICE;
+                    sendMessageToService(response);
                     break;
                 case MSG_FAILED:
-                    Log.d(getTag(), (String) msg.obj);
+                    Log.d(getTag(), msg.getData().getString("Mensagem"));
                     break;
                 case MSG_WIFI_DIRECT_NOK:
-                    Message msgWifiDirectAgain = Message.obtain();
-                    msgWifiDirectAgain.arg1 = GameService.MSG_WIFI_DIRECT_SERVICE;
-                    sendMessageToService(msgWifiDirectAgain);
-                    System.out.println("WifiDirect NOK");
+                    response = Message.obtain();
+                    response.arg1 = GameService.MSG_WIFI_DIRECT_SERVICE;
+                    sendMessageToService(response);
+                    Log.d(getTag(), "WifiDirect NOK");
                     break;
                 default:
                     super.handleMessage(msg);

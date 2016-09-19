@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PlayingCards</string>
+    <string name="finding_service">Procurando dispositivos</string>
 </resources>

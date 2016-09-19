@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
+import tcc.ronaldoyoshio.playingcards.activity.config.client.ClientConfigActivity;
 import tcc.ronaldoyoshio.playingcards.broadcastReceiver.WiFiDirectBroadcastReceiver;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 
@@ -114,6 +116,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
                     serv.setDevice(srcDevice);
                     serv.setInstanceName(instanceName);
                     serv.setServiceRegistrationType(registrationType);
+                    sendDiscoveredServiceMessage(serv);
                 }
             }
         };
@@ -149,18 +152,19 @@ public abstract class GameService extends Service implements ConnectionInfoListe
     class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
+            Message response;
             switch (msg.arg1) {
                 case MSG_SUCCESS:
-                    Log.d(getTag(), (String) msg.obj);
+                    Log.d(getTag(), msg.getData().getString("Mensagem"));
                     break;
                 case MSG_FAILED:
-                    Log.d(getTag(), (String) msg.obj);
+                    Log.d(getTag(), msg.getData().getString("Mensagem"));
                     break;
                 case MSG_CLIENT:
                     mActivity = msg.replyTo;
-                    Message msgClient = Message.obtain();
-                    msgClient.arg1 = ConfigActivity.MSG_SERVICE_CONNECTED;
-                    sendMessageToActivity(msgClient);
+                    response = Message.obtain();
+                    response.arg1 = ConfigActivity.MSG_SERVICE_CONNECTED;
+                    sendMessageToActivity(response);
                     Log.d(getTag(), "Activity adicionada");
                     wifiP2pInit();
                     registerWiFiDirectBroadcastReceiver();
@@ -169,16 +173,18 @@ public abstract class GameService extends Service implements ConnectionInfoListe
                     if (wifiDirectEnabled) {
                         startRegistration();
                         startDiscoverService();
-                        Message msgWifiDirectEnable = Message.obtain();
-                        msgWifiDirectEnable.obj = new String("WifiDirect OK");
-                        msgWifiDirectEnable.arg1 = ConfigActivity.MSG_SUCCESS;
-                        sendMessageToActivity(msgWifiDirectEnable);
+                        response = Message.obtain();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("Mensagem", "WifiDirect OK");
+                        response.setData(bundle);
+                        response.arg1 = ConfigActivity.MSG_SUCCESS;
+                        sendMessageToActivity(response);
                         Log.d(getTag(), "WifiDirect OK");
                     }
                     else {
-                        Message msgWifiDirectEnable = Message.obtain();
-                        msgWifiDirectEnable.arg1 = ConfigActivity.MSG_WIFI_DIRECT_NOK;
-                        sendMessageToActivity(msgWifiDirectEnable);
+                        response = Message.obtain();
+                        response.arg1 = ConfigActivity.MSG_WIFI_DIRECT_NOK;
+                        sendMessageToActivity(response);
                         Log.d(getTag(), "WifiDirect NOK");
                     }
                     break;
@@ -197,22 +203,35 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         }
     }
 
-    @Override
-    public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
-        Thread handler = null;
-
-        if (p2pInfo.isGroupOwner) {
-
-        } else {
-
+    protected void sendDiscoveredServiceMessage(WiFiP2pDiscoveredService service) {
+        if (getServiceInstance().equals(GamePlayerService.SERVICE_INSTANCE)) {
+            Message msg = Message.obtain();
+            msg.arg1 = ClientConfigActivity.MSG_NEW_DEVICE;
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("Device", (Parcelable) service);
+            msg.setData(bundle);
+            sendMessageToActivity(msg);
         }
-
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(receiver);
+    }
+
+    public void stopLooking () {
+        manager.stopPeerDiscovery(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailure(int reason) {
+
+            }
+        });
     }
 
 }
