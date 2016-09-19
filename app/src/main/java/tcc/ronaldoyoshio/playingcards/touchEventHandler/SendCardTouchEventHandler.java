@@ -3,6 +3,7 @@ package tcc.ronaldoyoshio.playingcards.touchEventHandler;
 import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
+import tcc.ronaldoyoshio.playingcards.gl.GLObject;
 import tcc.ronaldoyoshio.playingcards.gl.GLScreen;
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
 
@@ -29,7 +30,18 @@ public class SendCardTouchEventHandler extends TouchEventHandler{
                     throw new RuntimeException("onSendCard deve ser configurado com o método" +
                             " SetOnSendCard");
                 }
-                motionCardImage.getOnSendCard().onSendCard(pointerId, (int)x, (int)y);
+                ArrayList<String> cards = new ArrayList<>();
+                if (motionCardImage.getActiveCards().isEmpty()) {
+                    System.out.println();
+                    cards.add(motionCardImage.getCards().get(motionCardImage.getObjects().indexOf(motionCardImage.getPointerCards().get(pointerId))));
+                }
+                else {
+                    for (GLObject object :
+                            motionCardImage.getActiveCards()) {
+                        cards.add(motionCardImage.getCards().get(motionCardImage.getObjects().indexOf(object)));
+                    }
+                }
+                motionCardImage.getOnSendCard().onSendCard(pointerId, cards, (int)x, (int)y);
             }
         }
         return true;

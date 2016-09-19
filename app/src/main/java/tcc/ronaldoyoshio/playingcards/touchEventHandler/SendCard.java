@@ -1,10 +1,8 @@
-package tcc.ronaldoyoshio.playingcards.activity.deck;
+package tcc.ronaldoyoshio.playingcards.touchEventHandler;
 
 import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
-import tcc.ronaldoyoshio.playingcards.touchEventHandler.OnSendCard;
-import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCardTouchEventHandler;
 
 /**
  * Classe que lida com o envio das cartas.
@@ -22,7 +20,7 @@ public class SendCard implements OnSendCard {
     }
 
     @Override
-    public void onSendCard(int pointerId, int x, int y) {
+    public void onSendCard(int pointerId, ArrayList<String> cards, int x, int y) {
         SendCardTouchEventHandler sendCardTouchEventHandler =
                 cardImage.getSendCardTouchEventHandler();
         String targetPlayerName = sendCardTouchEventHandler.computeNearestPlayerName(
@@ -32,7 +30,7 @@ public class SendCard implements OnSendCard {
                 y
         );
 
-        System.out.println("Enviando para :" + targetPlayerName);
+        System.out.println("Enviando " + cards + " para :" + targetPlayerName);
         cardImage.removeCardsAtPointer(pointerId);
     }
 }
