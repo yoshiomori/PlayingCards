@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.activity.touchConfig;
+package tcc.ronaldoyoshio.playingcards.activity.config.touch;
 
 import android.content.Intent;
 import android.os.Bundle;
