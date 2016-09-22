@@ -54,11 +54,11 @@ public class DeckActivity extends GLActivity {
 
         /* Quando der duplo taps a carta vira */
         cardImage.addTouchEventHandler(new TouchEventHandler() {
-            public long previousDownTime = Long.MIN_VALUE;
-            public float previousX = Float.POSITIVE_INFINITY;
-            public float previousY = Float.POSITIVE_INFINITY;
-            public boolean doubleTap;
-            public GLObject previousCard;
+            long previousDownTime = Long.MIN_VALUE;
+            float previousX = Float.POSITIVE_INFINITY;
+            float previousY = Float.POSITIVE_INFINITY;
+            boolean doubleTap;
+            GLObject previousCard;
             @Override
             public boolean onDown(int pointerId, float x, float y) {
                 // Verificando se é double tap
@@ -94,7 +94,7 @@ public class DeckActivity extends GLActivity {
                 return false;
             }
 
-            public boolean isDoubleTap(long dt, float dx, float dy, GLObject card) {
+            boolean isDoubleTap(long dt, float dx, float dy, GLObject card) {
                 return dx * dx + dy * dy <= 1000 && dt * dt <= 100000 && previousCard == card;
             }
 
@@ -114,13 +114,6 @@ public class DeckActivity extends GLActivity {
         super.onCreate(savedInstanceState);
 
         print(cards);
-//        cards.shuffle();
-//        deckCardImage.print(cards);
-//        cards.remove("Joker Black");
-//        deckCardImage.print(cards);
-//        cards.clear();
-//        cards.add("Joker Black");
-//        deckCardImage.print(cards);
     }
 
     private void print(Cards cards) {
@@ -145,5 +138,12 @@ public class DeckActivity extends GLActivity {
             finish();
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    public void onReceiveCard(ArrayList<String> cards) {
+        for (String card :
+                cards) {
+            cardImage.addCard(card);
+        }
     }
 }
