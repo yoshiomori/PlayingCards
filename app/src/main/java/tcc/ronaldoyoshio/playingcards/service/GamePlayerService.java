@@ -16,6 +16,14 @@ import android.os.Messenger;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +31,7 @@ import java.util.Map;
 
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.config.client.ClientConfigActivity;
+import tcc.ronaldoyoshio.playingcards.model.WebMessage;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 
 public class GamePlayerService extends GameService {
@@ -102,6 +111,19 @@ public class GamePlayerService extends GameService {
         return this.TAG;
     }
 
+    final Messenger mMessenger = new Messenger(new GamePlayerIncomingHandler());
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return mMessenger.getBinder();
+    }
+
+    @Override
+    public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
+        Thread handler = new PlayerSocketHandler(p2pInfo.groupOwnerAddress, 4545);
+        handler.start();
+    }
+
     class GamePlayerIncomingHandler extends GameService.IncomingHandler {
         @Override
         public void handleMessage(Message msg) {
@@ -134,25 +156,40 @@ public class GamePlayerService extends GameService {
         }
     }
 
-    final Messenger mMessenger = new Messenger(new GamePlayerIncomingHandler());
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mMessenger.getBinder();
-    }
-
-    @Override
-    public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
-        Thread handler = null;
-        System.out.println("aaaa");
-        if (p2pInfo.isGroupOwner) {
-            System.out.println("aaad");
-            Log.d(getTag(), p2pInfo.groupOwnerAddress.toString());
-        } else {
-            Message msg = Message.obtain();
-            msg.arg1 = 100;
-            sendMessageToActivity(msg);
+    class PlayerSocketHandler extends Thread {
+        private Socket socket = null;
+        private InetAddress serverAddress;
+        private Integer serverPort;
+        private ObjectInputStream input;
+        private ObjectOutputStream output;
+        public PlayerSocketHandler (InetAddress serverAddress, Integer serverPort) {
+            this.socket = new Socket();
+            this.serverAddress = serverAddress;
+            this.serverPort = serverPort;
+        }
+        @Override
+        public void run() {
+            try {
+                socket.connect(new InetSocketAddress(serverAddress.getHostAddress(), serverPort), 5000);
+                ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
+                ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
+                while (true) {
+                    WebMessage message = (WebMessage) input.readObject();
+                    // TODO: Tratar Mensagem
+                }
+            } catch (IOException e) {
+                Log.d(TAG, e.getMessage());
+            } catch (ClassNotFoundException e) {
+                Log.d(TAG, e.getMessage());
+            }
         }
 
+        public void sendServer(WebMessage message) {
+            try {
+                output.writeObject(message);
+            } catch (IOException e) {
+                Log.d(TAG, e.getMessage());
+            }
+        }
     }
 }
