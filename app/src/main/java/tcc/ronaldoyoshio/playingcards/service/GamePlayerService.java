@@ -40,6 +40,7 @@ public class GamePlayerService extends GameService {
     public static final String SERVICE_INSTANCE = "_gamePlayer";
     private static final String TAG = "GamePlayerService";
     private String name = "Client";
+    private String debug = "a";
 
     @Override
     public void onCreate() {
@@ -170,21 +171,33 @@ public class GamePlayerService extends GameService {
         @Override
         public void run() {
             try {
-                socket.connect(new InetSocketAddress(serverAddress.getHostAddress(), serverPort), 5000);
-                ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
-                ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
+                Log.d(TAG, "Vamos gentar");
+                socket.connect(new InetSocketAddress(serverAddress.getHostAddress(), serverPort), 10000);
+                Log.d(TAG, "Aeeee");
+                input = new ObjectInputStream(socket.getInputStream());
+                output = new ObjectOutputStream(socket.getOutputStream());
+                WebMessage response = new WebMessage();
+                response.insertMessage("A","BSD");
+                response.insertMessage("S", "AADDA");
+                sendMessageServer(response);
                 while (true) {
+                    Log.d(TAG, "TTTTTT");
                     WebMessage message = (WebMessage) input.readObject();
-                    // TODO: Tratar Mensagem
+                    Log.d(TAG, message.getMessage("A"));
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
-            } catch (ClassNotFoundException e) {
-                Log.d(TAG, e.getMessage());
+                    try {
+                        if (socket != null && !socket.isClosed()){
+                            socket.close();
+                        }
+                    } catch (IOException e1) {
+                        Log.d(TAG, e.getMessage());
+                    }
             }
         }
 
-        public void sendServer(WebMessage message) {
+        public void sendMessageServer(WebMessage message) {
             try {
                 output.writeObject(message);
             } catch (IOException e) {

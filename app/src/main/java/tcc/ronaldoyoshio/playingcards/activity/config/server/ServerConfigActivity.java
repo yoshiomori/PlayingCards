@@ -2,6 +2,7 @@ package tcc.ronaldoyoshio.playingcards.activity.config.server;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.view.View;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
 import tcc.ronaldoyoshio.playingcards.activity.config.touch.TouchConfigActivity;
+import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
 import tcc.ronaldoyoshio.playingcards.service.GameServerService;
 
 /**
@@ -37,6 +39,13 @@ public class ServerConfigActivity extends ConfigActivity {
                 ServerConfigActivity.this.startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Intent intent = new Intent(this, GameServerService.class);
+        startService(intent);
     }
 
     @Override

@@ -59,6 +59,28 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         super.onCreate();
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        Log.i(getTag(), "Service onStartCommand");
+
+        for (int i = 0; i < 3; i++)
+        {
+            long endTime = System.currentTimeMillis() + 10*1000;
+            while (System.currentTimeMillis() < endTime) {
+                synchronized (this) {
+                    try {
+                        wait(endTime - System.currentTimeMillis());
+                    } catch (Exception e) {
+                    }
+                }
+            }
+            Log.i(getTag(), "Service running");
+        }
+        return Service.START_STICKY;
+    }
+
+
     protected abstract String getName();
 
     protected abstract String getServiceInstance();

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WebMessage implements Serializable{
+public class WebMessage implements Serializable {
     private Map<String, String> map;
 
     public WebMessage () {

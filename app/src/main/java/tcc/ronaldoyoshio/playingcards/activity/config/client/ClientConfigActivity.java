@@ -38,6 +38,9 @@ public class ClientConfigActivity extends ConfigActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.clientconfig);
         super.onCreate(savedInstanceState);
+        Intent intent = new Intent(this, GamePlayerService.class);
+        startService(intent);
+
     }
 
     public ClientConfigActivity() {
