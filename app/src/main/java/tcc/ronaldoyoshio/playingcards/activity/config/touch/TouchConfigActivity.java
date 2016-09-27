@@ -6,12 +6,12 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import tcc.ronaldoyoshio.playingcards.images.BackGround;
-import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
-import tcc.ronaldoyoshio.playingcards.touchEventHandler.OnSendCard;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
-import tcc.ronaldoyoshio.playingcards.model.Hand;
+import tcc.ronaldoyoshio.playingcards.images.BackGroundImage;
+import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
+import tcc.ronaldoyoshio.playingcards.model.Cards;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.OnSendCard;
 
 /**
  * Configura para onde a carta será enviada.
@@ -23,11 +23,13 @@ public class TouchConfigActivity extends GLActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         /* AddImage deve ser chamado antes do onCreate */
-        addImage(new BackGround());
+        addImage(new BackGroundImage());
         final MotionCardImage motionCardImage = new MotionCardImage(this);
-        Hand hand = new Hand();
-        hand.add("Back");
-        motionCardImage.setCards(hand);
+        Cards cards = new Cards();
+        cards.clear();
+        cards.add("Back");
+        motionCardImage.setCards(cards);
+        motionCardImage.setTotalCards(cards.size());
         addImage(motionCardImage);
 
         Bundle extras = getIntent().getExtras();
@@ -60,7 +62,7 @@ public class TouchConfigActivity extends GLActivity{
                 final ArrayList<Integer> directions = new ArrayList<>();
                 motionCardImage.setOnSendCard(new OnSendCard(){
                     @Override
-                    public void onSendCard(int pointerId, int x, int y) {
+                    public void onSendCard(int pointerId, ArrayList<String> cards, int x, int y) {
                         if (directions.size() < playersName.size() * 2) {
                             directions.add(x);
                             directions.add(y);

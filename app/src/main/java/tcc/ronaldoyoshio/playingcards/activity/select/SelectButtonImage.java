@@ -6,9 +6,9 @@ import android.os.Bundle;
 import tcc.ronaldoyoshio.playingcards.gl.GL;
 import tcc.ronaldoyoshio.playingcards.gl.GLImage;
 import tcc.ronaldoyoshio.playingcards.R;
+import tcc.ronaldoyoshio.playingcards.model.Cards;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 import tcc.ronaldoyoshio.playingcards.activity.deck.DeckActivity;
-import tcc.ronaldoyoshio.playingcards.model.Hand;
 
 /**
  * Botão de proseguir usado no SelectCardsActivity
@@ -16,7 +16,7 @@ import tcc.ronaldoyoshio.playingcards.model.Hand;
  */
 public class SelectButtonImage extends GLImage {
 
-    public SelectButtonImage(final SelectCardsActivity selectCardsActivity, final Hand cards, final Bundle extras) {
+    public SelectButtonImage(final SelectCardsActivity selectCardsActivity, final Cards cards, final Bundle extras) {
         addTouchEventHandler(new TouchEventHandler() {
             @Override
             public boolean onDown(int pointerId, float x, float y) {

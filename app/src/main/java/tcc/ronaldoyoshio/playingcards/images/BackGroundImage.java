@@ -4,7 +4,7 @@ import tcc.ronaldoyoshio.playingcards.gl.GL;
 import tcc.ronaldoyoshio.playingcards.gl.GLImage;
 import tcc.ronaldoyoshio.playingcards.R;
 
-public class BackGround extends GLImage {
+public class BackGroundImage extends GLImage {
     @Override
     protected void onSurfaceCreated() {
         setArray(

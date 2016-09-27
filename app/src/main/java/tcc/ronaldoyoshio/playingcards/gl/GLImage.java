@@ -40,7 +40,7 @@ public abstract class GLImage {
     private boolean isBlendEnable = false;
     private boolean isEnable = true;
 
-    protected void addTouchEventHandler(TouchEventHandler touchEventHandler) {
+    public void addTouchEventHandler(TouchEventHandler touchEventHandler) {
         touchEventHandlers.add(touchEventHandler);
     }
 
