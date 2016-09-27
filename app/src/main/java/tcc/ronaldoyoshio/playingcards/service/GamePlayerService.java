@@ -40,7 +40,6 @@ public class GamePlayerService extends GameService {
     public static final String SERVICE_INSTANCE = "_gamePlayer";
     private static final String TAG = "GamePlayerService";
     private String name = "Client";
-    private String debug = "a";
 
     @Override
     public void onCreate() {

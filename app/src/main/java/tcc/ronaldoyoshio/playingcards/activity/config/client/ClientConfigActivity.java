@@ -8,6 +8,7 @@ import android.os.Messenger;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +42,13 @@ public class ClientConfigActivity extends ConfigActivity {
         Intent intent = new Intent(this, GamePlayerService.class);
         startService(intent);
 
+    }
+
+    @Override
+    public void nextView(View view) {
+        super.nextView(view);
+        ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipperClient);
+        //flipper.showNext();
     }
 
     public ClientConfigActivity() {

@@ -13,8 +13,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
+import tcc.ronaldoyoshio.playingcards.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +42,15 @@ public abstract class ConfigActivity extends ListActivity {
     protected ArrayAdapter adapter;
     ArrayList<String> items = new ArrayList<>();
     ArrayList<View.OnClickListener> actions = new ArrayList<>();
+
+    public void nextView(View view) {
+        EditText editText = (EditText) findViewById(R.id.editText);
+        Button button = (Button) findViewById(R.id.button);
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        editText.setFocusable(false);
+        button.setEnabled(false);
+        progressBar.setVisibility(View.VISIBLE);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -10,6 +10,7 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
 import tcc.ronaldoyoshio.playingcards.activity.config.touch.TouchConfigActivity;
@@ -25,7 +26,7 @@ public class ServerConfigActivity extends ConfigActivity {
     final Messenger mMessenger = new Messenger(new ServerConfigIncomingHandler());
 
     public ServerConfigActivity() {
-        putItem("Pronto", new View.OnClickListener() {
+        /*putItem("Pronto", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ServerConfigActivity.this, TouchConfigActivity.class);
@@ -38,11 +39,16 @@ public class ServerConfigActivity extends ConfigActivity {
                 intent.putExtra("nextActivity", SelectCardsActivity.class);
                 ServerConfigActivity.this.startActivity(intent);
             }
-        });
+        });*/
+    }
+
+    protected void aux() {
+
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setContentView(R.layout.serverconfig);
         super.onCreate(savedInstanceState);
         Intent intent = new Intent(this, GameServerService.class);
         startService(intent);
@@ -68,7 +74,9 @@ public class ServerConfigActivity extends ConfigActivity {
     class ServerConfigIncomingHandler extends ConfigActivity.IncomingHandler {
         @Override
         public void handleMessage(Message msg) {
-            super.handleMessage(msg);
+            switch (msg.arg1) {
+                default: super.handleMessage(msg);
+            }
         }
     }
 }

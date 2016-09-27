@@ -22,7 +22,6 @@ public class GameServerService extends GameService {
     public static final String SERVICE_INSTANCE = "_gameServer";
     private static final String TAG = "GameServerService";
     private String name = "Server";
-    private String debug = "a";
 
     protected WifiServer wifiServer = null;
 
