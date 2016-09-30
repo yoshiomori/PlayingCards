@@ -14,6 +14,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 import tcc.ronaldoyoshio.playingcards.model.WebMessage;
 import tcc.ronaldoyoshio.playingcards.model.web.server.WifiServer;
@@ -21,9 +23,11 @@ import tcc.ronaldoyoshio.playingcards.model.web.server.WifiServer;
 public class GameServerService extends GameService {
     public static final String SERVICE_INSTANCE = "_gameServer";
     private static final String TAG = "GameServerService";
-    private String name = "Server";
-
+    private static final int MSG_SERVER_SOCKET = 4;
+    private ServerSocketHandler server;
     protected WifiServer wifiServer = null;
+
+    protected Map<String, ClientHandler> clients = new HashMap<>();
 
     @Override
     public void onCreate() {
@@ -33,11 +37,6 @@ public class GameServerService extends GameService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-    }
-
-    @Override
-    protected String getName() {
-        return this.name;
     }
 
     @Override
@@ -53,7 +52,14 @@ public class GameServerService extends GameService {
     class GameServerIncomingHandler extends GameService.IncomingHandler {
         @Override
         public void handleMessage(Message msg) {
-            super.handleMessage(msg);
+            switch (msg.arg1) {
+                case MSG_SERVER_SOCKET:
+                    server = new ServerSocketHandler(4545);
+                    server.start();
+                    break;
+                default:
+                    super.handleMessage(msg);
+            }
         }
     }
 
@@ -66,16 +72,14 @@ public class GameServerService extends GameService {
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
-        Thread server = new ServerSocketHandler(4545);
-        server.start();
+        if (!clients.containsKey(p2pInfo.groupOwnerAddress.getHostAddress())) {
+            clients.put(p2pInfo.groupOwnerAddress.getHostAddress(), null);
+        }
     }
 
-    class ServerSocketHandler extends Thread {
+    private class ServerSocketHandler extends Thread {
         private ServerSocket serverSocket = null;
         private Integer serverPort;
-        private boolean listeningClients = true;
-        private ObjectInputStream input;
-        private ObjectOutputStream output;
 
         public ServerSocketHandler (Integer serverPort) {
             this.serverPort = serverPort;
@@ -85,50 +89,59 @@ public class GameServerService extends GameService {
         public void run() {
             try {
                 serverSocket = new ServerSocket(serverPort);
-                //while (listeningClients) {
-                Log.d(TAG, "Vamos gentar");
-                Socket playerSocket = serverSocket.accept();
-                Log.d(TAG, "qqqqqq");
-                output = new ObjectOutputStream(playerSocket.getOutputStream());
-                Log.d(TAG, "qqqqqq");
-                input = new ObjectInputStream(playerSocket.getInputStream());
-                Log.d(TAG, "qqqqqq");
-                WebMessage response = new WebMessage();
-                Log.d(TAG, "qqqqqq");
-                response.insertMessage("A", "BSD");
-                Log.d(TAG, "qqqqqq");
-                response.insertMessage("B", "AAA");
-                sendMessagePlayer(response);
-                Log.d(TAG, "qqqqqq");
                 while (true) {
-                    Log.d(TAG, "Vamos EEEE");
-                    WebMessage message = (WebMessage) input.readObject();
-                    Log.d(TAG, message.getMessage("S"));
+                    Socket playerSocket = serverSocket.accept();
+                    if (clients.containsKey(playerSocket.getInetAddress().getHostAddress())) {
+                        ClientHandler client = new ClientHandler(playerSocket);
+                        clients.put(playerSocket.getInetAddress().getHostAddress(), client);
+                        client.start();
+                    }
                 }
-                //}
             } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
-                try {
-                    if (serverSocket != null && !serverSocket.isClosed()){
-                        serverSocket.close();
-                    }
-                } catch (IOException e1) {
-                    Log.d(TAG, e.getMessage());
-                }
+                stopListening();
             }
-
         }
 
-        public void sendMessagePlayer(WebMessage message) {
+        public void stopListening() {
+            try {
+                if (serverSocket != null && !serverSocket.isClosed()){
+                    serverSocket.close();
+                }
+            } catch (IOException e) {
+                Log.d(TAG, e.getMessage());
+            }
+        }
+    }
+
+    private class ClientHandler extends Thread {
+        private Socket clientSocket = null;
+        private ObjectInputStream input;
+        private ObjectOutputStream output;
+
+        public ClientHandler(Socket socket) {
+            this.clientSocket = socket;
+        }
+
+        @Override
+        public void run() {
+            try {
+                output = new ObjectOutputStream(clientSocket.getOutputStream());
+                input = new ObjectInputStream(clientSocket.getInputStream());
+                while (true) {
+                    WebMessage message = (WebMessage) input.readObject();
+                }
+            } catch (Exception e) {
+                Log.d(TAG, e.getMessage());
+            }
+        }
+
+        public void sendMessageClient(WebMessage message) {
             try {
                 output.writeObject(message);
             } catch (IOException e) {
                 Log.d(TAG, e.getMessage());
             }
-        }
-
-        public void stopListening() {
-            this.listeningClients = false;
         }
     }
 }

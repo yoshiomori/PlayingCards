@@ -40,6 +40,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
     public static final int MSG_FAILED = 3;
     protected static final String SERVICE_REG_TYPE = "_presence._tcp";
     protected static final String LISTEN_PORT = "4545";
+    private String name;
 
     protected WifiP2pManager manager;
     protected final IntentFilter intentFilter = new IntentFilter();
@@ -62,24 +63,8 @@ public abstract class GameService extends Service implements ConnectionInfoListe
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(getTag(), "Service onStartCommand");
-        for (int i = 0; i < 3; i++) {
-            long endTime = System.currentTimeMillis() + 10*1000;
-            while (System.currentTimeMillis() < endTime) {
-                synchronized (this) {
-                    try {
-                        wait(endTime - System.currentTimeMillis());
-                    } catch (Exception e) {
-                        Log.i(getTag(), e.getMessage());
-                    }
-                }
-            }
-            Log.i(getTag(), "Service running");
-        }
         return Service.START_STICKY;
     }
-
-
-    protected abstract String getName();
 
     protected abstract String getServiceInstance();
 
@@ -88,7 +73,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
     protected void startRegistration() {
         Map<String, String> record = new HashMap<String, String>();
         record.put("LISTEN_PORT", String.valueOf(LISTEN_PORT));
-        record.put("NAME", getName());
+        record.put("NAME", name);
 
         WifiP2pDnsSdServiceInfo service = WifiP2pDnsSdServiceInfo.newInstance(getServiceInstance(), SERVICE_REG_TYPE, record);
         manager.addLocalService(channel, service, new WifiP2pManager.ActionListener() {
@@ -182,6 +167,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
                     break;
                 case MSG_CLIENT:
                     mActivity = msg.replyTo;
+                    name = (msg.getData().getString("Name") != null) ? msg.getData().getString("Name") : name;
                     response = Message.obtain();
                     response.arg1 = ConfigActivity.MSG_SERVICE_CONNECTED;
                     sendMessageToActivity(response);
@@ -194,10 +180,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
                         startRegistration();
                         startDiscoverService();
                         response = Message.obtain();
-                        Bundle bundle = new Bundle();
-                        bundle.putString("Mensagem", "WifiDirect OK");
-                        response.setData(bundle);
-                        response.arg1 = ConfigActivity.MSG_SUCCESS;
+                        response.arg1 = ConfigActivity.MSG_WIFI_DIRECT_OK;
                         sendMessageToActivity(response);
                         Log.d(getTag(), "WifiDirect OK");
                     }

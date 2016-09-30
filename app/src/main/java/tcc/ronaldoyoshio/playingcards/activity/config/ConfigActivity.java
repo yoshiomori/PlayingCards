@@ -9,6 +9,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.microedition.khronos.egl.EGLDisplay;
+
 import tcc.ronaldoyoshio.playingcards.service.GameService;
 
 /**
@@ -35,8 +39,10 @@ public abstract class ConfigActivity extends ListActivity {
     protected Messenger mService = null;
     public static final int MSG_SERVICE_CONNECTED = 0;
     public static final int MSG_WIFI_DIRECT_NOK = 1;
-    public static final int MSG_SUCCESS = 2;
-    public static final int MSG_FAILED = 3;
+    public static final int MSG_WIFI_DIRECT_OK = 2;
+    public static final int MSG_TEXT = 3;
+    public static final int MSG_NEW_DEVICE = 4;
+
     protected Map<String, String> discoveredDevices = new HashMap<>();
 
     protected ArrayAdapter adapter;
@@ -64,15 +70,27 @@ public abstract class ConfigActivity extends ListActivity {
             }
         };
         setListAdapter(adapter);
+
+        EditText editText = (EditText)findViewById(R.id.editText);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Button button = (Button) findViewById(R.id.button);
+                button.setEnabled((s.length() > 0) ? true : false);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
     protected void putItem(String item, View.OnClickListener action){
         items.add(item);
         actions.add(action);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
     protected abstract Messenger getThisMessenger();
@@ -81,9 +99,14 @@ public abstract class ConfigActivity extends ListActivity {
         public void onServiceConnected(ComponentName className, IBinder service) {
             mService = new Messenger(service);
             mBound = true;
+            EditText editText = (EditText) findViewById(R.id.editText);
+            Bundle bundle = new Bundle();
+            bundle.putString("Name", editText.getText().toString());
+
             Message msg = Message.obtain();
             msg.arg1 = GameService.MSG_CLIENT;
             msg.replyTo = getThisMessenger();
+            msg.setData(bundle);
             sendMessageToService(msg);
         }
 
@@ -106,7 +129,7 @@ public abstract class ConfigActivity extends ListActivity {
                     response.arg1 = GameService.MSG_WIFI_DIRECT_SERVICE;
                     sendMessageToService(response);
                     break;
-                case MSG_FAILED:
+                case MSG_TEXT:
                     Log.d(getTag(), msg.getData().getString("Mensagem"));
                     break;
                 case MSG_WIFI_DIRECT_NOK:

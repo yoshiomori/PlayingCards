@@ -29,8 +29,6 @@ import tcc.ronaldoyoshio.playingcards.service.GameService;
  * Created by mori on 27/08/16.
  */
 public class ClientConfigActivity extends ConfigActivity {
-    public static final int MSG_NEW_DEVICE = 4;
-
     private static final String TAG = "ClientConfigActivity";
     public static final int MSG_CONNECT_NOK = 6;
     final Messenger mMessenger = new Messenger(new PlayerConfigIncomingHandler());
@@ -41,14 +39,13 @@ public class ClientConfigActivity extends ConfigActivity {
         super.onCreate(savedInstanceState);
         Intent intent = new Intent(this, GamePlayerService.class);
         startService(intent);
-
     }
 
     @Override
     public void nextView(View view) {
         super.nextView(view);
-        ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipperClient);
-        //flipper.showNext();
+        bindService(new Intent(this, GamePlayerService.class), mConnection,
+                Context.BIND_AUTO_CREATE);
     }
 
     public ClientConfigActivity() {
@@ -80,13 +77,6 @@ public class ClientConfigActivity extends ConfigActivity {
         );
         intent.putExtra("nextActivity", HandActivity.class);
         clientConfig.startActivity(intent);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        bindService(new Intent(this, GamePlayerService.class), mConnection,
-                Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -137,6 +127,11 @@ public class ClientConfigActivity extends ConfigActivity {
                     response = Message.obtain();
                     response.arg1 = GamePlayerService.MSG_REQUEST_DEVICES;
                     sendMessageToService(response);
+                    break;
+                case MSG_WIFI_DIRECT_OK:
+
+                    ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipperClient);
+                    flipper.showNext();
                     break;
                 case 100:
                     aux();

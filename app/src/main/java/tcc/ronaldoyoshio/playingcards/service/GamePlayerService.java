@@ -39,7 +39,6 @@ public class GamePlayerService extends GameService {
     public static final int MSG_REQUEST_DEVICES = 5;
     public static final String SERVICE_INSTANCE = "_gamePlayer";
     private static final String TAG = "GamePlayerService";
-    private String name = "Client";
 
     @Override
     public void onCreate() {
@@ -76,7 +75,7 @@ public class GamePlayerService extends GameService {
             public void onSuccess() {
                 Log.d(getTag(), "Conectando ao serviço");
                 Message response = Message.obtain();
-                response.arg1 = ClientConfigActivity.MSG_SUCCESS;
+                response.arg1 = ClientConfigActivity.MSG_TEXT;
                 Bundle bundle = new Bundle();
                 bundle.putString("Mensagem", "Conectado com Servidor");
                 response.setData(bundle);
@@ -94,11 +93,6 @@ public class GamePlayerService extends GameService {
                 sendMessageToActivity(response);
             }
         });
-    }
-
-    @Override
-    protected String getName() {
-        return this.name;
     }
 
     @Override
@@ -124,7 +118,7 @@ public class GamePlayerService extends GameService {
         handler.start();
     }
 
-    class GamePlayerIncomingHandler extends GameService.IncomingHandler {
+    private class GamePlayerIncomingHandler extends GameService.IncomingHandler {
         @Override
         public void handleMessage(Message msg) {
             Message response;
@@ -170,19 +164,11 @@ public class GamePlayerService extends GameService {
         @Override
         public void run() {
             try {
-                Log.d(TAG, "Vamos gentar");
                 socket.connect(new InetSocketAddress(serverAddress.getHostAddress(), serverPort), 10000);
-                Log.d(TAG, "Aeeee");
                 input = new ObjectInputStream(socket.getInputStream());
                 output = new ObjectOutputStream(socket.getOutputStream());
-                WebMessage response = new WebMessage();
-                response.insertMessage("A","BSD");
-                response.insertMessage("S", "AADDA");
-                sendMessageServer(response);
                 while (true) {
-                    Log.d(TAG, "TTTTTT");
                     WebMessage message = (WebMessage) input.readObject();
-                    Log.d(TAG, message.getMessage("A"));
                 }
             } catch (Exception e) {
                 Log.d(TAG, e.getMessage());

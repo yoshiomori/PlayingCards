@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.view.View;
+import android.widget.ListView;
+import android.widget.ViewFlipper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +44,14 @@ public class ServerConfigActivity extends ConfigActivity {
         });*/
     }
 
+    @Override
+    public void nextView(View view) {
+        super.nextView(view);
+        bindService(new Intent(this, GameServerService.class), mConnection,
+                Context.BIND_AUTO_CREATE);
+    }
+
+
     protected void aux() {
 
     }
@@ -52,13 +62,6 @@ public class ServerConfigActivity extends ConfigActivity {
         super.onCreate(savedInstanceState);
         Intent intent = new Intent(this, GameServerService.class);
         startService(intent);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        bindService(new Intent(this, GameServerService.class), mConnection,
-                Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -75,7 +78,15 @@ public class ServerConfigActivity extends ConfigActivity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.arg1) {
-                default: super.handleMessage(msg);
+                case MSG_WIFI_DIRECT_OK:
+                    ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipperServer);
+                    flipper.showNext();
+                    break;
+                case MSG_NEW_DEVICE:
+
+                    break;
+                default:
+                    super.handleMessage(msg);
             }
         }
     }
