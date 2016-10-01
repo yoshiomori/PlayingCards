@@ -2,6 +2,7 @@ package tcc.ronaldoyoshio.playingcards.service;
 
 import android.content.Intent;
 import android.net.wifi.p2p.WifiP2pInfo;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
@@ -14,16 +15,19 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import tcc.ronaldoyoshio.playingcards.activity.config.server.ServerConfigActivity;
 import tcc.ronaldoyoshio.playingcards.model.WebMessage;
 import tcc.ronaldoyoshio.playingcards.model.web.server.WifiServer;
 
 public class GameServerService extends GameService {
     public static final String SERVICE_INSTANCE = "_gameServer";
     private static final String TAG = "GameServerService";
-    private static final int MSG_SERVER_SOCKET = 4;
+    public static final int MSG_SERVER_SOCKET = 4;
+    public static final int MSG_STOP_SOCKET = 5;
     private ServerSocketHandler server;
     protected WifiServer wifiServer = null;
 
@@ -56,6 +60,9 @@ public class GameServerService extends GameService {
                 case MSG_SERVER_SOCKET:
                     server = new ServerSocketHandler(4545);
                     server.start();
+                    break;
+                case MSG_STOP_SOCKET:
+                    server.stopListening();
                     break;
                 default:
                     super.handleMessage(msg);
@@ -91,9 +98,16 @@ public class GameServerService extends GameService {
                 serverSocket = new ServerSocket(serverPort);
                 while (true) {
                     Socket playerSocket = serverSocket.accept();
-                    if (clients.containsKey(playerSocket.getInetAddress().getHostAddress())) {
+                    String address = playerSocket.getInetAddress().getHostAddress();
+                    if (clients.containsKey(address)) {
                         ClientHandler client = new ClientHandler(playerSocket);
-                        clients.put(playerSocket.getInetAddress().getHostAddress(), client);
+                        clients.put(address, client);
+                        Message msg = Message.obtain();
+                        msg.arg1 = ServerConfigActivity.MSG_NEW_DEVICE;
+                        Bundle bundle = new Bundle();
+                        bundle.putString("Nome", discoveredServices.get(address).getName());
+                        msg.setData(bundle);
+                        sendMessageToActivity(msg);
                         client.start();
                     }
                 }
@@ -130,8 +144,14 @@ public class GameServerService extends GameService {
                 input = new ObjectInputStream(clientSocket.getInputStream());
                 while (true) {
                     WebMessage message = (WebMessage) input.readObject();
+                    handleMessage(message);
                 }
             } catch (Exception e) {
+                try {
+                    clientSocket.close();
+                } catch (IOException e1) {
+                    Log.d(TAG, e.getMessage());
+                }
                 Log.d(TAG, e.getMessage());
             }
         }

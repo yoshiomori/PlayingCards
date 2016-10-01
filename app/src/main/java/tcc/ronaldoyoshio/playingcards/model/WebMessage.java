@@ -5,17 +5,36 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WebMessage implements Serializable {
-    private Map<String, String> map;
+    private Integer tag;
+
+    private Map<String, String> args;
 
     public WebMessage () {
-        map = new HashMap<>();
+        args = new HashMap<>();
+    }
+
+    public Integer getTag() {
+        return tag;
+    }
+
+    public void setTag(Integer tag) {
+        this.tag = tag;
+    }
+
+
+    public Map<String, String> getArgs() {
+        return args;
+    }
+
+    public void setArgs(Map<String, String> args) {
+        this.args = args;
     }
 
     public void insertMessage(String type, String message) {
-        map.put(type, message);
+        args.put(type, message);
     }
 
     public String getMessage(String type) {
-        return map.containsKey(type) ? map.get(type) : "";
+        return args.containsKey(type) ? args.get(type) : "";
     }
 }

@@ -31,6 +31,7 @@ import java.util.Map;
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.config.client.ClientConfigActivity;
 import tcc.ronaldoyoshio.playingcards.broadcastReceiver.WiFiDirectBroadcastReceiver;
+import tcc.ronaldoyoshio.playingcards.model.WebMessage;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 
 public abstract class GameService extends Service implements ConnectionInfoListener {
@@ -194,6 +195,18 @@ public abstract class GameService extends Service implements ConnectionInfoListe
                 default:
                     super.handleMessage(msg);
             }
+        }
+    }
+
+    protected void handleMessage(WebMessage message) {
+        Message msg = Message.obtain();
+        msg.arg1 = message.getTag();
+
+        for (Map.Entry<String, String> entry : message.getArgs().entrySet()) {
+            Bundle bundle = new Bundle();
+            bundle.putString(entry.getKey(), entry.getValue());
+            msg.setData(bundle);
+            sendMessageToActivity(msg);
         }
     }
 

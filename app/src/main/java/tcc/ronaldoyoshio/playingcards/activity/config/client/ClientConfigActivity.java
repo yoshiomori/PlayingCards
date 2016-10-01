@@ -7,6 +7,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -24,13 +25,11 @@ import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
 import tcc.ronaldoyoshio.playingcards.service.GameServerService;
 import tcc.ronaldoyoshio.playingcards.service.GameService;
 
-/**
- * Configuração do cliente.
- * Created by mori on 27/08/16.
- */
+
 public class ClientConfigActivity extends ConfigActivity {
     private static final String TAG = "ClientConfigActivity";
     public static final int MSG_CONNECT_NOK = 6;
+    private static final int MSG_CONNECT_SUCCESS = 7;
     final Messenger mMessenger = new Messenger(new PlayerConfigIncomingHandler());
 
     @Override
@@ -48,25 +47,19 @@ public class ClientConfigActivity extends ConfigActivity {
                 Context.BIND_AUTO_CREATE);
     }
 
-    public ClientConfigActivity() {
-        /*final ClientConfigActivity clientConfig = this;
-        putItem("Pronto", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(clientConfig, TouchConfigActivity.class);
-                intent.putStringArrayListExtra(
-                        "playersName",
-                        new ArrayList<>(Arrays.asList(
-                                new String[]{"Maria", "Bruxa", "servidor(mesa)"}
-                        ))
-                );
-                intent.putExtra("nextActivity", HandActivity.class);
-                clientConfig.startActivity(intent);
-            }
-        });*/
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        TextView textView = (TextView) adapter.getView(position, convertView, parent);
+        textView.setOnClickListener(actions.get(position));
+        return textView;
     }
 
-    protected void aux() {
+    protected void putItem(String item, View.OnClickListener action){
+        items.add(item);
+        actions.add(action);
+    }
+
+    @Override
+    protected void startHandActivity() {
         final ClientConfigActivity clientConfig = this;
         Intent intent = new Intent(clientConfig, TouchConfigActivity.class);
         intent.putStringArrayListExtra(
@@ -129,12 +122,11 @@ public class ClientConfigActivity extends ConfigActivity {
                     sendMessageToService(response);
                     break;
                 case MSG_WIFI_DIRECT_OK:
-
                     ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipperClient);
                     flipper.showNext();
                     break;
-                case 100:
-                    aux();
+                case MSG_CONNECT_SUCCESS:
+
                     break;
                 default:
                     super.handleMessage(msg);

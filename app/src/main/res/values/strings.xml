@@ -6,4 +6,5 @@
     <string name="next">Próximo</string>
     <string name="playerNick">Digite o Nick do seu Jogador</string>
     <string name="serverNick">Digite o Nick do Servidor</string>
+    <string name="toGame">Para o Jogo!</string>
 </resources>

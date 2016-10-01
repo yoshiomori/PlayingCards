@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import java.util.ArrayList;
@@ -19,30 +21,10 @@ import tcc.ronaldoyoshio.playingcards.activity.config.touch.TouchConfigActivity;
 import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
 import tcc.ronaldoyoshio.playingcards.service.GameServerService;
 
-/**
- * Activity para configurar o servidor
- * Created by mori on 26/08/16.
- */
 public class ServerConfigActivity extends ConfigActivity {
     private static final String TAG = "ServerConfigActivity";
+    private static final int MSG_CONFIRM = 5;
     final Messenger mMessenger = new Messenger(new ServerConfigIncomingHandler());
-
-    public ServerConfigActivity() {
-        /*putItem("Pronto", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ServerConfigActivity.this, TouchConfigActivity.class);
-                intent.putStringArrayListExtra(
-                        "playersName",
-                        new ArrayList<>(Arrays.asList(
-                                new String[]{"João", "Maria", "Bruxa"}
-                        ))
-                );
-                intent.putExtra("nextActivity", SelectCardsActivity.class);
-                ServerConfigActivity.this.startActivity(intent);
-            }
-        });*/
-    }
 
     @Override
     public void nextView(View view) {
@@ -51,9 +33,28 @@ public class ServerConfigActivity extends ConfigActivity {
                 Context.BIND_AUTO_CREATE);
     }
 
+    public void waitPlayersConf () {
+        Message msg = Message.obtain();
+        msg.arg1 = GameServerService.MSG_STOP_SOCKET;
+        sendMessageToService(msg);
 
-    protected void aux() {
+        Button button = (Button) findViewById(R.id.buttonFinish);
+        button.setEnabled(false);
+        button.setVisibility(View.GONE);
+        adapter.clear();
+        TextView view = (TextView) findViewById(R.id.wait);
+        view.setText("Esperando Confirmação");
+    }
 
+    @Override
+    protected void startHandActivity() {
+        Intent intent = new Intent(ServerConfigActivity.this, TouchConfigActivity.class);
+        intent.putStringArrayListExtra(
+                "playersName",
+                items
+        );
+        intent.putExtra("nextActivity", SelectCardsActivity.class);
+        ServerConfigActivity.this.startActivity(intent);
     }
 
     @Override
@@ -83,7 +84,16 @@ public class ServerConfigActivity extends ConfigActivity {
                     flipper.showNext();
                     break;
                 case MSG_NEW_DEVICE:
-
+                    Button button = (Button) findViewById(R.id.buttonFinish);
+                    button.setVisibility(View.VISIBLE);
+                    String client = msg.getData().getString("Nome");
+                    if (!items.contains(client)) {
+                        items.add(client);
+                        adapter.notifyDataSetChanged();
+                    }
+                    break;
+                case MSG_CONFIRM:
+                    startHandActivity();
                     break;
                 default:
                     super.handleMessage(msg);

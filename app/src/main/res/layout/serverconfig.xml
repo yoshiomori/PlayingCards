@@ -25,6 +25,7 @@
                 android:layout_marginRight="50dp"
                 android:inputType="text"
                 android:hint="@string/playerNick"
+                android:onClick="nextView"
                 android:focusable="true"
                 android:gravity="center"/>
 
@@ -75,7 +76,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="35dp"
-                    android:text="Para o Jogo!"
+                    android:text="@string/toGame"
                     android:visibility="invisible"/>
 
             <LinearLayout
@@ -85,6 +86,7 @@
                 android:layout_marginTop="10dip">
 
                 <TextView
+                    android:id="@+id/wait"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="20sp"

@@ -169,6 +169,7 @@ public class GamePlayerService extends GameService {
                 output = new ObjectOutputStream(socket.getOutputStream());
                 while (true) {
                     WebMessage message = (WebMessage) input.readObject();
+                    handleMessage(message);
                 }
             } catch (Exception e) {
                 Log.d(TAG, e.getMessage());

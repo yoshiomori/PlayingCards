@@ -30,10 +30,6 @@ import javax.microedition.khronos.egl.EGLDisplay;
 
 import tcc.ronaldoyoshio.playingcards.service.GameService;
 
-/**
- * Activity para configuracao
- * Created by mori on 27/08/16.
- */
 public abstract class ConfigActivity extends ListActivity {
     protected boolean mBound = false;
     protected Messenger mService = null;
@@ -46,8 +42,8 @@ public abstract class ConfigActivity extends ListActivity {
     protected Map<String, String> discoveredDevices = new HashMap<>();
 
     protected ArrayAdapter adapter;
-    ArrayList<String> items = new ArrayList<>();
-    ArrayList<View.OnClickListener> actions = new ArrayList<>();
+    protected ArrayList<String> items = new ArrayList<>();
+    protected ArrayList<View.OnClickListener> actions = new ArrayList<>();
 
     public void nextView(View view) {
         EditText editText = (EditText) findViewById(R.id.editText);
@@ -58,39 +54,30 @@ public abstract class ConfigActivity extends ListActivity {
         progressBar.setVisibility(View.VISIBLE);
     }
 
+    protected abstract void startHandActivity();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items) {
-            @Override
-            public View getView(final int position, View convertView, ViewGroup parent) {
-                TextView textView = (TextView) super.getView(position, convertView, parent);
-                textView.setOnClickListener(actions.get(position));
-                return textView;
-            }
-        };
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
         setListAdapter(adapter);
 
         EditText editText = (EditText)findViewById(R.id.editText);
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Button button = (Button) findViewById(R.id.button);
-                button.setEnabled((s.length() > 0) ? true : false);
-            }
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    Button button = (Button) findViewById(R.id.button);
+                    button.setEnabled((s.length() > 0) ? true : false);
+                }
 
-            @Override
-            public void afterTextChanged(Editable s) {
+                @Override
+                public void afterTextChanged(Editable s) {
             }
         });
-    }
-    protected void putItem(String item, View.OnClickListener action){
-        items.add(item);
-        actions.add(action);
     }
 
     protected abstract Messenger getThisMessenger();
