@@ -125,9 +125,6 @@ public class ClientConfigActivity extends ConfigActivity {
                     ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipperClient);
                     flipper.showNext();
                     break;
-                case MSG_CONNECT_SUCCESS:
-
-                    break;
                 default:
                     super.handleMessage(msg);
             }

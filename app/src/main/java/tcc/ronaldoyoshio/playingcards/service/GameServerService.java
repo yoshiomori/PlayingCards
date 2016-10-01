@@ -100,6 +100,12 @@ public class GameServerService extends GameService {
                     Socket playerSocket = serverSocket.accept();
                     String address = playerSocket.getInetAddress().getHostAddress();
                     if (clients.containsKey(address)) {
+                        for (Map.Entry<String, ClientHandler> client : clients.entrySet()) {
+                            WebMessage message = new WebMessage();
+                            message.setTag(GamePlayerService.MSG_WEB_CLIENT);
+                            message.insertMessage(client.getKey(), client.getKey());
+                            client.getValue().sendMessageClient(message);
+                        }
                         ClientHandler client = new ClientHandler(playerSocket);
                         clients.put(address, client);
                         Message msg = Message.obtain();

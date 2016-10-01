@@ -37,6 +37,7 @@ import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 public class GamePlayerService extends GameService {
     public static final int MSG_CONNECT_TO_DEVICE = 4;
     public static final int MSG_REQUEST_DEVICES = 5;
+    public static final int MSG_WEB_CLIENT = 6;
     public static final String SERVICE_INSTANCE = "_gamePlayer";
     private static final String TAG = "GamePlayerService";
 
