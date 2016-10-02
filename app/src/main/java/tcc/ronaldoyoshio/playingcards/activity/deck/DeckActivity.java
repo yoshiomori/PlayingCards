@@ -1,6 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.activity.deck;
 
 import android.os.Bundle;
+import android.os.Messenger;
 import android.view.KeyEvent;
 
 import java.util.ArrayList;
@@ -19,6 +20,9 @@ public class DeckActivity extends GLActivity {
     private ArrayList<String> playersName;
     private ArrayList<Integer> directions;
     MotionCardImage cardImage;
+
+    protected boolean mBound = false;
+    protected Messenger mService = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +112,7 @@ public class DeckActivity extends GLActivity {
                 }
             }
         });
-        cardImage.setOnSendCard(new SendCard(cardImage, playersName, directions));
+        cardImage.setOnSendCard(new SendCard(cardImage, playersName, directions, mService));
         addImage(cardImage);
 
         super.onCreate(savedInstanceState);

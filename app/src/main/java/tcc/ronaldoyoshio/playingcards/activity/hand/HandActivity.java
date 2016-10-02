@@ -1,6 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.activity.hand;
 
 import android.os.Bundle;
+import android.os.Messenger;
 
 import java.util.ArrayList;
 
@@ -11,6 +12,9 @@ import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
 
 public class HandActivity extends GLActivity {
     MotionCardImage motionCardImage;
+
+    protected boolean mBound = false;
+    protected Messenger mService = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +36,8 @@ public class HandActivity extends GLActivity {
             }
 
             motionCardImage = new MotionCardImage(this);
-            motionCardImage.setOnSendCard(new SendCard(motionCardImage, playersName, directions));
+            motionCardImage.setOnSendCard(
+                    new SendCard(motionCardImage, playersName, directions, mService));
             addImage(motionCardImage);
         }
 

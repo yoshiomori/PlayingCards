@@ -1,5 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.touchEventHandler;
 
+import android.os.Messenger;
+
 import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
@@ -12,11 +14,16 @@ public class SendCard implements OnSendCard {
     private MotionCardImage cardImage;
     private final ArrayList<String> playersName;
     private final ArrayList<Integer> directions;
+    private Messenger mService;
 
-    public SendCard(MotionCardImage cardImage, ArrayList<String> playersName, ArrayList<Integer> directions) {
+    public SendCard(MotionCardImage cardImage,
+                    ArrayList<String> playersName,
+                    ArrayList<Integer> directions,
+                    Messenger mService) {
         this.cardImage = cardImage;
         this.playersName = playersName;
         this.directions = directions;
+        this.mService = mService;
     }
 
     @Override
