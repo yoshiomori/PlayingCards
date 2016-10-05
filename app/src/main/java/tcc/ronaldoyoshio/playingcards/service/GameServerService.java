@@ -19,7 +19,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import tcc.ronaldoyoshio.playingcards.activity.config.client.ClientConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.config.server.ServerConfigActivity;
+import tcc.ronaldoyoshio.playingcards.activity.deck.DeckActivity;
+import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
 import tcc.ronaldoyoshio.playingcards.model.WebMessage;
 import tcc.ronaldoyoshio.playingcards.model.web.server.WifiServer;
 
@@ -28,9 +31,10 @@ public class GameServerService extends GameService {
     private static final String TAG = "GameServerService";
     public static final int MSG_SERVER_SOCKET = 4;
     public static final int MSG_STOP_SOCKET = 5;
+    public static final int MSG_SEND_PLAYER = 7;
     private ServerSocketHandler server;
     protected WifiServer wifiServer = null;
-
+    protected Map<String, String> clientAddress = new HashMap<>();
     protected Map<String, ClientHandler> clients = new HashMap<>();
 
     @Override
@@ -63,6 +67,14 @@ public class GameServerService extends GameService {
                     break;
                 case MSG_STOP_SOCKET:
                     server.stopListening();
+                    for (Map.Entry<String, ClientHandler> client : clients.entrySet()) {
+                        WebMessage message = new WebMessage();
+                        message.setTag(ClientConfigActivity.MSG_WEB_INIT);
+                        client.getValue().sendMessageClient(message);
+                    }
+                    break;
+                case MSG_SEND_CARD:
+                    sendCardToPlayer(msg.getData().getString("Player"), msg.getData().getStringArrayList("Cards"));
                     break;
                 default:
                     super.handleMessage(msg);
@@ -84,6 +96,15 @@ public class GameServerService extends GameService {
         }
     }
 
+    private void sendCardToPlayer(String player, ArrayList<String> cards) {
+        WebMessage message = new WebMessage();
+        message.setTag(HandActivity.MSG_RECEIVE_CARD);
+        for (int i = 0; i < cards.size(); i++) {
+            message.insertMessage("Card" + i, cards.get(i));
+        }
+        clients.get(player).sendMessageClient(message);
+    }
+
     private class ServerSocketHandler extends Thread {
         private ServerSocket serverSocket = null;
         private Integer serverPort;
@@ -96,14 +117,17 @@ public class GameServerService extends GameService {
         public void run() {
             try {
                 serverSocket = new ServerSocket(serverPort);
+                Log.d(getTag(), "aaa");
                 while (true) {
                     Socket playerSocket = serverSocket.accept();
                     String address = playerSocket.getInetAddress().getHostAddress();
                     if (clients.containsKey(address)) {
+                        Log.d(getTag(), "aaa");
+                        String nome = discoveredServices.get(address).getName();
                         for (Map.Entry<String, ClientHandler> client : clients.entrySet()) {
                             WebMessage message = new WebMessage();
-                            message.setTag(GamePlayerService.MSG_WEB_CLIENT);
-                            message.insertMessage(client.getKey(), client.getKey());
+                            message.setTag(ClientConfigActivity.MSG_WEB_PLAYER);
+                            message.insertMessage("Player",nome);
                             client.getValue().sendMessageClient(message);
                         }
                         ClientHandler client = new ClientHandler(playerSocket);
@@ -111,7 +135,7 @@ public class GameServerService extends GameService {
                         Message msg = Message.obtain();
                         msg.arg1 = ServerConfigActivity.MSG_NEW_DEVICE;
                         Bundle bundle = new Bundle();
-                        bundle.putString("Nome", discoveredServices.get(address).getName());
+                        bundle.putString("Nome", nome);
                         msg.setData(bundle);
                         sendMessageToActivity(msg);
                         client.start();
@@ -146,6 +170,7 @@ public class GameServerService extends GameService {
         @Override
         public void run() {
             try {
+                Log.d(getTag(), "aaa");
                 output = new ObjectOutputStream(clientSocket.getOutputStream());
                 input = new ObjectInputStream(clientSocket.getInputStream());
                 while (true) {
@@ -159,6 +184,33 @@ public class GameServerService extends GameService {
                     Log.d(TAG, e.getMessage());
                 }
                 Log.d(TAG, e.getMessage());
+            }
+        }
+
+        private void handleMessage(WebMessage message) {
+            switch (message.getTag()) {
+                case MSG_SEND_CARD:
+                    String player = message.getMessage("Player");
+                    ArrayList<String> cards = new ArrayList<>();
+                    for (int i = 0; true; i++) {
+                        String card = message.getMessage("Card" + i);
+                        if (card.equals("")) break;
+                        else cards.add(card);
+                    }
+
+                    if (player.equals(name)) {
+                        Message response = Message.obtain();
+                        response.arg1 = DeckActivity.MSG_RECEIVE_CARD;
+                        Bundle bundle = new Bundle();
+                        bundle.putStringArrayList("Cards", cards);
+                        response.setData(bundle);
+                        sendMessageToActivity(response);
+                    }
+                    else {
+                        sendCardToPlayer(player, cards);
+                    }
+                default:
+                    break;
             }
         }
 

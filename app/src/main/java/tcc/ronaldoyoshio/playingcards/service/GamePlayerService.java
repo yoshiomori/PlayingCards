@@ -31,15 +31,17 @@ import java.util.Map;
 
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.config.client.ClientConfigActivity;
+import tcc.ronaldoyoshio.playingcards.activity.deck.DeckActivity;
+import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
 import tcc.ronaldoyoshio.playingcards.model.WebMessage;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 
 public class GamePlayerService extends GameService {
     public static final int MSG_CONNECT_TO_DEVICE = 4;
     public static final int MSG_REQUEST_DEVICES = 5;
-    public static final int MSG_WEB_CLIENT = 6;
     public static final String SERVICE_INSTANCE = "_gamePlayer";
     private static final String TAG = "GamePlayerService";
+    private PlayerSocketHandler handler = null;
 
     @Override
     public void onCreate() {
@@ -115,7 +117,7 @@ public class GamePlayerService extends GameService {
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
-        Thread handler = new PlayerSocketHandler(p2pInfo.groupOwnerAddress, 4545);
+        handler = new PlayerSocketHandler(p2pInfo.groupOwnerAddress, 4545);
         handler.start();
     }
 
@@ -145,6 +147,16 @@ public class GamePlayerService extends GameService {
                         sendDiscoveredServiceMessage(service);
                     }
                     break;
+                case MSG_SEND_CARD:
+                    WebMessage message = new WebMessage();
+                    message.setTag(GameServerService.MSG_SEND_CARD);
+                    ArrayList<String> cards = msg.getData().getStringArrayList("Cards");
+                    for (int i = 0; i < cards.size(); i++) {
+                        message.insertMessage("Card" + i, cards.get(i));
+                    }
+                    message.insertMessage("Player", msg.getData().getString("Player"));
+                    handler.sendMessageServer(message);
+                    break;
                 default:
                     super.handleMessage(msg);
             }
@@ -165,7 +177,7 @@ public class GamePlayerService extends GameService {
         @Override
         public void run() {
             try {
-                socket.connect(new InetSocketAddress(serverAddress.getHostAddress(), serverPort), 10000);
+                socket.connect(new InetSocketAddress(serverAddress.getHostAddress(), serverPort), 0);
                 input = new ObjectInputStream(socket.getInputStream());
                 output = new ObjectOutputStream(socket.getOutputStream());
                 while (true) {
@@ -182,6 +194,31 @@ public class GamePlayerService extends GameService {
                         Log.d(TAG, e.getMessage());
                     }
             }
+        }
+
+        private void handleMessage(WebMessage message) {
+            Message msg = Message.obtain();
+            msg.arg1 = message.getTag();
+            Bundle bundle = new Bundle();
+
+            switch (msg.arg1) {
+                case ClientConfigActivity.MSG_WEB_PLAYER:
+                    bundle.putString("Player", message.getMessage("Player"));
+                    break;
+                case HandActivity.MSG_RECEIVE_CARD:
+                    ArrayList<String> cards = new ArrayList<>();
+                    for (int i = 0; true; i++) {
+                        String card = message.getMessage("Card" + i);
+                        if (card.equals("")) break;
+                        else cards.add(card);
+                    }
+                    bundle.putStringArrayList("Cards", cards);
+                    break;
+                default:
+                    break;
+            }
+            msg.setData(bundle);
+            sendMessageToActivity(msg);
         }
 
         public void sendMessageServer(WebMessage message) {

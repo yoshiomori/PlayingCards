@@ -1,5 +1,6 @@
 package tcc.ronaldoyoshio.playingcards.activity.config.client;
 
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +9,8 @@ import android.os.Messenger;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -29,12 +32,22 @@ import tcc.ronaldoyoshio.playingcards.service.GameService;
 public class ClientConfigActivity extends ConfigActivity {
     private static final String TAG = "ClientConfigActivity";
     public static final int MSG_CONNECT_NOK = 6;
-    private static final int MSG_CONNECT_SUCCESS = 7;
+    public static final int MSG_WEB_PLAYER = 7;
+    public static final int MSG_WEB_INIT = 8;
     final Messenger mMessenger = new Messenger(new PlayerConfigIncomingHandler());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.clientconfig);
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items) {
+            @Override
+            public View getView(final int position, View convertView, ViewGroup parent) {
+                TextView textView = (TextView) super.getView(position, convertView, parent);
+                textView.setOnClickListener(actions.get(position));
+                return textView;
+            }
+        };
+        setListAdapter(adapter);
         super.onCreate(savedInstanceState);
         Intent intent = new Intent(this, GamePlayerService.class);
         startService(intent);
@@ -47,10 +60,9 @@ public class ClientConfigActivity extends ConfigActivity {
                 Context.BIND_AUTO_CREATE);
     }
 
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        TextView textView = (TextView) adapter.getView(position, convertView, parent);
-        textView.setOnClickListener(actions.get(position));
-        return textView;
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+
     }
 
     protected void putItem(String item, View.OnClickListener action){
@@ -59,14 +71,12 @@ public class ClientConfigActivity extends ConfigActivity {
     }
 
     @Override
-    protected void startHandActivity() {
+    protected void startTouchActivity() {
         final ClientConfigActivity clientConfig = this;
         Intent intent = new Intent(clientConfig, TouchConfigActivity.class);
         intent.putStringArrayListExtra(
                 "playersName",
-                new ArrayList<>(Arrays.asList(
-                        new String[]{"Maria", "Bruxa", "servidor(mesa)"}
-                ))
+                items
         );
         intent.putExtra("nextActivity", HandActivity.class);
         clientConfig.startActivity(intent);
@@ -106,6 +116,8 @@ public class ClientConfigActivity extends ConfigActivity {
                                 TextView t = (TextView)findViewById(R.id.wait);
                                 t.setText("Esperando Servidor");
                                 adapter.clear();
+                                //items.clear();
+                                //items.add(discoveredDevices.get(address));
                                 adapter.notifyDataSetChanged();
                             }
                         });
@@ -124,6 +136,12 @@ public class ClientConfigActivity extends ConfigActivity {
                 case MSG_WIFI_DIRECT_OK:
                     ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipperClient);
                     flipper.showNext();
+                    break;
+                case MSG_WEB_PLAYER:
+                    items.add(msg.getData().getString("Player"));
+                    break;
+                case MSG_WEB_INIT:
+                    startTouchActivity();
                     break;
                 default:
                     super.handleMessage(msg);

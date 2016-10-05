@@ -41,7 +41,8 @@ public abstract class GameService extends Service implements ConnectionInfoListe
     public static final int MSG_FAILED = 3;
     protected static final String SERVICE_REG_TYPE = "_presence._tcp";
     protected static final String LISTEN_PORT = "4545";
-    private String name;
+    public static final int MSG_SEND_CARD = 6;
+    protected String name;
 
     protected WifiP2pManager manager;
     protected final IntentFilter intentFilter = new IntentFilter();
@@ -198,18 +199,6 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         }
     }
 
-    protected void handleMessage(WebMessage message) {
-        Message msg = Message.obtain();
-        msg.arg1 = message.getTag();
-
-        for (Map.Entry<String, String> entry : message.getArgs().entrySet()) {
-            Bundle bundle = new Bundle();
-            bundle.putString(entry.getKey(), entry.getValue());
-            msg.setData(bundle);
-            sendMessageToActivity(msg);
-        }
-    }
-
     protected void sendMessageToActivity(Message msg) {
         if (mActivity == null) return;
         try {
@@ -240,12 +229,10 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         manager.stopPeerDiscovery(channel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
-
             }
 
             @Override
             public void onFailure(int reason) {
-
             }
         });
     }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -47,7 +48,7 @@ public class ServerConfigActivity extends ConfigActivity {
     }
 
     @Override
-    protected void startHandActivity() {
+    protected void startTouchActivity() {
         Intent intent = new Intent(ServerConfigActivity.this, TouchConfigActivity.class);
         intent.putStringArrayListExtra(
                 "playersName",
@@ -60,6 +61,8 @@ public class ServerConfigActivity extends ConfigActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.serverconfig);
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
+        setListAdapter(adapter);
         super.onCreate(savedInstanceState);
         Intent intent = new Intent(this, GameServerService.class);
         startService(intent);
@@ -82,6 +85,9 @@ public class ServerConfigActivity extends ConfigActivity {
                 case MSG_WIFI_DIRECT_OK:
                     ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipperServer);
                     flipper.showNext();
+                    Message response = Message.obtain();
+                    response.arg1 = GameServerService.MSG_SERVER_SOCKET;
+                    sendMessageToService(response);
                     break;
                 case MSG_NEW_DEVICE:
                     Button button = (Button) findViewById(R.id.buttonFinish);
@@ -93,7 +99,7 @@ public class ServerConfigActivity extends ConfigActivity {
                     }
                     break;
                 case MSG_CONFIRM:
-                    startHandActivity();
+                    startTouchActivity();
                     break;
                 default:
                     super.handleMessage(msg);

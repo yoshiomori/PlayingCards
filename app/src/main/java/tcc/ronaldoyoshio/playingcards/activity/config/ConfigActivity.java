@@ -54,13 +54,11 @@ public abstract class ConfigActivity extends ListActivity {
         progressBar.setVisibility(View.VISIBLE);
     }
 
-    protected abstract void startHandActivity();
+    protected abstract void startTouchActivity();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
-        setListAdapter(adapter);
 
         EditText editText = (EditText)findViewById(R.id.editText);
             editText.addTextChangedListener(new TextWatcher() {
