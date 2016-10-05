@@ -1,7 +1,15 @@
 package tcc.ronaldoyoshio.playingcards.activity.deck;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
 import android.os.Messenger;
+import android.os.RemoteException;
 import android.view.KeyEvent;
 
 import java.util.ArrayList;
@@ -12,10 +20,13 @@ import tcc.ronaldoyoshio.playingcards.images.BackGroundImage;
 import tcc.ronaldoyoshio.playingcards.images.CardImage;
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
 import tcc.ronaldoyoshio.playingcards.model.Cards;
+import tcc.ronaldoyoshio.playingcards.service.GameServerService;
+import tcc.ronaldoyoshio.playingcards.service.GameService;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCard;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 
 public class DeckActivity extends GLActivity {
+    public static final int MSG_RECEIVE_CARD = 1 ;
     Cards cards;
     private ArrayList<String> playersName;
     private ArrayList<Integer> directions;
@@ -23,6 +34,7 @@ public class DeckActivity extends GLActivity {
 
     protected boolean mBound = false;
     protected Messenger mService = null;
+    final Messenger mMessenger = new Messenger(new IncomingHandler());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +130,8 @@ public class DeckActivity extends GLActivity {
         super.onCreate(savedInstanceState);
 
         print(cards);
+        bindService(new Intent(this, GameServerService.class), mConnection,
+                Context.BIND_AUTO_CREATE);
     }
 
     private void print(Cards cards) {
@@ -148,6 +162,45 @@ public class DeckActivity extends GLActivity {
         for (String card :
                 cards) {
             cardImage.addCard(card);
+        }
+    }
+
+    protected ServiceConnection mConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+        mService = new Messenger(service);
+        mBound = true;
+        Message msg = Message.obtain();
+        msg.arg1 = GameService.MSG_CLIENT;
+        msg.replyTo = mMessenger;
+        sendMessageToService(msg);
+    }
+
+    public void onServiceDisconnected(ComponentName className) {
+        mService = null;
+        mBound = false;
+    }
+};
+
+
+    class IncomingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.arg1) {
+                case MSG_RECEIVE_CARD:
+                    onReceiveCard(msg.getData().getStringArrayList("Cards"));
+                    break;
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+    }
+
+    public void sendMessageToService(Message msg) {
+        if (!mBound) return;
+        try {
+            mService.send(msg);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 }

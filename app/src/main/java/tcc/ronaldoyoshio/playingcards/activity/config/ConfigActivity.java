@@ -9,53 +9,73 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
+import tcc.ronaldoyoshio.playingcards.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.microedition.khronos.egl.EGLDisplay;
+
 import tcc.ronaldoyoshio.playingcards.service.GameService;
 
-/**
- * Activity para configuracao
- * Created by mori on 27/08/16.
- */
 public abstract class ConfigActivity extends ListActivity {
     protected boolean mBound = false;
     protected Messenger mService = null;
     public static final int MSG_SERVICE_CONNECTED = 0;
     public static final int MSG_WIFI_DIRECT_NOK = 1;
-    public static final int MSG_SUCCESS = 2;
-    public static final int MSG_FAILED = 3;
+    public static final int MSG_WIFI_DIRECT_OK = 2;
+    public static final int MSG_TEXT = 3;
+    public static final int MSG_NEW_DEVICE = 4;
+
     protected Map<String, String> discoveredDevices = new HashMap<>();
 
-    ArrayList<String> items = new ArrayList<>();
-    ArrayList<View.OnClickListener> actions = new ArrayList<>();
+    protected ArrayAdapter adapter;
+    protected ArrayList<String> items = new ArrayList<>();
+    protected ArrayList<View.OnClickListener> actions = new ArrayList<>();
+
+    public void nextView(View view) {
+        EditText editText = (EditText) findViewById(R.id.editText);
+        Button button = (Button) findViewById(R.id.button);
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        editText.setFocusable(false);
+        button.setEnabled(false);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    protected abstract void startTouchActivity();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items) {
-            @Override
-            public View getView(final int position, View convertView, ViewGroup parent) {
-                TextView textView = (TextView) super.getView(position, convertView, parent);
-                textView.setOnClickListener(actions.get(position));
-                return textView;
+
+        EditText editText = (EditText)findViewById(R.id.editText);
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    Button button = (Button) findViewById(R.id.button);
+                    button.setEnabled((s.length() > 0) ? true : false);
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
             }
         });
-    }
-    protected void putItem(String item, View.OnClickListener action){
-        items.add(item);
-        actions.add(action);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
     protected abstract Messenger getThisMessenger();
@@ -64,9 +84,14 @@ public abstract class ConfigActivity extends ListActivity {
         public void onServiceConnected(ComponentName className, IBinder service) {
             mService = new Messenger(service);
             mBound = true;
+            EditText editText = (EditText) findViewById(R.id.editText);
+            Bundle bundle = new Bundle();
+            bundle.putString("Name", editText.getText().toString());
+
             Message msg = Message.obtain();
             msg.arg1 = GameService.MSG_CLIENT;
             msg.replyTo = getThisMessenger();
+            msg.setData(bundle);
             sendMessageToService(msg);
         }
 
@@ -81,24 +106,22 @@ public abstract class ConfigActivity extends ListActivity {
     protected class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
+            Message response;
             switch (msg.arg1) {
                 case MSG_SERVICE_CONNECTED:
-                    System.out.println("Activity conectada");
-                    Message msgWifiDirect = Message.obtain();
-                    msgWifiDirect.arg1 = GameService.MSG_WIFI_DIRECT_SERVICE;
-                    sendMessageToService(msgWifiDirect);
+                    response = Message.obtain();
+                    Log.d(getTag(), "Activity conectada");
+                    response.arg1 = GameService.MSG_WIFI_DIRECT_SERVICE;
+                    sendMessageToService(response);
                     break;
-                case MSG_SUCCESS:
-                    Log.d(getTag(), (String) msg.obj);
-                    break;
-                case MSG_FAILED:
-                    Log.d(getTag(), (String) msg.obj);
+                case MSG_TEXT:
+                    Log.d(getTag(), msg.getData().getString("Mensagem"));
                     break;
                 case MSG_WIFI_DIRECT_NOK:
-                    Message msgWifiDirectAgain = Message.obtain();
-                    msgWifiDirectAgain.arg1 = GameService.MSG_WIFI_DIRECT_SERVICE;
-                    sendMessageToService(msgWifiDirectAgain);
-                    System.out.println("WifiDirect NOK");
+                    response = Message.obtain();
+                    response.arg1 = GameService.MSG_WIFI_DIRECT_SERVICE;
+                    sendMessageToService(response);
+                    Log.d(getTag(), "WifiDirect NOK");
                     break;
                 default:
                     super.handleMessage(msg);

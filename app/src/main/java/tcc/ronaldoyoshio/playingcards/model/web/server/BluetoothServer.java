@@ -1,13 +1,5 @@
 package tcc.ronaldoyoshio.playingcards.model.web.server;
 
-public class BluetoothServer implements ServerInterface {
-    @Override
-    public void run() {
+public class BluetoothServer {
 
-    }
-
-    @Override
-    public void closeServer() {
-
-    }
 }
