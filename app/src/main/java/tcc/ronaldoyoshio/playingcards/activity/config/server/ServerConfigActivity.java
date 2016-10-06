@@ -8,18 +8,13 @@ import android.os.Messenger;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
-import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
 import tcc.ronaldoyoshio.playingcards.activity.config.touch.TouchConfigActivity;
-import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
+import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
 import tcc.ronaldoyoshio.playingcards.service.GameServerService;
 
 public class ServerConfigActivity extends ConfigActivity {
@@ -61,7 +56,7 @@ public class ServerConfigActivity extends ConfigActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.serverconfig);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
         setListAdapter(adapter);
         super.onCreate(savedInstanceState);
         Intent intent = new Intent(this, GameServerService.class);

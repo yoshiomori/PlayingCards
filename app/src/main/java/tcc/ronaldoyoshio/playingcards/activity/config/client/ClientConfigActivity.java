@@ -1,12 +1,10 @@
 package tcc.ronaldoyoshio.playingcards.activity.config.client;
 
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -14,27 +12,23 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-
 import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
-import tcc.ronaldoyoshio.playingcards.activity.config.server.ServerConfigActivity;
-import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
 import tcc.ronaldoyoshio.playingcards.activity.config.touch.TouchConfigActivity;
+import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
 import tcc.ronaldoyoshio.playingcards.service.GameServerService;
-import tcc.ronaldoyoshio.playingcards.service.GameService;
 
 
 public class ClientConfigActivity extends ConfigActivity {
     private static final String TAG = "ClientConfigActivity";
+    public static final int MSG_CONNECT_OK = 5;
     public static final int MSG_CONNECT_NOK = 6;
     public static final int MSG_WEB_PLAYER = 7;
     public static final int MSG_WEB_INIT = 8;
     final Messenger mMessenger = new Messenger(new PlayerConfigIncomingHandler());
+    private String serverAddress = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,8 +93,8 @@ public class ClientConfigActivity extends ConfigActivity {
             switch (msg.arg1) {
                 case MSG_NEW_DEVICE:
                     msg.getData().setClassLoader(WiFiP2pDiscoveredService.class.getClassLoader());
-                    WiFiP2pDiscoveredService service = (WiFiP2pDiscoveredService) msg.getData().getParcelable("Device");
-                    final String address = service.getDevice().deviceAddress;
+                    WiFiP2pDiscoveredService service = msg.getData().getParcelable("Device");
+                    final String address = (service != null) ? service.getDevice().deviceAddress : "";
                     if (service.getInstanceName().equals(GameServerService.SERVICE_INSTANCE) && !discoveredDevices.containsKey(address)) {
                         String name = service.getName();
                         discoveredDevices.put(address, name);
@@ -115,14 +109,17 @@ public class ClientConfigActivity extends ConfigActivity {
                                 sendMessageToService(msg);
                                 TextView t = (TextView)findViewById(R.id.wait);
                                 t.setText("Esperando Servidor");
+                                serverAddress = address;
                                 adapter.clear();
-                                //items.clear();
-                                //items.add(discoveredDevices.get(address));
                                 adapter.notifyDataSetChanged();
                             }
                         });
                         adapter.notifyDataSetChanged();
                     }
+                    break;
+                case MSG_CONNECT_OK:
+                    items.clear();
+                    items.add(discoveredDevices.get(serverAddress));
                     break;
                 case MSG_CONNECT_NOK:
                     TextView t = (TextView)findViewById(R.id.wait);

@@ -13,13 +13,12 @@ import android.os.RemoteException;
 
 import java.util.ArrayList;
 
-import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
-import tcc.ronaldoyoshio.playingcards.service.GameServerService;
-import tcc.ronaldoyoshio.playingcards.service.GameService;
-import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCard;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.images.BackGroundImage;
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
+import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
+import tcc.ronaldoyoshio.playingcards.service.GameService;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCard;
 
 public class HandActivity extends GLActivity {
     MotionCardImage motionCardImage;

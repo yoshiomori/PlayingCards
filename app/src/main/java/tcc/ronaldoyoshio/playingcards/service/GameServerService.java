@@ -31,10 +31,7 @@ public class GameServerService extends GameService {
     private static final String TAG = "GameServerService";
     public static final int MSG_SERVER_SOCKET = 4;
     public static final int MSG_STOP_SOCKET = 5;
-    public static final int MSG_SEND_PLAYER = 7;
     private ServerSocketHandler server;
-    protected WifiServer wifiServer = null;
-    protected Map<String, String> clientAddress = new HashMap<>();
     protected Map<String, ClientHandler> clients = new HashMap<>();
 
     @Override
@@ -93,6 +90,7 @@ public class GameServerService extends GameService {
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
         if (!clients.containsKey(p2pInfo.groupOwnerAddress.getHostAddress())) {
             clients.put(p2pInfo.groupOwnerAddress.getHostAddress(), null);
+            Log.d(getTag(), p2pInfo.groupOwnerAddress.getHostAddress());
         }
     }
 
@@ -117,10 +115,10 @@ public class GameServerService extends GameService {
         public void run() {
             try {
                 serverSocket = new ServerSocket(serverPort);
-                Log.d(getTag(), "aaa");
                 while (true) {
                     Socket playerSocket = serverSocket.accept();
                     String address = playerSocket.getInetAddress().getHostAddress();
+                    Log.d(getTag(), address);
                     if (clients.containsKey(address)) {
                         Log.d(getTag(), "aaa");
                         String nome = discoveredServices.get(address).getName();

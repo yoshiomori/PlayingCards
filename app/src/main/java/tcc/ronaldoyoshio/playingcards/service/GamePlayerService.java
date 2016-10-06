@@ -78,10 +78,7 @@ public class GamePlayerService extends GameService {
             public void onSuccess() {
                 Log.d(getTag(), "Conectando ao serviço");
                 Message response = Message.obtain();
-                response.arg1 = ClientConfigActivity.MSG_TEXT;
-                Bundle bundle = new Bundle();
-                bundle.putString("Mensagem", "Conectado com Servidor");
-                response.setData(bundle);
+                response.arg1 = ClientConfigActivity.MSG_CONNECT_OK;
                 sendMessageToActivity(response);
             }
 

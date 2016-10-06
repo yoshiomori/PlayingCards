@@ -5,10 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.wifi.WpsInfo;
-import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
-import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
@@ -16,22 +13,18 @@ import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import tcc.ronaldoyoshio.playingcards.broadcastReceiver.WiFiDirectBroadcastReceiver;
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.config.client.ClientConfigActivity;
-import tcc.ronaldoyoshio.playingcards.broadcastReceiver.WiFiDirectBroadcastReceiver;
-import tcc.ronaldoyoshio.playingcards.model.WebMessage;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 
 public abstract class GameService extends Service implements ConnectionInfoListener {
@@ -55,11 +48,6 @@ public abstract class GameService extends Service implements ConnectionInfoListe
 
     public void setIsiWfiDirectEnabled(boolean b) {
         this.wifiDirectEnabled = b;
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
     }
 
     @Override

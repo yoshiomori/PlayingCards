@@ -13,21 +13,16 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.ViewFlipper;
 
-import tcc.ronaldoyoshio.playingcards.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.microedition.khronos.egl.EGLDisplay;
-
+import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.service.GameService;
 
 public abstract class ConfigActivity extends ListActivity {
@@ -69,7 +64,7 @@ public abstract class ConfigActivity extends ListActivity {
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     Button button = (Button) findViewById(R.id.button);
-                    button.setEnabled((s.length() > 0) ? true : false);
+                    button.setEnabled((s.length() > 0));
                 }
 
                 @Override
