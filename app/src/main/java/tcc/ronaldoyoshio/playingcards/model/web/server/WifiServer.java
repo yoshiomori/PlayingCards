@@ -1,43 +1,41 @@
 package tcc.ronaldoyoshio.playingcards.model.web.server;
 
+import android.os.Handler;
+import android.util.Log;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
-import java.net.Socket;
 
-public class WifiServer implements ServerInterface {
+public class WifiServer {
+    ServerSocket socket = null;
+    private Handler handler;
+    private static final String TAG = "WifiServer";
+    private int port = 8888;
+    private InputStream iStream;
+    private OutputStream oStream;
 
-    private static WifiServer server = new WifiServer();
-    private ServerSocket serverSocket;
-    private final int serverPort = 8888;
-
-    private WifiServer() {}
-
-    public static WifiServer getInstance() {
-        return server;
+    public WifiServer(Handler handler) throws IOException {
+        socket = new ServerSocket(port);
+        this.handler = handler;
+        Log.d(TAG, "Server socket iniciado");
     }
 
-    @Override
-    public void run() {
-        try {
-            serverSocket = new ServerSocket(getPort());
-            Socket socket = serverSocket.accept();
-        } catch (IOException e) {
-            System.out.println("Não foi possível iniciar servidor.");
-        }
-    }
-
-    public int getPort() {
-        return serverPort;
-    }
-
-    @Override
-    public void closeServer() {
-        if (serverSocket != null) {
+    /*public void run() {
+        while (true) {
             try {
-                serverSocket.close();
+
+
             } catch (IOException e) {
-                System.out.println("Não foi possível encerrar servidor.");
+                try {
+                    if (socket != null && !socket.isClosed())
+                        socket.close();
+                } catch (IOException ioe) {
+
+                }
+                break;
             }
         }
-    }
+    }*/
 }

@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">PlayingCards</string>
+    <string name="finding_service">Procurando dispositivos</string>
+    <string name="waiting_players">Esperando Jogadores</string>
+    <string name="begin">Começar Jogo</string>
+    <string name="next">Próximo</string>
+    <string name="playerNick">Digite o Nick do seu Jogador</string>
+    <string name="serverNick">Digite o Nick do Servidor</string>
+    <string name="toGame">Para o Jogo!</string>
 </resources>

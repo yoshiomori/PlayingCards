@@ -1,10 +1,14 @@
 package tcc.ronaldoyoshio.playingcards.touchEventHandler;
 
+import android.os.Bundle;
+import android.os.Message;
 import android.os.Messenger;
+import android.os.RemoteException;
 
 import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
+import tcc.ronaldoyoshio.playingcards.service.GameService;
 
 /**
  * Classe que lida com o envio das cartas.
@@ -15,6 +19,8 @@ public class SendCard implements OnSendCard {
     private final ArrayList<String> playersName;
     private final ArrayList<Integer> directions;
     private Messenger mService;
+
+    private boolean mBound = false;
 
     public SendCard(MotionCardImage cardImage,
                     ArrayList<String> playersName,
@@ -37,7 +43,31 @@ public class SendCard implements OnSendCard {
                 y
         );
 
+        Message message = Message.obtain();
+        message.arg1 = GameService.MSG_SEND_CARD;
+        Bundle bundle = new Bundle();
+        bundle.putString("Player", targetPlayerName);
+        bundle.putStringArrayList("Cards", cards);
+        sendMessageToService(message);
+
         System.out.println("Enviando " + cards + " para :" + targetPlayerName);
         cardImage.removeCardsAtPointer(pointerId);
+    }
+
+    public boolean ismBound() {
+        return mBound;
+    }
+
+    public void setmBound(boolean mBound) {
+        this.mBound = mBound;
+    }
+
+    public void sendMessageToService(Message msg) {
+        if (!mBound) return;
+        try {
+            mService.send(msg);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }
