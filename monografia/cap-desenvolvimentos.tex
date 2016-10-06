@@ -16,7 +16,7 @@
 %\includegraphics[width=5cm]{figuras/graph}
 %\caption{\label{fig:graph}Exemplo de uma figura.}
 %\end{figure}
-\chapter{Gerenciador de geração de imagens}
+\chapter{Desenhando objetos}
 \label{cap:desenvolvimentos}
 % O objetivo deste capítulo é expor as técnicas e decisões para gerar as imagens das cartas no
 % celular
@@ -30,9 +30,13 @@
 
 % Mostras testes de experimento de tempo durante o processo de otimização.
 
-O desenvolvimento do gerenciador de geração de images foi feita com auxílio da biblioteca gráfica
-openGL, que é um ambiente de desenvolvimento para aplicações gráficas 2D e 3D e especifica uma
-interface de software padrão para hardware de processamento gráfico.
+O Android pode ser visto como uma camada de abstração da interface de manipulação da tela do celular e
+do sensor de toque da tela disponibilisados pelos fabricantes. Nosso aplicativo faz uso desses
+dispositivos, por meio desta camada e não iremos nos preocupar como essa abstração foi implementada.
 
-Para desenhar o fundo, foi necessário especificar 4 vértices para serem usados na contrução de
-dois triângulos. 
+O OpengGL ES é um conjunto de comandos que permitem a especificação de objetos geométricos em duas
+ou três dimenções, junto com comandos que controlam como esses objetos são renderizados no
+framebuffer.
+
+Desta forma iremos usar o OpengGL para gerar o que deve ser desenhado na tela e faremos uso dos
+métodos e classes do android para expor a imagem na tela e receber informações sobre eventos de toque.

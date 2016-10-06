@@ -1,0 +1,12 @@
+*.aux
+*.backup
+*.log
+*.bbl
+*.blg
+*.idx
+*.ilg
+*.ind
+*.toc
+*.kilepr
+*.out
+*.brf
