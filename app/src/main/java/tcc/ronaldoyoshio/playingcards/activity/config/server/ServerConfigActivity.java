@@ -19,7 +19,7 @@ import tcc.ronaldoyoshio.playingcards.service.GameServerService;
 
 public class ServerConfigActivity extends ConfigActivity {
     private static final String TAG = "ServerConfigActivity";
-    private static final int MSG_CONFIRM = 5;
+    public static final int MSG_CONFIRM = 5;
     final Messenger mMessenger = new Messenger(new ServerConfigIncomingHandler());
 
     @Override
@@ -29,17 +29,17 @@ public class ServerConfigActivity extends ConfigActivity {
                 Context.BIND_AUTO_CREATE);
     }
 
-    public void waitPlayersConf () {
+    public void waitPlayersConf (View view) {
         Message msg = Message.obtain();
-        msg.arg1 = GameServerService.MSG_STOP_SOCKET;
+        msg.what = GameServerService.MSG_STOP_SOCKET;
         sendMessageToService(msg);
 
         Button button = (Button) findViewById(R.id.buttonFinish);
         button.setEnabled(false);
         button.setVisibility(View.GONE);
         adapter.clear();
-        TextView view = (TextView) findViewById(R.id.wait);
-        view.setText("Esperando Confirmação");
+        TextView textView = (TextView) findViewById(R.id.wait);
+        textView.setText("Esperando Confirmação");
     }
 
     @Override
@@ -76,12 +76,12 @@ public class ServerConfigActivity extends ConfigActivity {
     class ServerConfigIncomingHandler extends ConfigActivity.IncomingHandler {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.arg1) {
+            switch (msg.what) {
                 case MSG_WIFI_DIRECT_OK:
                     ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipperServer);
                     flipper.showNext();
                     Message response = Message.obtain();
-                    response.arg1 = GameServerService.MSG_SERVER_SOCKET;
+                    response.what = GameServerService.MSG_SERVER_SOCKET;
                     sendMessageToService(response);
                     break;
                 case MSG_NEW_DEVICE:

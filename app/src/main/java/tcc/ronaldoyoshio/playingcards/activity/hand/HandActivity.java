@@ -69,7 +69,7 @@ public class HandActivity extends GLActivity {
             mService = new Messenger(service);
             mBound = true;
             Message msg = Message.obtain();
-            msg.arg1 = GameService.MSG_CLIENT;
+            msg.what = GameService.MSG_CLIENT;
             msg.replyTo = mMessenger;
             sendMessageToService(msg);
         }
@@ -83,7 +83,7 @@ public class HandActivity extends GLActivity {
     class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.arg1) {
+            switch (msg.what) {
                 case MSG_RECEIVE_CARD:
                     onReceiveCard(msg.getData().getStringArrayList("Cards"));
                     break;

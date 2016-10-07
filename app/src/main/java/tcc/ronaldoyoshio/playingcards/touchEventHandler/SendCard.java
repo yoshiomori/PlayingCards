@@ -44,7 +44,7 @@ public class SendCard implements OnSendCard {
         );
 
         Message message = Message.obtain();
-        message.arg1 = GameService.MSG_SEND_CARD;
+        message.what = GameService.MSG_SEND_CARD;
         Bundle bundle = new Bundle();
         bundle.putString("Player", targetPlayerName);
         bundle.putStringArrayList("Cards", cards);
