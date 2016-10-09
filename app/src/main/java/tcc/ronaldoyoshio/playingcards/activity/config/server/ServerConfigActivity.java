@@ -1,7 +1,9 @@
 package tcc.ronaldoyoshio.playingcards.activity.config.server;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -14,6 +16,7 @@ import android.widget.ViewFlipper;
 import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.config.touch.TouchConfigActivity;
+import tcc.ronaldoyoshio.playingcards.activity.deck.DeckActivity;
 import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
 import tcc.ronaldoyoshio.playingcards.service.GameServerService;
 
@@ -37,20 +40,21 @@ public class ServerConfigActivity extends ConfigActivity {
         Button button = (Button) findViewById(R.id.buttonFinish);
         button.setEnabled(false);
         button.setVisibility(View.GONE);
-        adapter.clear();
+
         TextView textView = (TextView) findViewById(R.id.wait);
         textView.setText("Esperando Confirmação");
     }
 
     @Override
     protected void startTouchActivity() {
-        Intent intent = new Intent(ServerConfigActivity.this, TouchConfigActivity.class);
+        final ServerConfigActivity serverConfig = this;
+        Intent intent = new Intent(serverConfig, TouchConfigActivity.class);
         intent.putStringArrayListExtra(
                 "playersName",
                 items
         );
-        intent.putExtra("nextActivity", SelectCardsActivity.class);
-        ServerConfigActivity.this.startActivity(intent);
+        intent.putExtra("nextActivity", DeckActivity.class);
+        serverConfig.startActivity(intent);
     }
 
     @Override
@@ -59,6 +63,8 @@ public class ServerConfigActivity extends ConfigActivity {
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
         setListAdapter(adapter);
         super.onCreate(savedInstanceState);
+        PackageManager pManager = this.getPackageManager();
+        pManager.setComponentEnabledSetting(new ComponentName(getApplicationContext(), GameServerService.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
         Intent intent = new Intent(this, GameServerService.class);
         startService(intent);
     }

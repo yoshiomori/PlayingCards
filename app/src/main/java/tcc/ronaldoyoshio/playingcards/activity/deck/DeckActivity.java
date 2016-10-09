@@ -130,8 +130,7 @@ public class DeckActivity extends GLActivity {
         super.onCreate(savedInstanceState);
 
         print(cards);
-        bindService(new Intent(this, GameServerService.class), mConnection,
-                Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this, GameServerService.class), mConnection, 0);
     }
 
     private void print(Cards cards) {
@@ -167,19 +166,20 @@ public class DeckActivity extends GLActivity {
 
     protected ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
-        mService = new Messenger(service);
-        mBound = true;
-        Message msg = Message.obtain();
-        msg.what = GameService.MSG_CLIENT;
-        msg.replyTo = mMessenger;
-        sendMessageToService(msg);
-    }
+            mService = new Messenger(service);
+            mBound = true;
+            Message msg = Message.obtain();
+            msg.what = GameService.MSG_CLIENT;
+            msg.arg1 = 1;
+            msg.replyTo = mMessenger;
+            sendMessageToService(msg);
+         }
 
-    public void onServiceDisconnected(ComponentName className) {
-        mService = null;
-        mBound = false;
-    }
-};
+        public void onServiceDisconnected(ComponentName className) {
+            mService = null;
+            mBound = false;
+        }
+    };
 
 
     class IncomingHandler extends Handler {

@@ -1,7 +1,9 @@
 package tcc.ronaldoyoshio.playingcards.activity.config.client;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -43,6 +45,8 @@ public class ClientConfigActivity extends ConfigActivity {
         };
         setListAdapter(adapter);
         super.onCreate(savedInstanceState);
+        PackageManager pManager = this.getPackageManager();
+        pManager.setComponentEnabledSetting(new ComponentName(getApplicationContext(), GamePlayerService.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
         Intent intent = new Intent(this, GamePlayerService.class);
         startService(intent);
     }

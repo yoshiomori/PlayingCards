@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
@@ -80,6 +81,7 @@ public class GamePlayerService extends GameService {
                 Message response = Message.obtain();
                 response.what = ClientConfigActivity.MSG_CONNECT_OK;
                 sendMessageToActivity(response);
+                stopLooking();
             }
 
             @Override
@@ -174,7 +176,7 @@ public class GamePlayerService extends GameService {
         @Override
         public void run() {
             try {
-                socket.connect(new InetSocketAddress(serverAddress.getHostAddress(), serverPort), 0);
+                socket.connect(new InetSocketAddress(serverAddress.getHostAddress(), serverPort), 5000);
                 input = new ObjectInputStream(socket.getInputStream());
                 output = new ObjectOutputStream(socket.getOutputStream());
                 sendName();

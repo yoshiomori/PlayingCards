@@ -53,8 +53,7 @@ public class HandActivity extends GLActivity {
         }
 
         super.onCreate(savedInstanceState);
-        bindService(new Intent(this, GamePlayerService.class), mConnection,
-                Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this, GamePlayerService.class), mConnection, 0);
     }
 
     public void onReceiveCard(ArrayList<String> cards) {
@@ -70,6 +69,7 @@ public class HandActivity extends GLActivity {
             mBound = true;
             Message msg = Message.obtain();
             msg.what = GameService.MSG_CLIENT;
+            msg.arg1 = 1;
             msg.replyTo = mMessenger;
             sendMessageToService(msg);
         }

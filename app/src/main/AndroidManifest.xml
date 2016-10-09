@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="tcc.ronaldoyoshio.playingcards">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="tcc.ronaldoyoshio.playingcards">
 
     <!-- Tell the system this app requires OpenGL ES 2.0. -->
     <uses-feature android:glEsVersion="0x00020000" android:required="true" />
@@ -38,9 +38,11 @@
         <activity android:name=".activity.config.touch.TouchConfigActivity" android:noHistory="true"/>
 
         <service android:name=".service.GamePlayerService"
-            android:process=":remotePlayerService" />
+                 android:enabled="false"
+                 android:process=":remotePlayerService" />
         <service android:name=".service.GameServerService"
-            android:process=":remoteServerService" />
+                 android:enabled="false"
+                 android:process=":remoteServerService" />
     </application>
 
 </manifest>

@@ -85,6 +85,7 @@ public abstract class ConfigActivity extends ListActivity {
 
             Message msg = Message.obtain();
             msg.what = GameService.MSG_CLIENT;
+            msg.arg1 = 0;
             msg.replyTo = getThisMessenger();
             msg.setData(bundle);
             sendMessageToService(msg);

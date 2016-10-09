@@ -72,6 +72,7 @@ public class GameServerService extends GameService {
                     Message response = Message.obtain();
                     response.what = ServerConfigActivity.MSG_CONFIRM;
                     sendMessageToActivity(response);
+                    stopLooking();
                     break;
                 case MSG_SEND_CARD:
                     sendCardToPlayer(msg.getData().getString("Player"), msg.getData().getStringArrayList("Cards"));

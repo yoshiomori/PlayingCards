@@ -22,9 +22,9 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
-import tcc.ronaldoyoshio.playingcards.broadcastReceiver.WiFiDirectBroadcastReceiver;
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.config.client.ClientConfigActivity;
+import tcc.ronaldoyoshio.playingcards.broadcastReceiver.WiFiDirectBroadcastReceiver;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 
 public abstract class GameService extends Service implements ConnectionInfoListener {
@@ -163,8 +163,11 @@ public abstract class GameService extends Service implements ConnectionInfoListe
                     response.what = ConfigActivity.MSG_SERVICE_CONNECTED;
                     sendMessageToActivity(response);
                     Log.d(getTag(), "Activity adicionada");
-                    wifiP2pInit();
-                    registerWiFiDirectBroadcastReceiver();
+                    if (msg.arg1 == 0) {
+                        wifiP2pInit();
+                        registerWiFiDirectBroadcastReceiver();
+                        break;
+                    }
                     break;
                 case MSG_WIFI_DIRECT_SERVICE:
                     if (wifiDirectEnabled) {
@@ -211,10 +214,11 @@ public abstract class GameService extends Service implements ConnectionInfoListe
     @Override
     public void onDestroy() {
         super.onDestroy();
+        stopLooking();
         unregisterReceiver(receiver);
     }
 
-    public void stopLooking () {
+    public void stopLooking() {
         manager.stopPeerDiscovery(channel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {

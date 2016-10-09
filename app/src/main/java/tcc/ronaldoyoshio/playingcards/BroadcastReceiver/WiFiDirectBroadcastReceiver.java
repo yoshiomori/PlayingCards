@@ -8,6 +8,7 @@ import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.util.Log;
 
 import tcc.ronaldoyoshio.playingcards.service.GameService;
@@ -29,7 +30,9 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
     private void turnOnWifi(Context context) {
         WifiManager wifiManager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-        wifiManager.setWifiEnabled(true);
+        if (!wifiManager.isWifiEnabled()) {
+            wifiManager.setWifiEnabled(true);
+        }
         Log.d(TAG, "Wifi Ligado");
     }
 
@@ -61,7 +64,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                 // info to find group owner IP
                 Log.d(TAG, "Connected to p2p network. Requesting network details");
                 mManager.requestConnectionInfo(mChannel,
-                        (WifiP2pManager.ConnectionInfoListener) service);
+                        (ConnectionInfoListener) service);
             } else {
                 // It's a disconnect
             }
