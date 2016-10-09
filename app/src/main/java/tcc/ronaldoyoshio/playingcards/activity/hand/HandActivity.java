@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -18,6 +19,7 @@ import tcc.ronaldoyoshio.playingcards.images.BackGroundImage;
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
 import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
 import tcc.ronaldoyoshio.playingcards.service.GameService;
+import tcc.ronaldoyoshio.playingcards.touchEventHandler.OnSendCard;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCard;
 
 public class HandActivity extends GLActivity {
@@ -26,6 +28,7 @@ public class HandActivity extends GLActivity {
     protected boolean mBound = false;
     protected Messenger mService = null;
     final Messenger mMessenger = new Messenger(new IncomingHandler());
+    private OnSendCard sendCardEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +50,8 @@ public class HandActivity extends GLActivity {
             }
 
             motionCardImage = new MotionCardImage(this);
-            motionCardImage.setOnSendCard(
-                    new SendCard(motionCardImage, playersName, directions, mService));
+            sendCardEvent = new SendCard(motionCardImage, playersName, directions, mService);
+            motionCardImage.setOnSendCard(sendCardEvent);
             addImage(motionCardImage);
         }
 
@@ -57,6 +60,7 @@ public class HandActivity extends GLActivity {
     }
 
     public void onReceiveCard(ArrayList<String> cards) {
+        Log.d("Hand", String.valueOf(cards.size()));
         for (String card :
                 cards) {
             motionCardImage.addCard(card);
@@ -66,7 +70,9 @@ public class HandActivity extends GLActivity {
     protected ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             mService = new Messenger(service);
+            ((SendCard) sendCardEvent).setmService(mService);
             mBound = true;
+            ((SendCard) sendCardEvent).setmBound(mBound);
             Message msg = Message.obtain();
             msg.what = GameService.MSG_CLIENT;
             msg.arg1 = 1;

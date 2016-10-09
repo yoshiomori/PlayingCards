@@ -18,6 +18,7 @@ public class SendCard implements OnSendCard {
     private MotionCardImage cardImage;
     private final ArrayList<String> playersName;
     private final ArrayList<Integer> directions;
+
     private Messenger mService;
 
     private boolean mBound = false;
@@ -29,7 +30,6 @@ public class SendCard implements OnSendCard {
         this.cardImage = cardImage;
         this.playersName = playersName;
         this.directions = directions;
-        this.mService = mService;
     }
 
     @Override
@@ -62,8 +62,12 @@ public class SendCard implements OnSendCard {
         this.mBound = mBound;
     }
 
+    public void setmService(Messenger mService) {
+        this.mService = mService;
+    }
+
     public void sendMessageToService(Message msg) {
-        if (!mBound) return;
+        if (!mBound || mService == null) return;
         try {
             mService.send(msg);
         } catch (RemoteException e) {
