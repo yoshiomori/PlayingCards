@@ -48,14 +48,11 @@ public class SendCard implements OnSendCard {
         Bundle bundle = new Bundle();
         bundle.putString("Player", targetPlayerName);
         bundle.putStringArrayList("Cards", cards);
+        message.setData(bundle);
         sendMessageToService(message);
 
         System.out.println("Enviando " + cards + " para :" + targetPlayerName);
         cardImage.removeCardsAtPointer(pointerId);
-    }
-
-    public boolean ismBound() {
-        return mBound;
     }
 
     public void setmBound(boolean mBound) {
