@@ -22,9 +22,9 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
-import tcc.ronaldoyoshio.playingcards.broadcastReceiver.WiFiDirectBroadcastReceiver;
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.config.client.ClientConfigActivity;
+import tcc.ronaldoyoshio.playingcards.broadcastReceiver.WiFiDirectBroadcastReceiver;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 
 public abstract class GameService extends Service implements ConnectionInfoListener {
@@ -98,6 +98,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
             @Override
             public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> record, WifiP2pDevice device) {
                 Log.d(getTag(), fullDomainName);
+                Log.d(getTag(), device.deviceAddress);
                 discoveredServices.put(device.deviceAddress, new WiFiP2pDiscoveredService(record.get("NAME"), Integer.parseInt(record.get("LISTEN_PORT"))));
             }
         };
@@ -148,7 +149,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         @Override
         public void handleMessage(Message msg) {
             Message response;
-            switch (msg.arg1) {
+            switch (msg.what) {
                 case MSG_SUCCESS:
                     Log.d(getTag(), msg.getData().getString("Mensagem"));
                     break;
@@ -159,24 +160,27 @@ public abstract class GameService extends Service implements ConnectionInfoListe
                     mActivity = msg.replyTo;
                     name = (msg.getData().getString("Name") != null) ? msg.getData().getString("Name") : name;
                     response = Message.obtain();
-                    response.arg1 = ConfigActivity.MSG_SERVICE_CONNECTED;
+                    response.what = ConfigActivity.MSG_SERVICE_CONNECTED;
                     sendMessageToActivity(response);
                     Log.d(getTag(), "Activity adicionada");
-                    wifiP2pInit();
-                    registerWiFiDirectBroadcastReceiver();
+                    if (msg.arg1 == 0) {
+                        wifiP2pInit();
+                        registerWiFiDirectBroadcastReceiver();
+                        break;
+                    }
                     break;
                 case MSG_WIFI_DIRECT_SERVICE:
                     if (wifiDirectEnabled) {
                         startRegistration();
                         startDiscoverService();
                         response = Message.obtain();
-                        response.arg1 = ConfigActivity.MSG_WIFI_DIRECT_OK;
+                        response.what = ConfigActivity.MSG_WIFI_DIRECT_OK;
                         sendMessageToActivity(response);
                         Log.d(getTag(), "WifiDirect OK");
                     }
                     else {
                         response = Message.obtain();
-                        response.arg1 = ConfigActivity.MSG_WIFI_DIRECT_NOK;
+                        response.what = ConfigActivity.MSG_WIFI_DIRECT_NOK;
                         sendMessageToActivity(response);
                         Log.d(getTag(), "WifiDirect NOK");
                     }
@@ -199,7 +203,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
     protected void sendDiscoveredServiceMessage(WiFiP2pDiscoveredService service) {
         if (getServiceInstance().equals(GamePlayerService.SERVICE_INSTANCE)) {
             Message msg = Message.obtain();
-            msg.arg1 = ClientConfigActivity.MSG_NEW_DEVICE;
+            msg.what = ClientConfigActivity.MSG_NEW_DEVICE;
             Bundle bundle = new Bundle();
             bundle.putParcelable("Device", (Parcelable) service);
             msg.setData(bundle);
@@ -210,10 +214,11 @@ public abstract class GameService extends Service implements ConnectionInfoListe
     @Override
     public void onDestroy() {
         super.onDestroy();
+        stopLooking();
         unregisterReceiver(receiver);
     }
 
-    public void stopLooking () {
+    public void stopLooking() {
         manager.stopPeerDiscovery(channel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {

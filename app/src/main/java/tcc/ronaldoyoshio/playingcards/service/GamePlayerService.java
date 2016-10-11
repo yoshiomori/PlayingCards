@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
@@ -78,15 +79,16 @@ public class GamePlayerService extends GameService {
             public void onSuccess() {
                 Log.d(getTag(), "Conectando ao serviço");
                 Message response = Message.obtain();
-                response.arg1 = ClientConfigActivity.MSG_CONNECT_OK;
+                response.what = ClientConfigActivity.MSG_CONNECT_OK;
                 sendMessageToActivity(response);
+                stopLooking();
             }
 
             @Override
             public void onFailure(int errorCode) {
                 Log.d(getTag(), "Falha na conexão com serviço");
                 Message response = Message.obtain();
-                response.arg1 = ClientConfigActivity.MSG_CONNECT_NOK;
+                response.what = ClientConfigActivity.MSG_CONNECT_NOK;
                 Bundle bundle = new Bundle();
                 bundle.putString("Mensagem", "Falha ao conectar");
                 response.setData(bundle);
@@ -122,7 +124,7 @@ public class GamePlayerService extends GameService {
         @Override
         public void handleMessage(Message msg) {
             Message response;
-            switch (msg.arg1) {
+            switch (msg.what) {
                 case MSG_CONNECT_TO_DEVICE:
                     String address = msg.getData().getString("Address");
                     if (discoveredServices.containsKey(address)) {
@@ -132,7 +134,7 @@ public class GamePlayerService extends GameService {
                     }
                     else {
                         response = Message.obtain();
-                        response.arg1 = ClientConfigActivity.MSG_CONNECT_NOK;
+                        response.what = ClientConfigActivity.MSG_CONNECT_NOK;
                         Bundle bundle = new Bundle();
                         bundle.putString("Mensagem", "Servidor não encontrado");
                         response.setData(bundle);
@@ -174,9 +176,10 @@ public class GamePlayerService extends GameService {
         @Override
         public void run() {
             try {
-                socket.connect(new InetSocketAddress(serverAddress.getHostAddress(), serverPort), 0);
+                socket.connect(new InetSocketAddress(serverAddress.getHostAddress(), serverPort), 5000);
                 input = new ObjectInputStream(socket.getInputStream());
                 output = new ObjectOutputStream(socket.getOutputStream());
+                sendName();
                 while (true) {
                     WebMessage message = (WebMessage) input.readObject();
                     handleMessage(message);
@@ -193,12 +196,19 @@ public class GamePlayerService extends GameService {
             }
         }
 
+        private void sendName() {
+            WebMessage message = new WebMessage();
+            message.setTag(GameService.MSG_CLIENT);
+            message.insertMessage("Nome", name);
+            sendMessageServer(message);
+        }
+
         private void handleMessage(WebMessage message) {
             Message msg = Message.obtain();
-            msg.arg1 = message.getTag();
+            msg.what = message.getTag();
             Bundle bundle = new Bundle();
 
-            switch (msg.arg1) {
+            switch (msg.what) {
                 case ClientConfigActivity.MSG_WEB_PLAYER:
                     bundle.putString("Player", message.getMessage("Player"));
                     break;

@@ -1,7 +1,9 @@
 package tcc.ronaldoyoshio.playingcards.activity.config.client;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -43,6 +45,8 @@ public class ClientConfigActivity extends ConfigActivity {
         };
         setListAdapter(adapter);
         super.onCreate(savedInstanceState);
+        PackageManager pManager = this.getPackageManager();
+        pManager.setComponentEnabledSetting(new ComponentName(getApplicationContext(), GamePlayerService.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
         Intent intent = new Intent(this, GamePlayerService.class);
         startService(intent);
     }
@@ -90,7 +94,7 @@ public class ClientConfigActivity extends ConfigActivity {
         @Override
         public void handleMessage(Message msg) {
             Message response;
-            switch (msg.arg1) {
+            switch (msg.what) {
                 case MSG_NEW_DEVICE:
                     msg.getData().setClassLoader(WiFiP2pDiscoveredService.class.getClassLoader());
                     WiFiP2pDiscoveredService service = msg.getData().getParcelable("Device");
@@ -102,7 +106,7 @@ public class ClientConfigActivity extends ConfigActivity {
                             @Override
                             public void onClick(View v) {
                                 Message msg = Message.obtain();
-                                msg.arg1 = GamePlayerService.MSG_CONNECT_TO_DEVICE;
+                                msg.what = GamePlayerService.MSG_CONNECT_TO_DEVICE;
                                 Bundle bundle = new Bundle();
                                 bundle.putString("Address", address);
                                 msg.setData(bundle);
@@ -127,7 +131,7 @@ public class ClientConfigActivity extends ConfigActivity {
                     adapter.clear();
                     adapter.notifyDataSetChanged();
                     response = Message.obtain();
-                    response.arg1 = GamePlayerService.MSG_REQUEST_DEVICES;
+                    response.what = GamePlayerService.MSG_REQUEST_DEVICES;
                     sendMessageToService(response);
                     break;
                 case MSG_WIFI_DIRECT_OK:

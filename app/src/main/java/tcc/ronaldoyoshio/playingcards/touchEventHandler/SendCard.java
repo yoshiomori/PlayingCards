@@ -18,6 +18,7 @@ public class SendCard implements OnSendCard {
     private MotionCardImage cardImage;
     private final ArrayList<String> playersName;
     private final ArrayList<Integer> directions;
+
     private Messenger mService;
 
     private boolean mBound = false;
@@ -29,7 +30,6 @@ public class SendCard implements OnSendCard {
         this.cardImage = cardImage;
         this.playersName = playersName;
         this.directions = directions;
-        this.mService = mService;
     }
 
     @Override
@@ -44,26 +44,27 @@ public class SendCard implements OnSendCard {
         );
 
         Message message = Message.obtain();
-        message.arg1 = GameService.MSG_SEND_CARD;
+        message.what = GameService.MSG_SEND_CARD;
         Bundle bundle = new Bundle();
         bundle.putString("Player", targetPlayerName);
         bundle.putStringArrayList("Cards", cards);
+        message.setData(bundle);
         sendMessageToService(message);
 
         System.out.println("Enviando " + cards + " para :" + targetPlayerName);
         cardImage.removeCardsAtPointer(pointerId);
     }
 
-    public boolean ismBound() {
-        return mBound;
-    }
-
     public void setmBound(boolean mBound) {
         this.mBound = mBound;
     }
 
+    public void setmService(Messenger mService) {
+        this.mService = mService;
+    }
+
     public void sendMessageToService(Message msg) {
-        if (!mBound) return;
+        if (!mBound || mService == null) return;
         try {
             mService.send(msg);
         } catch (RemoteException e) {

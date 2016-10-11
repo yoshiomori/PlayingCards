@@ -1,9 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="tcc.ronaldoyoshio.playingcards">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="tcc.ronaldoyoshio.playingcards">
 
     <!-- Tell the system this app requires OpenGL ES 2.0. -->
     <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+    <uses-permission android:name="android.permission.CLEAR_APP_CACHE"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
@@ -16,6 +17,7 @@
     <uses-feature android:name="android.hardware.wifi.direct" android:required="true"/>
 
     <application
+        android:name="tcc.ronaldoyoshio.playingcards.application.PlayingCardsApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -38,9 +40,11 @@
         <activity android:name=".activity.config.touch.TouchConfigActivity" android:noHistory="true"/>
 
         <service android:name=".service.GamePlayerService"
-            android:process=":remotePlayerService" />
+                 android:enabled="false"
+                 android:process=":remotePlayerService" />
         <service android:name=".service.GameServerService"
-            android:process=":remoteServerService" />
+                 android:enabled="false"
+                 android:process=":remoteServerService" />
     </application>
 
 </manifest>

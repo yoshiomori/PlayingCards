@@ -57,7 +57,7 @@ public class GameServerService extends GameService {
     class GameServerIncomingHandler extends GameService.IncomingHandler {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.arg1) {
+            switch (msg.what) {
                 case MSG_SERVER_SOCKET:
                     server = new ServerSocketHandler(4545);
                     server.start();
@@ -69,6 +69,10 @@ public class GameServerService extends GameService {
                         message.setTag(ClientConfigActivity.MSG_WEB_INIT);
                         client.getValue().sendMessageClient(message);
                     }
+                    Message response = Message.obtain();
+                    response.what = ServerConfigActivity.MSG_CONFIRM;
+                    sendMessageToActivity(response);
+                    stopLooking();
                     break;
                 case MSG_SEND_CARD:
                     sendCardToPlayer(msg.getData().getString("Player"), msg.getData().getStringArrayList("Cards"));
@@ -88,10 +92,7 @@ public class GameServerService extends GameService {
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
-        if (!clients.containsKey(p2pInfo.groupOwnerAddress.getHostAddress())) {
-            clients.put(p2pInfo.groupOwnerAddress.getHostAddress(), null);
-            Log.d(getTag(), p2pInfo.groupOwnerAddress.getHostAddress());
-        }
+        Log.d(getTag(), "Novo Cliente conectando");
     }
 
     private void sendCardToPlayer(String player, ArrayList<String> cards) {
@@ -117,27 +118,8 @@ public class GameServerService extends GameService {
                 serverSocket = new ServerSocket(serverPort);
                 while (true) {
                     Socket playerSocket = serverSocket.accept();
-                    String address = playerSocket.getInetAddress().getHostAddress();
-                    Log.d(getTag(), address);
-                    if (clients.containsKey(address)) {
-                        Log.d(getTag(), "aaa");
-                        String nome = discoveredServices.get(address).getName();
-                        for (Map.Entry<String, ClientHandler> client : clients.entrySet()) {
-                            WebMessage message = new WebMessage();
-                            message.setTag(ClientConfigActivity.MSG_WEB_PLAYER);
-                            message.insertMessage("Player",nome);
-                            client.getValue().sendMessageClient(message);
-                        }
-                        ClientHandler client = new ClientHandler(playerSocket);
-                        clients.put(address, client);
-                        Message msg = Message.obtain();
-                        msg.arg1 = ServerConfigActivity.MSG_NEW_DEVICE;
-                        Bundle bundle = new Bundle();
-                        bundle.putString("Nome", nome);
-                        msg.setData(bundle);
-                        sendMessageToActivity(msg);
-                        client.start();
-                    }
+                    ClientHandler client = new ClientHandler(playerSocket);
+                    client.start();
                 }
             } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
@@ -198,7 +180,7 @@ public class GameServerService extends GameService {
 
                     if (player.equals(name)) {
                         Message response = Message.obtain();
-                        response.arg1 = DeckActivity.MSG_RECEIVE_CARD;
+                        response.what = DeckActivity.MSG_RECEIVE_CARD;
                         Bundle bundle = new Bundle();
                         bundle.putStringArrayList("Cards", cards);
                         response.setData(bundle);
@@ -207,6 +189,25 @@ public class GameServerService extends GameService {
                     else {
                         sendCardToPlayer(player, cards);
                     }
+                    break;
+                case MSG_CLIENT:
+                    String clientName = message.getMessage("Nome");
+                    if (!clients.containsKey(clientName)) {
+                        for (Map.Entry<String, ClientHandler> client : clients.entrySet()) {
+                            WebMessage webMessage = new WebMessage();
+                            webMessage.setTag(ClientConfigActivity.MSG_WEB_PLAYER);
+                            webMessage.insertMessage("Player", clientName);
+                            client.getValue().sendMessageClient(webMessage);
+                        }
+                        clients.put(clientName, this);
+                        Message msg = Message.obtain();
+                        msg.what = ServerConfigActivity.MSG_NEW_DEVICE;
+                        Bundle bundle = new Bundle();
+                        bundle.putString("Nome", clientName);
+                        msg.setData(bundle);
+                        sendMessageToActivity(msg);
+                    }
+                    break;
                 default:
                     break;
             }

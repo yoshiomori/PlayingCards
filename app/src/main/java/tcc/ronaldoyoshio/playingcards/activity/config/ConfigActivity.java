@@ -84,7 +84,8 @@ public abstract class ConfigActivity extends ListActivity {
             bundle.putString("Name", editText.getText().toString());
 
             Message msg = Message.obtain();
-            msg.arg1 = GameService.MSG_CLIENT;
+            msg.what = GameService.MSG_CLIENT;
+            msg.arg1 = 0;
             msg.replyTo = getThisMessenger();
             msg.setData(bundle);
             sendMessageToService(msg);
@@ -102,11 +103,11 @@ public abstract class ConfigActivity extends ListActivity {
         @Override
         public void handleMessage(Message msg) {
             Message response;
-            switch (msg.arg1) {
+            switch (msg.what) {
                 case MSG_SERVICE_CONNECTED:
                     response = Message.obtain();
                     Log.d(getTag(), "Activity conectada");
-                    response.arg1 = GameService.MSG_WIFI_DIRECT_SERVICE;
+                    response.what = GameService.MSG_WIFI_DIRECT_SERVICE;
                     sendMessageToService(response);
                     break;
                 case MSG_TEXT:
@@ -114,7 +115,7 @@ public abstract class ConfigActivity extends ListActivity {
                     break;
                 case MSG_WIFI_DIRECT_NOK:
                     response = Message.obtain();
-                    response.arg1 = GameService.MSG_WIFI_DIRECT_SERVICE;
+                    response.what = GameService.MSG_WIFI_DIRECT_SERVICE;
                     sendMessageToService(response);
                     Log.d(getTag(), "WifiDirect NOK");
                     break;
