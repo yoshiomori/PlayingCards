@@ -1,5 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.images;
 
+import android.annotation.SuppressLint;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,10 +26,13 @@ public class MotionCardImage extends CardImage {
     private List<GLObject> activeCards = Collections.synchronizedList(new ArrayList<GLObject>());
     private List<Integer> activeCardsIndex = Collections.synchronizedList(new ArrayList<Integer>());
     private List<String> activeCardsNames = Collections.synchronizedList(new ArrayList<String>());
+    @SuppressLint("UseSparseArrays")
     private HashMap<Integer, GLObject> pointerCards = new HashMap<>();
     private OnSendCard onSendCard;
 
     public MotionCardImage(final GLActivity glActivity) {
+
+        getCards().clear();
 
         /* Tratamento de toque na borda */
         sendCardTouchEventHandler = new SendCardTouchEventHandler(this, glActivity);
@@ -35,8 +40,8 @@ public class MotionCardImage extends CardImage {
 
         /* Tratamento de toque na carta */
         addTouchEventHandler(new TouchEventHandler() {
-            public float downY;
-            public float downX;
+            float downY;
+            float downX;
             TimerTask timerTask = null;
             long previousDownTime = Long.MIN_VALUE;
             private static final int DELAY = 500;
