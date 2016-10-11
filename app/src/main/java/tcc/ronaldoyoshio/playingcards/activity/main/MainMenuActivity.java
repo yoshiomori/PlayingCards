@@ -2,6 +2,7 @@ package tcc.ronaldoyoshio.playingcards.activity.main;
 
 import android.os.Bundle;
 
+import tcc.ronaldoyoshio.playingcards.application.PlayingCardsApplication;
 import tcc.ronaldoyoshio.playingcards.images.BackGroundImage;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 
@@ -12,7 +13,7 @@ import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 public class MainMenuActivity extends GLActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        PlayingCardsApplication.getInstance().clearApplicationData();
         /* AddImage  deve Ser chamando antes de onCreate */
         addImage(new BackGroundImage());
         addImage(new MainMenuButtonImage(this));
