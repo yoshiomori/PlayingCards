@@ -1,5 +1,6 @@
 package tcc.ronaldoyoshio.playingcards.activity.config.server;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +17,6 @@ import android.widget.ViewFlipper;
 import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.config.touch.TouchConfigActivity;
-import tcc.ronaldoyoshio.playingcards.activity.deck.DeckActivity;
 import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
 import tcc.ronaldoyoshio.playingcards.service.GameServerService;
 
@@ -32,6 +32,7 @@ public class ServerConfigActivity extends ConfigActivity {
                 Context.BIND_AUTO_CREATE);
     }
 
+    @SuppressLint("SetTextI18n")
     public void waitPlayersConf (View view) {
         Message msg = Message.obtain();
         msg.what = GameServerService.MSG_STOP_SOCKET;
@@ -53,7 +54,7 @@ public class ServerConfigActivity extends ConfigActivity {
                 "playersName",
                 items
         );
-        intent.putExtra("nextActivity", DeckActivity.class);
+        intent.putExtra("nextActivity", SelectCardsActivity.class);
         serverConfig.startActivity(intent);
     }
 
@@ -79,6 +80,7 @@ public class ServerConfigActivity extends ConfigActivity {
         return TAG;
     }
 
+    @SuppressLint("HandlerLeak")
     class ServerConfigIncomingHandler extends ConfigActivity.IncomingHandler {
         @Override
         public void handleMessage(Message msg) {
