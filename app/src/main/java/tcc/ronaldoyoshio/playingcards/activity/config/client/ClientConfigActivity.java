@@ -29,7 +29,7 @@ public class ClientConfigActivity extends ConfigActivity {
     public static final int MSG_CONNECT_NOK = 6;
     public static final int MSG_WEB_PLAYER = 7;
     public static final int MSG_WEB_INIT = 8;
-    final Messenger mMessenger = new Messenger(new PlayerConfigIncomingHandler());
+
     private String serverAddress = null;
 
     @Override
@@ -52,20 +52,8 @@ public class ClientConfigActivity extends ConfigActivity {
     }
 
     @Override
-    public void nextView(View view) {
-        super.nextView(view);
-        bindService(new Intent(this, GamePlayerService.class), mConnection,
-                Context.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-
-    }
-
-    protected void putItem(String item, View.OnClickListener action){
-        items.add(item);
-        actions.add(action);
+    protected String getTag() {
+        return TAG;
     }
 
     @Override
@@ -81,72 +69,73 @@ public class ClientConfigActivity extends ConfigActivity {
     }
 
     @Override
-    protected Messenger getThisMessenger() {
-        return mMessenger;
+    public void nextView(View view) {
+        super.nextView(view);
+        bindService(new Intent(this, GamePlayerService.class), mConnection,
+                Context.BIND_AUTO_CREATE);
+    }
+
+    protected void putItem(String item, View.OnClickListener action){
+        items.add(item);
+        actions.add(action);
     }
 
     @Override
-    protected String getTag() {
-        return TAG;
-    }
-
-    class PlayerConfigIncomingHandler extends ConfigActivity.IncomingHandler {
-        @Override
-        public void handleMessage(Message msg) {
-            Message response;
-            switch (msg.what) {
-                case MSG_NEW_DEVICE:
-                    msg.getData().setClassLoader(WiFiP2pDiscoveredService.class.getClassLoader());
-                    WiFiP2pDiscoveredService service = msg.getData().getParcelable("Device");
-                    final String address = (service != null) ? service.getDevice().deviceAddress : "";
-                    if (service.getInstanceName().equals(GameServerService.SERVICE_INSTANCE) && !discoveredDevices.containsKey(address)) {
-                        String name = service.getName();
-                        discoveredDevices.put(address, name);
-                        putItem(name, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Message msg = Message.obtain();
-                                msg.what = GamePlayerService.MSG_CONNECT_TO_DEVICE;
-                                Bundle bundle = new Bundle();
-                                bundle.putString("Address", address);
-                                msg.setData(bundle);
-                                sendMessageToService(msg);
-                                TextView t = (TextView)findViewById(R.id.wait);
-                                t.setText("Esperando Servidor");
-                                serverAddress = address;
-                                adapter.clear();
-                                adapter.notifyDataSetChanged();
-                            }
-                        });
-                        adapter.notifyDataSetChanged();
-                    }
-                    break;
-                case MSG_CONNECT_OK:
-                    items.clear();
-                    items.add(discoveredDevices.get(serverAddress));
-                    break;
-                case MSG_CONNECT_NOK:
-                    TextView t = (TextView)findViewById(R.id.wait);
-                    t.setText("Esperando Servidor");
-                    adapter.clear();
+    public boolean handleMessage(Message msg) {
+        Message response;
+        switch (msg.what) {
+            case MSG_NEW_DEVICE:
+                msg.getData().setClassLoader(WiFiP2pDiscoveredService.class.getClassLoader());
+                WiFiP2pDiscoveredService service = msg.getData().getParcelable("Device");
+                final String address = (service != null) ? service.getDevice().deviceAddress : "";
+                if (service.getInstanceName().equals(GameServerService.SERVICE_INSTANCE) && !discoveredDevices.containsKey(address)) {
+                    String name = service.getName();
+                    discoveredDevices.put(address, name);
+                    putItem(name, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Message msg = Message.obtain();
+                            msg.what = GamePlayerService.MSG_CONNECT_TO_DEVICE;
+                            Bundle bundle = new Bundle();
+                            bundle.putString("Address", address);
+                            msg.setData(bundle);
+                            sendMessageToService(msg);
+                            TextView t = (TextView)findViewById(R.id.wait);
+                            t.setText("Esperando Servidor");
+                            serverAddress = address;
+                            adapter.clear();
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
                     adapter.notifyDataSetChanged();
-                    response = Message.obtain();
-                    response.what = GamePlayerService.MSG_REQUEST_DEVICES;
-                    sendMessageToService(response);
-                    break;
-                case MSG_WIFI_DIRECT_OK:
-                    ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipperClient);
-                    flipper.showNext();
-                    break;
-                case MSG_WEB_PLAYER:
-                    items.add(msg.getData().getString("Player"));
-                    break;
-                case MSG_WEB_INIT:
-                    startTouchActivity();
-                    break;
-                default:
-                    super.handleMessage(msg);
-            }
+                }
+                break;
+            case MSG_CONNECT_OK:
+                items.clear();
+                items.add(discoveredDevices.get(serverAddress));
+                break;
+            case MSG_CONNECT_NOK:
+                TextView t = (TextView)findViewById(R.id.wait);
+                t.setText("Esperando Servidor");
+                adapter.clear();
+                adapter.notifyDataSetChanged();
+                response = Message.obtain();
+                response.what = GamePlayerService.MSG_REQUEST_DEVICES;
+                sendMessageToService(response);
+                break;
+            case MSG_WIFI_DIRECT_OK:
+                ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipperClient);
+                flipper.showNext();
+                break;
+            case MSG_WEB_PLAYER:
+                items.add(msg.getData().getString("Player"));
+                break;
+            case MSG_WEB_INIT:
+                startTouchActivity();
+                break;
+            default:
+                super.handleMessage(msg);
         }
+        return true;
     }
 }

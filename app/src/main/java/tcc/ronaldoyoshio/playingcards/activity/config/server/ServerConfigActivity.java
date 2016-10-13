@@ -23,13 +23,22 @@ import tcc.ronaldoyoshio.playingcards.service.GameServerService;
 public class ServerConfigActivity extends ConfigActivity {
     private static final String TAG = "ServerConfigActivity";
     public static final int MSG_CONFIRM = 5;
-    final Messenger mMessenger = new Messenger(new ServerConfigIncomingHandler());
 
     @Override
-    public void nextView(View view) {
-        super.nextView(view);
-        bindService(new Intent(this, GameServerService.class), mConnection,
-                Context.BIND_AUTO_CREATE);
+    protected void onCreate(Bundle savedInstanceState) {
+        setContentView(R.layout.serverconfig);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
+        setListAdapter(adapter);
+        super.onCreate(savedInstanceState);
+        PackageManager pManager = this.getPackageManager();
+        pManager.setComponentEnabledSetting(new ComponentName(getApplicationContext(), GameServerService.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+        Intent intent = new Intent(this, GameServerService.class);
+        startService(intent);
+    }
+
+    @Override
+    protected String getTag() {
+        return TAG;
     }
 
     @SuppressLint("SetTextI18n")
@@ -59,54 +68,37 @@ public class ServerConfigActivity extends ConfigActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.serverconfig);
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
-        setListAdapter(adapter);
-        super.onCreate(savedInstanceState);
-        PackageManager pManager = this.getPackageManager();
-        pManager.setComponentEnabledSetting(new ComponentName(getApplicationContext(), GameServerService.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-        Intent intent = new Intent(this, GameServerService.class);
-        startService(intent);
+    public void nextView(View view) {
+        super.nextView(view);
+        bindService(new Intent(this, GameServerService.class), mConnection,
+                Context.BIND_AUTO_CREATE);
     }
 
     @Override
-    protected Messenger getThisMessenger() {
-        return mMessenger;
-    }
-
-    @Override
-    protected String getTag() {
-        return TAG;
-    }
-
-    @SuppressLint("HandlerLeak")
-    class ServerConfigIncomingHandler extends ConfigActivity.IncomingHandler {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_WIFI_DIRECT_OK:
-                    ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipperServer);
-                    flipper.showNext();
-                    Message response = Message.obtain();
-                    response.what = GameServerService.MSG_SERVER_SOCKET;
-                    sendMessageToService(response);
-                    break;
-                case MSG_NEW_DEVICE:
-                    Button button = (Button) findViewById(R.id.buttonFinish);
-                    button.setVisibility(View.VISIBLE);
-                    String client = msg.getData().getString("Nome");
-                    if (!items.contains(client)) {
-                        items.add(client);
-                        adapter.notifyDataSetChanged();
-                    }
-                    break;
-                case MSG_CONFIRM:
-                    startTouchActivity();
-                    break;
-                default:
-                    super.handleMessage(msg);
-            }
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case MSG_WIFI_DIRECT_OK:
+                ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipperServer);
+                flipper.showNext();
+                Message response = Message.obtain();
+                response.what = GameServerService.MSG_SERVER_SOCKET;
+                sendMessageToService(response);
+                break;
+            case MSG_NEW_DEVICE:
+                Button button = (Button) findViewById(R.id.buttonFinish);
+                button.setVisibility(View.VISIBLE);
+                String client = msg.getData().getString("Nome");
+                if (!items.contains(client)) {
+                    items.add(client);
+                    adapter.notifyDataSetChanged();
+                }
+                break;
+            case MSG_CONFIRM:
+                startTouchActivity();
+                break;
+            default:
+                super.handleMessage(msg);
         }
+        return true;
     }
 }
