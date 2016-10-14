@@ -107,8 +107,6 @@ public class GamePlayerService extends GameService {
         return this.TAG;
     }
 
-    final Messenger mMessenger = new Messenger(new GamePlayerIncomingHandler());
-
     @Override
     public IBinder onBind(Intent intent) {
         return mMessenger.getBinder();
@@ -120,46 +118,45 @@ public class GamePlayerService extends GameService {
         handler.start();
     }
 
-    private class GamePlayerIncomingHandler extends GameService.IncomingHandler {
-        @Override
-        public void handleMessage(Message msg) {
-            Message response;
-            switch (msg.what) {
-                case MSG_CONNECT_TO_DEVICE:
-                    String address = msg.getData().getString("Address");
-                    if (discoveredServices.containsKey(address)) {
-                        WiFiP2pDiscoveredService service = discoveredServices.get(address);
-                        Log.d(getTag(), "Conectando com " + service.getName());
-                        connectP2p(service);
-                    }
-                    else {
-                        response = Message.obtain();
-                        response.what = ClientConfigActivity.MSG_CONNECT_NOK;
-                        Bundle bundle = new Bundle();
-                        bundle.putString("Mensagem", "Servidor não encontrado");
-                        response.setData(bundle);
-                        sendMessageToActivity(response);
-                    }
-                    break;
-                case MSG_REQUEST_DEVICES:
-                    for (WiFiP2pDiscoveredService service : discoveredServices.values()) {
-                        sendDiscoveredServiceMessage(service);
-                    }
-                    break;
-                case MSG_SEND_CARD:
-                    WebMessage message = new WebMessage();
-                    message.setTag(GameServerService.MSG_SEND_CARD);
-                    ArrayList<String> cards = msg.getData().getStringArrayList("Cards");
-                    for (int i = 0; i < cards.size(); i++) {
-                        message.insertMessage("Card" + i, cards.get(i));
-                    }
-                    message.insertMessage("Player", msg.getData().getString("Player"));
-                    handler.sendMessageServer(message);
-                    break;
-                default:
-                    super.handleMessage(msg);
-            }
+    @Override
+    public boolean handleMessage(Message msg) {
+        Message response;
+        switch (msg.what) {
+            case MSG_CONNECT_TO_DEVICE:
+                String address = msg.getData().getString("Address");
+                if (discoveredServices.containsKey(address)) {
+                    WiFiP2pDiscoveredService service = discoveredServices.get(address);
+                    Log.d(getTag(), "Conectando com " + service.getName());
+                    connectP2p(service);
+                }
+                else {
+                    response = Message.obtain();
+                    response.what = ClientConfigActivity.MSG_CONNECT_NOK;
+                    Bundle bundle = new Bundle();
+                    bundle.putString("Mensagem", "Servidor não encontrado");
+                    response.setData(bundle);
+                    sendMessageToActivity(response);
+                }
+                break;
+            case MSG_REQUEST_DEVICES:
+                for (WiFiP2pDiscoveredService service : discoveredServices.values()) {
+                    sendDiscoveredServiceMessage(service);
+                }
+                break;
+            case MSG_SEND_CARD:
+                WebMessage message = new WebMessage();
+                message.setTag(GameServerService.MSG_SEND_CARD);
+                ArrayList<String> cards = msg.getData().getStringArrayList("Cards");
+                for (int i = 0; i < cards.size(); i++) {
+                    message.insertMessage("Card" + i, cards.get(i));
+                }
+                message.insertMessage("Player", msg.getData().getString("Player"));
+                handler.sendMessageServer(message);
+                break;
+            default:
+                super.handleMessage(msg);
         }
+        return true;
     }
 
     class PlayerSocketHandler extends Thread {

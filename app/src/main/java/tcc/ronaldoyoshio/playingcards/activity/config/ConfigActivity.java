@@ -19,26 +19,42 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.service.GameService;
 
-public abstract class ConfigActivity extends ListActivity {
-    protected boolean mBound = false;
-    protected Messenger mService = null;
+public abstract class ConfigActivity extends ListActivity implements Handler.Callback {
     public static final int MSG_SERVICE_CONNECTED = 0;
     public static final int MSG_WIFI_DIRECT_NOK = 1;
     public static final int MSG_WIFI_DIRECT_OK = 2;
     public static final int MSG_TEXT = 3;
     public static final int MSG_NEW_DEVICE = 4;
 
-    protected Map<String, String> discoveredDevices = new HashMap<>();
-
+    private final Handler handler = new Handler(this);
+    private final Messenger mMessenger = new Messenger(handler);
+    private boolean mBound = false;
+    private Messenger mService = null;
     protected ArrayAdapter adapter;
     protected ArrayList<String> items = new ArrayList<>();
-    protected ArrayList<View.OnClickListener> actions = new ArrayList<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        EditText editText = (EditText)findViewById(R.id.editText);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Button button = (Button) findViewById(R.id.button);
+                button.setEnabled((s.length() > 0));
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+    }
 
     public void nextView(View view) {
         EditText editText = (EditText) findViewById(R.id.editText);
@@ -48,32 +64,6 @@ public abstract class ConfigActivity extends ListActivity {
         button.setEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
     }
-
-    protected abstract void startTouchActivity();
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        EditText editText = (EditText)findViewById(R.id.editText);
-            editText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    Button button = (Button) findViewById(R.id.button);
-                    button.setEnabled((s.length() > 0));
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-            }
-        });
-    }
-
-    protected abstract Messenger getThisMessenger();
 
     protected ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -86,7 +76,7 @@ public abstract class ConfigActivity extends ListActivity {
             Message msg = Message.obtain();
             msg.what = GameService.MSG_CLIENT;
             msg.arg1 = 0;
-            msg.replyTo = getThisMessenger();
+            msg.replyTo = mMessenger;
             msg.setData(bundle);
             sendMessageToService(msg);
         }
@@ -97,32 +87,27 @@ public abstract class ConfigActivity extends ListActivity {
         }
     };
 
-    protected abstract String getTag();
-
-    protected class IncomingHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            Message response;
-            switch (msg.what) {
-                case MSG_SERVICE_CONNECTED:
-                    response = Message.obtain();
-                    Log.d(getTag(), "Activity conectada");
-                    response.what = GameService.MSG_WIFI_DIRECT_SERVICE;
-                    sendMessageToService(response);
-                    break;
-                case MSG_TEXT:
-                    Log.d(getTag(), msg.getData().getString("Mensagem"));
-                    break;
-                case MSG_WIFI_DIRECT_NOK:
-                    response = Message.obtain();
-                    response.what = GameService.MSG_WIFI_DIRECT_SERVICE;
-                    sendMessageToService(response);
-                    Log.d(getTag(), "WifiDirect NOK");
-                    break;
-                default:
-                    super.handleMessage(msg);
-            }
+    @Override
+    public boolean handleMessage(Message msg) {
+        Message response;
+        switch (msg.what) {
+            case MSG_SERVICE_CONNECTED:
+                response = Message.obtain();
+                Log.d(getTag(), "Activity conectada");
+                response.what = GameService.MSG_WIFI_DIRECT_SERVICE;
+                sendMessageToService(response);
+                break;
+            case MSG_TEXT:
+                Log.d(getTag(), msg.getData().getString("Mensagem"));
+                break;
+            case MSG_WIFI_DIRECT_NOK:
+                response = Message.obtain();
+                response.what = GameService.MSG_WIFI_DIRECT_SERVICE;
+                sendMessageToService(response);
+                Log.d(getTag(), "WifiDirect NOK");
+                break;
         }
+        return true;
     }
 
     public void sendMessageToService(Message msg) {
@@ -133,4 +118,8 @@ public abstract class ConfigActivity extends ListActivity {
             e.printStackTrace();
         }
     }
+
+    protected abstract void startTouchActivity();
+
+    protected abstract String getTag();
 }

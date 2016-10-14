@@ -54,36 +54,33 @@ public class GameServerService extends GameService {
         return this.TAG;
     }
 
-    class GameServerIncomingHandler extends GameService.IncomingHandler {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_SERVER_SOCKET:
-                    server = new ServerSocketHandler(4545);
-                    server.start();
-                    break;
-                case MSG_STOP_SOCKET:
-                    server.stopListening();
-                    for (Map.Entry<String, ClientHandler> client : clients.entrySet()) {
-                        WebMessage message = new WebMessage();
-                        message.setTag(ClientConfigActivity.MSG_WEB_INIT);
-                        client.getValue().sendMessageClient(message);
-                    }
-                    Message response = Message.obtain();
-                    response.what = ServerConfigActivity.MSG_CONFIRM;
-                    sendMessageToActivity(response);
-                    stopLooking();
-                    break;
-                case MSG_SEND_CARD:
-                    sendCardToPlayer(msg.getData().getString("Player"), msg.getData().getStringArrayList("Cards"));
-                    break;
-                default:
-                    super.handleMessage(msg);
-            }
+    @Override
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case MSG_SERVER_SOCKET:
+                server = new ServerSocketHandler(4545);
+                server.start();
+                break;
+            case MSG_STOP_SOCKET:
+                server.stopListening();
+                for (Map.Entry<String, ClientHandler> client : clients.entrySet()) {
+                    WebMessage message = new WebMessage();
+                    message.setTag(ClientConfigActivity.MSG_WEB_INIT);
+                    client.getValue().sendMessageClient(message);
+                }
+                Message response = Message.obtain();
+                response.what = ServerConfigActivity.MSG_CONFIRM;
+                sendMessageToActivity(response);
+                stopLooking();
+                break;
+            case MSG_SEND_CARD:
+                sendCardToPlayer(msg.getData().getString("Player"), msg.getData().getStringArrayList("Cards"));
+                break;
+            default:
+                super.handleMessage(msg);
         }
+        return true;
     }
-
-    final Messenger mMessenger = new Messenger(new GameServerIncomingHandler());
 
     @Override
     public IBinder onBind(Intent intent) {

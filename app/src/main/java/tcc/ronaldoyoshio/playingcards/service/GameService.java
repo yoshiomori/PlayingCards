@@ -27,7 +27,7 @@ import tcc.ronaldoyoshio.playingcards.activity.config.client.ClientConfigActivit
 import tcc.ronaldoyoshio.playingcards.broadcastReceiver.WiFiDirectBroadcastReceiver;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 
-public abstract class GameService extends Service implements ConnectionInfoListener {
+public abstract class GameService extends Service implements ConnectionInfoListener, Handler.Callback {
     public static final int MSG_CLIENT = 0;
     public static final int MSG_WIFI_DIRECT_SERVICE = 1;
     public static final int MSG_SUCCESS = 2;
@@ -45,6 +45,9 @@ public abstract class GameService extends Service implements ConnectionInfoListe
     protected Messenger mActivity = null;
     protected Map<String, WiFiP2pDiscoveredService> discoveredServices = new HashMap<>();
     protected WifiP2pDnsSdServiceRequest serviceRequest;
+
+    private final Handler handler = new Handler(this);
+    protected final Messenger mMessenger = new Messenger(handler);
 
     public void setIsiWfiDirectEnabled(boolean b) {
         this.wifiDirectEnabled = b;
@@ -145,50 +148,47 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         });
     }
 
-    class IncomingHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            Message response;
-            switch (msg.what) {
-                case MSG_SUCCESS:
-                    Log.d(getTag(), msg.getData().getString("Mensagem"));
+    @Override
+    public boolean handleMessage(Message msg) {
+        Message response;
+        switch (msg.what) {
+            case MSG_SUCCESS:
+                Log.d(getTag(), msg.getData().getString("Mensagem"));
+                break;
+            case MSG_FAILED:
+                Log.d(getTag(), msg.getData().getString("Mensagem"));
+                break;
+            case MSG_CLIENT:
+                mActivity = msg.replyTo;
+                name = (msg.getData().getString("Name") != null) ? msg.getData().getString("Name") : name;
+                response = Message.obtain();
+                response.what = ConfigActivity.MSG_SERVICE_CONNECTED;
+                sendMessageToActivity(response);
+                Log.d(getTag(), "Activity adicionada");
+                if (msg.arg1 == 0) {
+                    wifiP2pInit();
+                    registerWiFiDirectBroadcastReceiver();
                     break;
-                case MSG_FAILED:
-                    Log.d(getTag(), msg.getData().getString("Mensagem"));
-                    break;
-                case MSG_CLIENT:
-                    mActivity = msg.replyTo;
-                    name = (msg.getData().getString("Name") != null) ? msg.getData().getString("Name") : name;
+                }
+                break;
+            case MSG_WIFI_DIRECT_SERVICE:
+                if (wifiDirectEnabled) {
+                    startRegistration();
+                    startDiscoverService();
                     response = Message.obtain();
-                    response.what = ConfigActivity.MSG_SERVICE_CONNECTED;
+                    response.what = ConfigActivity.MSG_WIFI_DIRECT_OK;
                     sendMessageToActivity(response);
-                    Log.d(getTag(), "Activity adicionada");
-                    if (msg.arg1 == 0) {
-                        wifiP2pInit();
-                        registerWiFiDirectBroadcastReceiver();
-                        break;
-                    }
-                    break;
-                case MSG_WIFI_DIRECT_SERVICE:
-                    if (wifiDirectEnabled) {
-                        startRegistration();
-                        startDiscoverService();
-                        response = Message.obtain();
-                        response.what = ConfigActivity.MSG_WIFI_DIRECT_OK;
-                        sendMessageToActivity(response);
-                        Log.d(getTag(), "WifiDirect OK");
-                    }
-                    else {
-                        response = Message.obtain();
-                        response.what = ConfigActivity.MSG_WIFI_DIRECT_NOK;
-                        sendMessageToActivity(response);
-                        Log.d(getTag(), "WifiDirect NOK");
-                    }
-                    break;
-                default:
-                    super.handleMessage(msg);
-            }
+                    Log.d(getTag(), "WifiDirect OK");
+                }
+                else {
+                    response = Message.obtain();
+                    response.what = ConfigActivity.MSG_WIFI_DIRECT_NOK;
+                    sendMessageToActivity(response);
+                    Log.d(getTag(), "WifiDirect NOK");
+                }
+                break;
         }
+        return true;
     }
 
     protected void sendMessageToActivity(Message msg) {
