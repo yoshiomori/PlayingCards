@@ -7,4 +7,6 @@
     <string name="playerNick">Digite o Nick do seu Jogador</string>
     <string name="serverNick">Digite o Nick do Servidor</string>
     <string name="toGame">Para o Jogo!</string>
+    <string name="waiting_server">Esperando Servidor</string>
+    <string name="waiting_confirm">Esperando Confirmação</string>
 </resources>

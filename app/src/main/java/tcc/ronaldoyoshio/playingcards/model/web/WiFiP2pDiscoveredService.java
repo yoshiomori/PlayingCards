@@ -13,7 +13,6 @@ public class WiFiP2pDiscoveredService implements Parcelable {
     private String name = null;
 
     public WiFiP2pDiscoveredService(String name, int port) {
-        this.instanceName = instanceName;
         this.port = port;
         this.name = name;
     }

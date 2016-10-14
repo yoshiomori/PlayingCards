@@ -6,13 +6,15 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Message;
-import android.os.Messenger;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
@@ -30,6 +32,8 @@ public class ClientConfigActivity extends ConfigActivity {
     public static final int MSG_WEB_PLAYER = 7;
     public static final int MSG_WEB_INIT = 8;
 
+    private final Map<String, String> discoveredDevices = new HashMap<>();
+    private final ArrayList<View.OnClickListener> actions = new ArrayList<>();
     private String serverAddress = null;
 
     @Override
@@ -75,7 +79,7 @@ public class ClientConfigActivity extends ConfigActivity {
                 Context.BIND_AUTO_CREATE);
     }
 
-    protected void putItem(String item, View.OnClickListener action){
+    private void putItem(String item, View.OnClickListener action){
         items.add(item);
         actions.add(action);
     }
@@ -88,7 +92,7 @@ public class ClientConfigActivity extends ConfigActivity {
                 msg.getData().setClassLoader(WiFiP2pDiscoveredService.class.getClassLoader());
                 WiFiP2pDiscoveredService service = msg.getData().getParcelable("Device");
                 final String address = (service != null) ? service.getDevice().deviceAddress : "";
-                if (service.getInstanceName().equals(GameServerService.SERVICE_INSTANCE) && !discoveredDevices.containsKey(address)) {
+                if (!discoveredDevices.containsKey(address) && !(service == null || !GameServerService.SERVICE_INSTANCE.equals(service.getInstanceName()))) {
                     String name = service.getName();
                     discoveredDevices.put(address, name);
                     putItem(name, new View.OnClickListener() {
@@ -101,7 +105,7 @@ public class ClientConfigActivity extends ConfigActivity {
                             msg.setData(bundle);
                             sendMessageToService(msg);
                             TextView t = (TextView)findViewById(R.id.wait);
-                            t.setText("Esperando Servidor");
+                            t.setText(R.string.waiting_server);
                             serverAddress = address;
                             adapter.clear();
                             adapter.notifyDataSetChanged();
@@ -116,7 +120,7 @@ public class ClientConfigActivity extends ConfigActivity {
                 break;
             case MSG_CONNECT_NOK:
                 TextView t = (TextView)findViewById(R.id.wait);
-                t.setText("Esperando Servidor");
+                t.setText(R.string.waiting_server);
                 adapter.clear();
                 adapter.notifyDataSetChanged();
                 response = Message.obtain();

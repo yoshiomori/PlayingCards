@@ -13,11 +13,17 @@ import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 public class MainMenuActivity extends GLActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        PlayingCardsApplication.getInstance().clearApplicationData();
         /* AddImage  deve Ser chamando antes de onCreate */
         addImage(new BackGroundImage());
         addImage(new MainMenuButtonImage(this));
 
         super.onCreate(savedInstanceState);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        PlayingCardsApplication.getInstance().clearApplicationData();
+    }
+
 }

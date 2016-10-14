@@ -19,8 +19,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.service.GameService;
@@ -34,12 +32,10 @@ public abstract class ConfigActivity extends ListActivity implements Handler.Cal
 
     private final Handler handler = new Handler(this);
     private final Messenger mMessenger = new Messenger(handler);
-    protected boolean mBound = false;
-    protected Messenger mService = null;
-    protected Map<String, String> discoveredDevices = new HashMap<>();
+    private boolean mBound = false;
+    private Messenger mService = null;
     protected ArrayAdapter adapter;
     protected ArrayList<String> items = new ArrayList<>();
-    protected ArrayList<View.OnClickListener> actions = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -6,9 +6,8 @@ import android.content.Intent;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pDevice;
-import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager;
-import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
+import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.util.Log;
 
 import tcc.ronaldoyoshio.playingcards.service.GameService;
@@ -16,9 +15,9 @@ import tcc.ronaldoyoshio.playingcards.service.GameService;
 
 public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "WiFitReceiver";
-    private WifiP2pManager mManager;
-    private Channel mChannel;
-    private GameService service;
+    private final WifiP2pManager mManager;
+    private final Channel mChannel;
+    private final GameService service;
 
     public WiFiDirectBroadcastReceiver(WifiP2pManager manager, Channel channel, GameService service) {
         super();
@@ -55,21 +54,17 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                 return;
             }
 
-            NetworkInfo networkInfo = (NetworkInfo) intent
+            NetworkInfo networkInfo = intent
                     .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 
             if (networkInfo.isConnected()) {
-
-                // we are connected with the other device, request connection
-                // info to find group owner IP
-                Log.d(TAG, "Connected to p2p network. Requesting network details");
-                mManager.requestConnectionInfo(mChannel,
-                        (ConnectionInfoListener) service);
+                Log.d(TAG, "Conectado com Dispositivo via WifiDirect");
+                mManager.requestConnectionInfo(mChannel, service);
             } else {
-                // It's a disconnect
+                Log.d(TAG, "Desconectado com Dispositivo");
             }
         } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
-            WifiP2pDevice device = (WifiP2pDevice) intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
+            WifiP2pDevice device = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
             Log.d(TAG, "Device status -" + device.status);
         }
     }

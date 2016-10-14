@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Message;
-import android.os.Messenger;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -41,7 +40,6 @@ public class ServerConfigActivity extends ConfigActivity {
         return TAG;
     }
 
-    @SuppressLint("SetTextI18n")
     public void waitPlayersConf (View view) {
         Message msg = Message.obtain();
         msg.what = GameServerService.MSG_STOP_SOCKET;
@@ -52,7 +50,7 @@ public class ServerConfigActivity extends ConfigActivity {
         button.setVisibility(View.GONE);
 
         TextView textView = (TextView) findViewById(R.id.wait);
-        textView.setText("Esperando Confirmação");
+        textView.setText(R.string.waiting_confirm);
     }
 
     @Override
