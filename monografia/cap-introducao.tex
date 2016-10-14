@@ -43,7 +43,15 @@
 O desenvolvimento de um aplicativo android nos remete aos computadores dos anos 90 com modem de
 internet, cpu e memória limitados e tudo isso sendo alimentado por uma pequena bateria. Neste
 projeto iremos desenvolver um aplicativo android de um baralho virtual para ser usado em rede local
-como um substitudo de um baralho real.
+como um substitudo de um baralho real. Com um baralho real, podemos misturar, virar, desvirar e
+distribuir as cartas e serão essas as ações que nosso aplicativo deve fazer. Para misturar as
+cartas o usuário deve selecionar todas as cartas mantendo o dedo sobre as cartas e arrastar as
+cartas para cima e para baixo algumas vezes. Para virar e desvirar o usuário deve dar um duplo
+toque sobre as cartas, se várias cartas foram selecionadas, todas as cartas selecionadas serão
+viradas ou desviradas. Para distribuir as cartas, o usuário deve arrastar a carta até a borda da
+tela em direção do jogador desejado. Iremos ver que o toque sobre a imagem de um objeto e a
+interpretação do movimento do dedo na tela são problemas no desenvolvimento deste tipo de
+aplicativos.
 
 O aplicativo será desenvolvido para aparelhos com sistema operacional android versão 5.0.1 com
 o sistema gráfico OpenGL ES. Android é um sistema operacional desenvolvido pela Google para
@@ -53,15 +61,6 @@ aplicativo foi adaptar as imagens dos objetos para a tela. O sistema gráfico Ope
 interface de software para hardware gráficos. A interface consiste de um conjunto de procedimentos
 e funções que nos permitem especificar objetos e operações para produzir imagens gráficas de alta
 qualidade.
-
-Com um baralho real, podemos misturar, virar, desvirar e distribuir as cartas e serão essas as
-ações que nosso aplicativo deve fazer. Para misturar as cartas o usuário deve selecionar todas as
-cartas mantendo o dedo sobre as cartas e arrastar as cartas para cima e para baixo algumas vezes.
-Para virar e desvirar o usuário deve dar um duplo toque sobre as cartas, se várias cartas foram
-selecionadas, todas as cartas selecionadas serão viradas ou desviradas. Para distribuir as cartas,
-o usuário deve arrastar a carta até a borda da tela em direção do jogador desejado. Iremos ver que
-o toque sobre a imagem de um objeto e a interpretação do movimento do dedo na tela são problemas
-no desenvolvimento deste tipo de aplicativos.
 
 Em adicional, queremos especificar uma linguagem para possibilitar o aplicativo executar essas
 ações de forma automática e também queremos implementar a detecção automática da direção entre os

@@ -1,7 +1,6 @@
 package tcc.ronaldoyoshio.playingcards.activity.deck;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -168,6 +167,7 @@ public class DeckActivity extends GLActivity {
                 cards) {
             cardImage.addCard(card);
         }
+        getScreen().requestRender();
     }
 
     protected ServiceConnection mConnection = new ServiceConnection() {

@@ -30,13 +30,52 @@
 
 % Mostras testes de experimento de tempo durante o processo de otimização.
 
+O nosso aplicativo precisa mostrar as imagens das cartas, do fundo e dos botões na tela do celular.
+Para alcançar este objetivo fizemos uso da interface de programação de aplicações (API) fornecido pelo
+android e da biblioteca gráfica OpenGL.
+
 O Android pode ser visto como uma camada de abstração da interface de manipulação da tela do celular e
 do sensor de toque da tela disponibilisados pelos fabricantes. Nosso aplicativo faz uso desses
 dispositivos, por meio desta camada e não iremos nos preocupar como essa abstração foi implementada.
 
-O OpengGL ES é um conjunto de comandos que permitem a especificação de objetos geométricos em duas
-ou três dimenções, junto com comandos que controlam como esses objetos são renderizados no
-framebuffer.
+Um aplicativo para Android é construidos com componetes. Cada componetes é um diferente ponto de
+entrada do sistema. Existem quatro tipos diferentes de componetes: Activities, Services, Content
+providers e Broadcast receivers, cada qual responsável por alguma funcionalidade dentro do aplicativo.
 
-Desta forma iremos usar o OpengGL para gerar o que deve ser desenhado na tela e faremos uso dos
-métodos e classes do android para expor a imagem na tela e receber informações sobre eventos de toque.
+Nesta etapa de desenvolvimento, faremos uso da componete Activity. Uma activity representa uma tela
+única com uma interface de usuário. Afim de gerar imagens para ser desenhada nesta tela, faremos uso
+do OpenGL ES.
+
+O OpenGL ES é um conjunto de comandos que permitem a especificação de objetos geométricos em duas
+ou três dimenções, junto com comandos que controlam como esses objetos são renderizados no
+{\it framebuffer}. Esses objetos geométricos são construidos com {\it primitivas} que podem ser ponto,
+segmento de linha, ou triângulo. As primitivas são definidas por um grupo de um ou mais vértices. Os
+vértices definem um ponto, ponto final de uma aresta ou canto de um triângulo onde duas arestas se
+encontram e são representados como elementos de \( \mathbb{R} ^ 2 \) em coordenadas homogêneas.
+Informações como coordenadas de posição, cores, normal, coordenadas de textura podem estar associados
+a um vértice. As primitivas formadas pelos vértices \( \left( x, y \right) \) tais que
+\( -1 \leq x, y \leq 1 \) são enviados para serem mostrados na tela, chamaremos esses vértices de
+vértices visíveis.
+
+Inicialmente haviamos escolhido um modelo com 312 vértices para desenhar 104 triângulos que juntas
+formam a imagem de carta. Fizemos um teste de desempenho usando o celular da lg modelo F240L, mas o
+aplicativo estava gerando 8 frames por segundo, observamos que o resultado não foi satisfatório.
+Decidimos usar um modelo com 6 vértices para desenhar 2 triângulos, como resultado o aplicativo
+passou a gerar 71 frames por segundo.
+
+
+Existem muitos tipos e modelos de aparelhos mobile e as dimenções da tela podem variar muito de modelo
+para modelo, o que causa uma distorção na imagem desenhada na tela. Queremos que nosso aplicativo seja
+capaz de fazer essa correção automaticamente, de tal modo que todos os vértices visíveis continuem
+sendo visíveis após a correção.
+
+Quando o OpenGL desenha os fragmentos de um vértice \(x, y\) em uma tela de comprimento w e altura h,
+ocorre uma transformação \( T \) que leva vértices em \( \mathbb{R} ^ 2 \) para \( \mathbb{R} ^ 2 \) 
+
+$$
+\left[
+\begin{array}{ccc}
+  
+\end{array}
+\right]
+$$

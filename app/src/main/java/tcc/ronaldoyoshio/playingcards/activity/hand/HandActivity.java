@@ -1,7 +1,6 @@
 package tcc.ronaldoyoshio.playingcards.activity.hand;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -65,6 +64,7 @@ public class HandActivity extends GLActivity {
                 cards) {
             motionCardImage.addCard(card);
         }
+        getScreen().requestRender();
     }
 
     protected ServiceConnection mConnection = new ServiceConnection() {
