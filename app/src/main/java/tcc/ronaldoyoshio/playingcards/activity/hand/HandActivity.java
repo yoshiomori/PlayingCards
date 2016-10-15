@@ -21,12 +21,14 @@ import tcc.ronaldoyoshio.playingcards.service.GameService;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.OnSendCard;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCard;
 
-public class HandActivity extends GLActivity {
-    MotionCardImage motionCardImage;
+public class HandActivity extends GLActivity implements Handler.Callback {
     public static final int MSG_RECEIVE_CARD = 1 ;
-    protected boolean mBound = false;
-    protected Messenger mService = null;
-    final Messenger mMessenger = new Messenger(new IncomingHandler());
+
+    private MotionCardImage motionCardImage;
+    private boolean mBound = false;
+    private Messenger mService = null;
+    private final Handler handler = new Handler(this);
+    private final Messenger mMessenger = new Messenger(handler);
     private OnSendCard sendCardEvent;
 
     @Override
@@ -58,7 +60,7 @@ public class HandActivity extends GLActivity {
         bindService(new Intent(this, GamePlayerService.class), mConnection, 0);
     }
 
-    public void onReceiveCard(ArrayList<String> cards) {
+    private void onReceiveCard(ArrayList<String> cards) {
         Log.d("Hand", String.valueOf(cards.size()));
         for (String card :
                 cards) {
@@ -67,12 +69,11 @@ public class HandActivity extends GLActivity {
         getScreen().requestRender();
     }
 
-    protected ServiceConnection mConnection = new ServiceConnection() {
+    private final ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             mService = new Messenger(service);
-            ((SendCard) sendCardEvent).setmService(mService);
             mBound = true;
-            ((SendCard) sendCardEvent).setmBound(mBound);
+            setServiceSendCard(mService, true);
             Message msg = Message.obtain();
             msg.what = GameService.MSG_CLIENT;
             msg.arg1 = 1;
@@ -83,23 +84,26 @@ public class HandActivity extends GLActivity {
         public void onServiceDisconnected(ComponentName className) {
             mService = null;
             mBound = false;
+            setServiceSendCard(null, false);
+        }
+
+        private void setServiceSendCard (Messenger service, boolean bound) {
+            ((SendCard) sendCardEvent).setmService(service);
+            ((SendCard) sendCardEvent).setmBound(bound);
         }
     };
 
-    class IncomingHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_RECEIVE_CARD:
-                    onReceiveCard(msg.getData().getStringArrayList("Cards"));
-                    break;
-                default:
-                    super.handleMessage(msg);
-            }
+    @Override
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case MSG_RECEIVE_CARD:
+                onReceiveCard(msg.getData().getStringArrayList("Cards"));
+                break;
         }
+        return true;
     }
 
-    public void sendMessageToService(Message msg) {
+    private void sendMessageToService(Message msg) {
         if (!mBound) return;
         try {
             mService.send(msg);

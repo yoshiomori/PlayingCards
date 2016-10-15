@@ -26,17 +26,18 @@ import tcc.ronaldoyoshio.playingcards.touchEventHandler.OnSendCard;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCard;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 
-public class DeckActivity extends GLActivity {
+public class DeckActivity extends GLActivity implements Handler.Callback {
     public static final int MSG_RECEIVE_CARD = 1 ;
-    Cards cards;
+    private Cards cards;
     private ArrayList<String> playersName;
     private ArrayList<Integer> directions;
-    MotionCardImage cardImage;
+    private MotionCardImage cardImage;
     private OnSendCard sendCardEvent;
 
-    protected boolean mBound = false;
-    protected Messenger mService = null;
-    final Messenger mMessenger = new Messenger(new IncomingHandler());
+    private boolean mBound = false;
+    private Messenger mService = null;
+    private final Handler handler = new Handler(this);
+    private final Messenger mMessenger = new Messenger(handler);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,7 +162,7 @@ public class DeckActivity extends GLActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-    public void onReceiveCard(ArrayList<String> cards) {
+    private void onReceiveCard(ArrayList<String> cards) {
         Log.d("Deck", String.valueOf(cards.size()));
         for (String card :
                 cards) {
@@ -170,12 +171,11 @@ public class DeckActivity extends GLActivity {
         getScreen().requestRender();
     }
 
-    protected ServiceConnection mConnection = new ServiceConnection() {
+    private final ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             mService = new Messenger(service);
-            ((SendCard) sendCardEvent).setmService(mService);
             mBound = true;
-            ((SendCard) sendCardEvent).setmBound(mBound);
+            setServiceSendCard(mService, true);
             Message msg = Message.obtain();
             msg.what = GameService.MSG_CLIENT;
             msg.arg1 = 1;
@@ -186,24 +186,26 @@ public class DeckActivity extends GLActivity {
         public void onServiceDisconnected(ComponentName className) {
             mService = null;
             mBound = false;
+            setServiceSendCard(null, false);
+        }
+
+        private void setServiceSendCard (Messenger service, boolean bound) {
+            ((SendCard) sendCardEvent).setmService(service);
+            ((SendCard) sendCardEvent).setmBound(bound);
         }
     };
 
-
-    class IncomingHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_RECEIVE_CARD:
-                    onReceiveCard(msg.getData().getStringArrayList("Cards"));
-                    break;
-                default:
-                    super.handleMessage(msg);
-            }
+    @Override
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case MSG_RECEIVE_CARD:
+                onReceiveCard(msg.getData().getStringArrayList("Cards"));
+                break;
         }
+        return true;
     }
 
-    public void sendMessageToService(Message msg) {
+    private void sendMessageToService(Message msg) {
         if (!mBound) return;
         try {
             mService.send(msg);

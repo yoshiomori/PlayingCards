@@ -27,6 +27,7 @@ public class SendCard implements OnSendCard {
                     ArrayList<String> playersName,
                     ArrayList<Integer> directions,
                     Messenger mService) {
+        this.mService = mService;
         this.cardImage = cardImage;
         this.playersName = playersName;
         this.directions = directions;
@@ -63,7 +64,7 @@ public class SendCard implements OnSendCard {
         this.mService = mService;
     }
 
-    public void sendMessageToService(Message msg) {
+    private void sendMessageToService(Message msg) {
         if (!mBound || mService == null) return;
         try {
             mService.send(msg);
