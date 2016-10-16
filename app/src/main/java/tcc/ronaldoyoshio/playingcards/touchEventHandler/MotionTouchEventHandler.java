@@ -18,11 +18,11 @@ import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
  * Created by mori on 12/09/16.
  */
 public class MotionTouchEventHandler extends TouchEventHandler {
-    public int[] neighborhoods = new int[3];
-    public double[] mins = new double[neighborhoods.length];
-    public int[] traceData = new int[5];
-    public static final int N = 1;
-    public static final int P = 0;
+    private int[] neighborhoods = new int[3];
+    private double[] mins = new double[neighborhoods.length];
+    private int[] traceData = new int[5];
+    private static final int N = 1;
+    private static final int P = 0;
     private final ArrayList<int[]> samples = new ArrayList<>(Arrays.asList(
             new int[]{0, 0, 0, 0, 0}, // 1
             new int[]{246, 37348, 52048, 172, -124}, // 2
@@ -78,10 +78,7 @@ public class MotionTouchEventHandler extends TouchEventHandler {
 
     @Override
     public boolean onDown(int pointerId, float x, float y) {
-        List<GLObject> activeCards = motionCardImage.getActiveCards();
-        if (!activeCards.isEmpty()) {
-            return true;
-        }
+
         int index = findFirstCardIndexAt(x, getWidth(), y, getHeight(), motionCardImage.getObjects());
         if (index >= 0) {
             putPointerCards(pointerId, index);
@@ -144,7 +141,7 @@ public class MotionTouchEventHandler extends TouchEventHandler {
      * @param dx        deslocamento no eixo x da tela
      * @param dy        deslocamento no eixo y da tela
      */
-    public void movePointerCard(int pointerId, float dx, float dy) {
+    private void movePointerCard(int pointerId, float dx, float dy) {
         // Criando a matriz de projeção do modelo para a tela, idêntico ao do shader.
         setProjectionCoords(dx, dy, getWidth(), getHeight());
         if (motionCardImage.getPointerCards().containsKey(pointerId)) {

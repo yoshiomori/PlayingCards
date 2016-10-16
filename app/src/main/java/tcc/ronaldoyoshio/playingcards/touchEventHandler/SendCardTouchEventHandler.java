@@ -32,13 +32,14 @@ public class SendCardTouchEventHandler extends TouchEventHandler{
                 }
                 ArrayList<String> cards = new ArrayList<>();
                 if (motionCardImage.getActiveCards().isEmpty()) {
-                    System.out.println();
-                    cards.add(motionCardImage.getCards().get(motionCardImage.getObjects().indexOf(motionCardImage.getPointerCards().get(pointerId))));
+                    cards.add(motionCardImage.getCards().get(motionCardImage.getObjects().indexOf(
+                            motionCardImage.getPointerCards().get(pointerId))));
                 }
                 else {
                     for (GLObject object :
                             motionCardImage.getActiveCards()) {
-                        cards.add(motionCardImage.getCards().get(motionCardImage.getObjects().indexOf(object)));
+                        cards.add(motionCardImage.getCards().get(
+                                motionCardImage.getObjects().indexOf(object)));
                     }
                 }
                 motionCardImage.getOnSendCard().onSendCard(pointerId, cards, (int)x, (int)y);
