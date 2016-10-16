@@ -31,14 +31,16 @@ public class SendCardTouchEventHandler extends TouchEventHandler{
                             " SetOnSendCard");
                 }
                 ArrayList<String> cards = new ArrayList<>();
-                if (motionCardImage.getActiveCards().isEmpty()) {
-                    System.out.println();
-                    cards.add(motionCardImage.getCards().get(motionCardImage.getObjects().indexOf(motionCardImage.getPointerCards().get(pointerId))));
-                }
-                else {
-                    for (GLObject object :
-                            motionCardImage.getActiveCards()) {
-                        cards.add(motionCardImage.getCards().get(motionCardImage.getObjects().indexOf(object)));
+                synchronized (motionCardImage.getActiveCards()) {
+                    if (motionCardImage.getActiveCards().isEmpty()) {
+                        cards.add(motionCardImage.getCards().get(motionCardImage.getObjects().indexOf(
+                                motionCardImage.getPointerCards().get(pointerId))));
+                    } else {
+                        for (GLObject object :
+                                motionCardImage.getActiveCards()) {
+                            cards.add(motionCardImage.getCards().get(
+                                    motionCardImage.getObjects().indexOf(object)));
+                        }
                     }
                 }
                 motionCardImage.getOnSendCard().onSendCard(pointerId, cards, (int)x, (int)y);
@@ -47,7 +49,7 @@ public class SendCardTouchEventHandler extends TouchEventHandler{
         return true;
     }
 
-    public String computeNearestPlayerName(
+    String computeNearestPlayerName(
             ArrayList<String> playersName,
             ArrayList<Integer> directions,
             int x,
