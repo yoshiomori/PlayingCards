@@ -2,6 +2,7 @@ package tcc.ronaldoyoshio.playingcards.touchEventHandler;
 
 import android.content.Context;
 import android.os.Vibrator;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +13,8 @@ import java.util.Vector;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Trata dos eventos de toque de movimento
@@ -24,48 +27,20 @@ public class MotionTouchEventHandler extends TouchEventHandler {
     private static final int N = 1;
     private static final int P = 0;
     private final ArrayList<int[]> samples = new ArrayList<>(Arrays.asList(
-            new int[]{0, 0, 0, 0, 0}, // 1
-            new int[]{246, 37348, 52048, 172, -124}, // 2
-            new int[]{134, 18149, 32029, -32, -631}, // 3
-            new int[]{386, 52502, 120184, -107, -611}, // 4
-            new int[]{306, 40104, 56256, -74, -1036}, // 5
-            new int[]{198, 27595, 17286, 19, 6}, // 6
-            new int[]{274, 41636, 92313, 52, 53}, // 7
-            new int[]{270, 43491, 72131, 280, 854}, // 8
-            new int[]{298, 37673, 83028, 208, -1072}, // 9
-            new int[]{330, 49664, 51265, 3, -690}, // 10
-            new int[]{186, 27694, 27554, -47, -740}, // 11
-            new int[]{218, 27981, 60799, -181, -42}, // 12
-            new int[]{170, 24378, 40933, 187, -46}, // 13
-            new int[]{266, 40300, 58356, -112, -265}, // 14
-            new int[]{158, 22765, 39143, 95, 1175}, // 15
-            new int[]{138, 20623, 31656, 259, 24}, // 16
-            new int[]{194, 27440, 44080, -13, -28}, // 17
-            new int[]{350, 49950, 79980, -80, -15}, // 18
-            new int[]{278, 38875, 61429, 295, 1156}, // 19
-            new int[]{114, 14276, 18913, -182, -554} // 20
+            new int[]{182, 12831, 44521, -346, 32}, // 1
+            new int[]{274, 36192, 52292, 35, -53}, // 2
+            new int[]{158, 19221, 56594, -1, 796}, // 3
+            new int[]{334, 43808, 54444, 27, -727}, // 4
+            new int[]{358, 45673, 118836, 9, -701}, // 5
+            new int[]{354, 43974, 110122, 3, 694} // 6
     ));
     private final int[] types = new int[]{
             N, // 1
-            P, // 2
+            N, // 2
             N, // 3
-            N, // 4
-            N, // 5
-            P, // 6
-            P, // 7
-            P, // 8
-            N, // 9
-            N, // 10
-            N, // 11
-            P, // 12
-            P, // 13
-            P, // 14
-            N, // 15
-            P, // 16
-            P, // 17
-            P, // 18
-            N, // 19
-            N // 20
+            P, // 4
+            P, // 4
+            P // 5
     };
     private Vector<Integer> trace = new Vector<>();
     private MotionCardImage motionCardImage;
@@ -175,6 +150,8 @@ public class MotionTouchEventHandler extends TouchEventHandler {
                 traceData[3] += trace.get(index + 2);
                 traceData[4] += trace.get(index + 3);
             }
+
+            Log.d(TAG, "onUp: " + Arrays.toString(traceData));
 
             for (int[] sample :
                     samples) {
