@@ -21,7 +21,7 @@ import tcc.ronaldoyoshio.playingcards.service.GameServerService;
 
 public class ServerConfigActivity extends ConfigActivity {
     private static final String TAG = "ServerConfigActivity";
-    public static final int MSG_CONFIRM = 5;
+    public static final int MSG_CONFIRM = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +63,7 @@ public class ServerConfigActivity extends ConfigActivity {
         );
         intent.putExtra("nextActivity", SelectCardsActivity.class);
         serverConfig.startActivity(intent);
+        finish();
     }
 
     @Override
@@ -75,13 +76,6 @@ public class ServerConfigActivity extends ConfigActivity {
     @Override
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
-            case MSG_WIFI_DIRECT_OK:
-                ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipperServer);
-                flipper.showNext();
-                Message response = Message.obtain();
-                response.what = GameServerService.MSG_SERVER_SOCKET;
-                sendMessageToService(response);
-                break;
             case MSG_NEW_DEVICE:
                 Button button = (Button) findViewById(R.id.buttonFinish);
                 button.setVisibility(View.VISIBLE);

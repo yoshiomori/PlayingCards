@@ -10,9 +10,11 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import tcc.ronaldoyoshio.playingcards.application.PlayingCardsApplication;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.images.BackGroundImage;
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
@@ -22,7 +24,10 @@ import tcc.ronaldoyoshio.playingcards.touchEventHandler.OnSendCard;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCard;
 
 public class HandActivity extends GLActivity implements Handler.Callback {
+    private static final String TAG = "HandActivity";
     public static final int MSG_RECEIVE_CARD = 1 ;
+    public static final int MSG_TEXT = 2;
+    public static final int MSG_ERROR = 3;
 
     private MotionCardImage motionCardImage;
     private boolean mBound = false;
@@ -61,7 +66,6 @@ public class HandActivity extends GLActivity implements Handler.Callback {
     }
 
     private void onReceiveCard(ArrayList<String> cards) {
-        Log.d("Hand", String.valueOf(cards.size()));
         for (String card :
                 cards) {
             motionCardImage.addCard(card);
@@ -99,6 +103,11 @@ public class HandActivity extends GLActivity implements Handler.Callback {
             case MSG_RECEIVE_CARD:
                 onReceiveCard(msg.getData().getStringArrayList("Cards"));
                 break;
+            case MSG_TEXT:
+                Log.d(TAG, msg.getData().getString("Mensagem"));
+                Toast.makeText(getApplicationContext(), msg.getData().getString("Mensagem"), Toast.LENGTH_SHORT).show();
+                if (msg.arg1 == MSG_ERROR) finish();
+                break;
         }
         return true;
     }
@@ -110,5 +119,21 @@ public class HandActivity extends GLActivity implements Handler.Callback {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    @Override
+    public void onDestroy() {
+        unbindService(mConnection);
+        if (PlayingCardsApplication.getInstance().isMyServiceRunning(GamePlayerService.class)) {
+            Intent intent = new Intent(this, GamePlayerService.class);
+            stopService(intent);
+        }
+        super.onDestroy();
     }
 }

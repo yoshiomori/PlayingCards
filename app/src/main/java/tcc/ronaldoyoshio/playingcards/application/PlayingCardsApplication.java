@@ -1,9 +1,15 @@
 package tcc.ronaldoyoshio.playingcards.application;
 
+import android.app.ActivityManager;
 import android.app.Application;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import java.io.File;
+
+import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
+import tcc.ronaldoyoshio.playingcards.service.GameServerService;
 
 
 // Referência: https://www.hrupin.com/2011/11/how-to-clear-user-data-in-your-android-application-programmatically
@@ -48,5 +54,28 @@ public class PlayingCardsApplication extends Application {
         }
 
         return dir.delete();
+    }
+
+    public boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void cleanApp() {
+        if (isMyServiceRunning(GamePlayerService.class)) {
+            Intent intent = new Intent(this, GamePlayerService.class);
+            stopService(intent);
+        }
+
+        if (isMyServiceRunning(GameServerService.class)) {
+            Intent intent = new Intent(this, GameServerService.class);
+            stopService(intent);
+        }
+        clearApplicationData();
     }
 }

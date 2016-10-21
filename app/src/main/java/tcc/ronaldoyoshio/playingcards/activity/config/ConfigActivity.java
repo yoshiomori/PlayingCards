@@ -17,10 +17,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.R;
+import tcc.ronaldoyoshio.playingcards.application.PlayingCardsApplication;
 import tcc.ronaldoyoshio.playingcards.service.GameService;
 
 public abstract class ConfigActivity extends ListActivity implements Handler.Callback {
@@ -29,6 +32,7 @@ public abstract class ConfigActivity extends ListActivity implements Handler.Cal
     public static final int MSG_WIFI_DIRECT_OK = 2;
     public static final int MSG_TEXT = 3;
     public static final int MSG_NEW_DEVICE = 4;
+    public static final int MSG_ERROR = 5;
 
     private final Handler handler = new Handler(this);
     private final Messenger mMessenger = new Messenger(handler);
@@ -99,12 +103,18 @@ public abstract class ConfigActivity extends ListActivity implements Handler.Cal
                 break;
             case MSG_TEXT:
                 Log.d(getTag(), msg.getData().getString("Mensagem"));
+                Toast.makeText(getApplicationContext(), msg.getData().getString("Mensagem"),  Toast.LENGTH_SHORT).show();
+                if (msg.arg1 == MSG_ERROR) finish();
                 break;
             case MSG_WIFI_DIRECT_NOK:
                 response = Message.obtain();
                 response.what = GameService.MSG_WIFI_DIRECT_SERVICE;
                 sendMessageToService(response);
                 Log.d(getTag(), "WifiDirect NOK");
+                break;
+            case MSG_WIFI_DIRECT_OK:
+                ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipper);
+                flipper.showNext();
                 break;
         }
         return true;
@@ -117,6 +127,20 @@ public abstract class ConfigActivity extends ListActivity implements Handler.Cal
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mBound) {
+            unbindService(mConnection);
+        }
+        super.onDestroy();
     }
 
     protected abstract void startTouchActivity();

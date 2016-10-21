@@ -38,23 +38,41 @@ import tcc.ronaldoyoshio.playingcards.model.WebMessage;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 
 public class GamePlayerService extends GameService {
-    public static final int MSG_CONNECT_TO_DEVICE = 4;
-    public static final int MSG_REQUEST_DEVICES = 5;
-    public static final String SERVICE_INSTANCE = "_gamePlayer";
+    public static final int MSG_CONNECT_TO_DEVICE = 3;
+    public static final int MSG_REQUEST_DEVICES = 4;
+
     private static final String TAG = "GamePlayerService";
+    public static final String SERVICE_INSTANCE = "_gamePlayer";
+
     private PlayerSocketHandler handler = null;
+    private WiFiP2pDiscoveredService serviceServer;
 
     @Override
-    public void onCreate() {
-        super.onCreate();
+    public IBinder onBind(Intent intent) {
+        return mMessenger.getBinder();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected void startRegistration() {
+        Map<String, String> record = new HashMap<>();
+        record.put("NAME", name);
+
+        WifiP2pDnsSdServiceInfo service = WifiP2pDnsSdServiceInfo.newInstance(getServiceInstance(), SERVICE_REG_TYPE, record);
+        manager.addLocalService(channel, service, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                Log.d(getTag(), "Serviço Local Adicionado");
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                Log.d(getTag(), "Falha ao adicionar o serviço: " + reason);
+                sendToastMessage("Erro na inicialização WifiDirect. Tente Novamente", ConfigActivity.MSG_ERROR);
+            }
+        });
     }
 
     public void connectP2p(WiFiP2pDiscoveredService service) {
+        serviceServer = service;
         WifiP2pConfig config = new WifiP2pConfig();
         config.deviceAddress = service.getDevice().deviceAddress;
         config.wps.setup = WpsInfo.PBC;
@@ -68,8 +86,9 @@ public class GamePlayerService extends GameService {
                         }
 
                         @Override
-                        public void onFailure(int arg0) {
-                            Log.d(getTag(), "Falha ao remover serviceRequest");
+                        public void onFailure(int reason) {
+                            Log.d(getTag(), "Falha ao remover serviceRequest: " + reason);
+                            sendToastMessage("Erro na Conexão com Servidor. Tente Novamente", ConfigActivity.MSG_ERROR);
                         }
                     });
 
@@ -85,37 +104,24 @@ public class GamePlayerService extends GameService {
             }
 
             @Override
-            public void onFailure(int errorCode) {
-                Log.d(getTag(), "Falha na conexão com serviço");
+            public void onFailure(int reason) {
+                Log.d(getTag(), "Falha na conexão com serviço: " + reason);
                 Message response = Message.obtain();
                 response.what = ClientConfigActivity.MSG_CONNECT_NOK;
                 Bundle bundle = new Bundle();
                 bundle.putString("Mensagem", "Falha ao conectar");
                 response.setData(bundle);
                 sendMessageToActivity(response);
+                sendToastMessage("Falha ao conectar com servidor.", -1);
             }
         });
     }
 
     @Override
-    protected String getServiceInstance() {
-        return this.SERVICE_INSTANCE;
-    }
-
-    @Override
-    protected String getTag() {
-        return this.TAG;
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mMessenger.getBinder();
-    }
-
-    @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
-        handler = new PlayerSocketHandler(p2pInfo.groupOwnerAddress, 4545);
+        handler = new PlayerSocketHandler(p2pInfo.groupOwnerAddress, serviceServer.getPort());
         handler.start();
+        stopLooking();
     }
 
     @Override
@@ -136,6 +142,7 @@ public class GamePlayerService extends GameService {
                     bundle.putString("Mensagem", "Servidor não encontrado");
                     response.setData(bundle);
                     sendMessageToActivity(response);
+                    sendToastMessage("Falha ao conectar com servidor.", -1);
                 }
                 break;
             case MSG_REQUEST_DEVICES:
@@ -183,13 +190,7 @@ public class GamePlayerService extends GameService {
                 }
             } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
-                    try {
-                        if (socket != null && !socket.isClosed()){
-                            socket.close();
-                        }
-                    } catch (IOException e1) {
-                        Log.d(TAG, e.getMessage());
-                    }
+                finish();
             }
         }
 
@@ -206,8 +207,14 @@ public class GamePlayerService extends GameService {
             Bundle bundle = new Bundle();
 
             switch (msg.what) {
-                case ClientConfigActivity.MSG_WEB_PLAYER:
-                    bundle.putString("Player", message.getMessage("Player"));
+                case ClientConfigActivity.MSG_WEB_INIT:
+                    ArrayList<String> players = new ArrayList<>();
+                    for (int i = 0; true; i++) {
+                        String player = message.getMessage("Player" + i);
+                        if (players.equals("")) break;
+                        else players.add(player);
+                    }
+                    bundle.putStringArrayList("Players", players);
                     break;
                 case HandActivity.MSG_RECEIVE_CARD:
                     ArrayList<String> cards = new ArrayList<>();
@@ -232,5 +239,34 @@ public class GamePlayerService extends GameService {
                 Log.d(TAG, e.getMessage());
             }
         }
+
+        public void finish() {
+            if (socket != null && !socket.isClosed()){
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    Log.d(TAG, e.getMessage());
+                    sendToastMessage("Falha na comunicação com servidor", ConfigActivity.MSG_TEXT);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (handler != null && handler.isAlive()) {
+            handler.interrupt();
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    protected String getServiceInstance() {
+        return this.SERVICE_INSTANCE;
+    }
+
+    @Override
+    protected String getTag() {
+        return this.TAG;
     }
 }
