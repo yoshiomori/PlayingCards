@@ -21,13 +21,12 @@ public class MainMenuActivity extends GLActivity {
         /* AddImage  deve Ser chamando antes de onCreate */
         addImage(new BackGroundImage());
         addImage(new MainMenuButtonImage(this));
-
         super.onCreate(savedInstanceState);
     }
 
     @Override
     protected void onResume() {
+        PlayingCardsApplication.getInstance().stopServices();
         super.onResume();
-        PlayingCardsApplication.getInstance().cleanApp();
     }
 }

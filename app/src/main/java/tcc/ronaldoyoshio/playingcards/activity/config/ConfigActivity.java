@@ -131,8 +131,8 @@ public abstract class ConfigActivity extends ListActivity implements Handler.Cal
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         finish();
+        super.onBackPressed();
     }
 
     @Override
@@ -140,6 +140,7 @@ public abstract class ConfigActivity extends ListActivity implements Handler.Cal
         if (mBound) {
             unbindService(mConnection);
         }
+        handler.removeCallbacks(null);
         super.onDestroy();
     }
 

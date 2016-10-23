@@ -233,10 +233,6 @@ public class DeckActivity extends GLActivity implements Handler.Callback {
     @Override
     public void onDestroy() {
         unbindService(mConnection);
-        if (PlayingCardsApplication.getInstance().isMyServiceRunning(GameServerService.class)) {
-            Intent intent = new Intent(this, GameServerService.class);
-            stopService(intent);
-        }
         super.onDestroy();
     }
 }

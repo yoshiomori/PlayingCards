@@ -10,12 +10,12 @@ import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
+import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -42,6 +42,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
     private BroadcastReceiver receiver;
     protected WifiP2pDnsSdServiceRequest serviceRequest;
     protected WifiP2pManager manager;
+    protected WifiP2pDnsSdServiceInfo service;
     protected Channel channel;
     protected String name;
     protected Map<String, WiFiP2pDiscoveredService> discoveredServices = new HashMap<>();
@@ -178,42 +179,73 @@ public abstract class GameService extends Service implements ConnectionInfoListe
     }
 
 
-    protected void stopLooking() {
-        manager.stopPeerDiscovery(channel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                Log.d(getTag(), "Finalizando a procura de dispositivos");
-            }
+    protected void cleanWifiP2P() {
+        if (manager != null && channel != null) {
+           /* manager.stopPeerDiscovery(channel, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Log.d(getTag(), "Finalizando a procura de dispositivos");
+                }
 
-            @Override
-            public void onFailure(int reason) {
-                Log.d(getTag(), "Falha na finalizacao de procura de disposiivos: " + reason);
-            }
-        });
+                @Override
+                public void onFailure(int reason) {
+                    Log.d(getTag(), "Falha na finalizacao de procura de disposiivos: " + reason);
+                }
+            });
 
-        manager.clearLocalServices(channel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                Log.d(getTag(), "Limpando Servicos Locais");
-            }
+            manager.clearLocalServices(channel, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Log.d(getTag(), "Limpando Servicos Locais");
+                }
 
-            @Override
-            public void onFailure(int reason) {
-                Log.d(getTag(), "Falha na Limpeza de Servicos: " + reason);
-            }
-        });
+                @Override
+                public void onFailure(int reason) {
+                    Log.d(getTag(), "Falha na Limpeza de Servicos: " + reason);
+                }
+            });
 
-        manager.clearServiceRequests(channel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                Log.d(getTag(), "Limpando Requisições");
-            }
+            manager.clearServiceRequests(channel, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Log.d(getTag(), "Limpando Requisições");
+                }
 
-            @Override
-            public void onFailure(int reason) {
-                Log.d(getTag(), "Falha na Limpeza de Requisições: " + reason);
+                @Override
+                public void onFailure(int reason) {
+                    Log.d(getTag(), "Falha na Limpeza de Requisições: " + reason);
+                }
+            });
+
+            if (service != null) {
+                manager.removeLocalService(channel, service, new WifiP2pManager.ActionListener() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d(getTag(), "Limpando Requisições");
+                    }
+
+                    @Override
+                    public void onFailure(int reason) {
+                        Log.d(getTag(), "Falha na Limpeza de Requisições: " + reason);
+                    }
+                });
+            }*/
+
+            if (serviceRequest != null) {
+                manager.removeServiceRequest(channel, serviceRequest, new WifiP2pManager.ActionListener() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d(getTag(), "Service Request removido");
+                    }
+
+                    @Override
+                    public void onFailure(int reason) {
+                        Log.d(getTag(), "Falha ao remover serviceRequest: " + reason);
+                        sendToastMessage("Erro na Conexão com Servidor. Tente Novamente", ConfigActivity.MSG_ERROR);
+                    }
+                });
             }
-        });
+        }
     }
 
     public void setIsiWfiDirectEnabled(boolean b) {
@@ -242,32 +274,9 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         if (receiver != null) {
             unregisterReceiver(receiver);
         }
+        cleanWifiP2P();
+        handler.removeCallbacks(null);
         super.onDestroy();
-    }
-
-    protected void disconnect() {
-        if (manager != null && channel != null) {
-            manager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
-                @Override
-                public void onGroupInfoAvailable(WifiP2pGroup group) {
-                    if (group != null && manager != null && channel != null
-                            && group.isGroupOwner()) {
-                        manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
-
-                            @Override
-                            public void onSuccess() {
-                                Log.d(getTag(), "Grupo Removido");
-                            }
-
-                            @Override
-                            public void onFailure(int reason) {
-                                Log.d(getTag(), "Erro ao remover Grupo: " + reason);
-                            }
-                        });
-                    }
-                }
-            });
-        }
     }
 
     protected abstract String getServiceInstance();

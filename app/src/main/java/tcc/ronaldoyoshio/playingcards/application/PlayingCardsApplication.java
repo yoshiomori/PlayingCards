@@ -67,6 +67,11 @@ public class PlayingCardsApplication extends Application {
     }
 
     public void cleanApp() {
+        stopServices();
+        clearApplicationData();
+    }
+
+    public void stopServices() {
         if (isMyServiceRunning(GamePlayerService.class)) {
             Intent intent = new Intent(this, GamePlayerService.class);
             stopService(intent);
@@ -76,6 +81,5 @@ public class PlayingCardsApplication extends Application {
             Intent intent = new Intent(this, GameServerService.class);
             stopService(intent);
         }
-        clearApplicationData();
     }
 }

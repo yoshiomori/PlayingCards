@@ -1,6 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.service;
 
 import android.content.Intent;
+import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
@@ -49,7 +50,7 @@ public class GameServerService extends GameService {
         record.put("LISTEN_PORT", String.valueOf(startServerSocket()));
         record.put("NAME", name);
 
-        WifiP2pDnsSdServiceInfo service = WifiP2pDnsSdServiceInfo.newInstance(getServiceInstance(), SERVICE_REG_TYPE, record);
+        service = WifiP2pDnsSdServiceInfo.newInstance(getServiceInstance(), SERVICE_REG_TYPE, record);
         manager.addLocalService(channel, service, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
@@ -59,19 +60,6 @@ public class GameServerService extends GameService {
             @Override
             public void onFailure(int reason) {
                 Log.d(getTag(), "Falha ao adicionar o serviço: " + reason);
-                sendToastMessage("Erro na inicialização WifiDirect. Tente Novamente", ConfigActivity.MSG_ERROR);
-            }
-        });
-
-        manager.createGroup(channel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                Log.d(getTag(), "Grupo criado com Sucesso");
-            }
-
-            @Override
-            public void onFailure(int reason) {
-                Log.d(getTag(), "Não foi possível criar Grupo P2P: " + reason);
                 sendToastMessage("Erro na inicialização WifiDirect. Tente Novamente", ConfigActivity.MSG_ERROR);
             }
         });
@@ -87,7 +75,6 @@ public class GameServerService extends GameService {
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
             case MSG_STOP_SOCKET:
-                server.stopListening();
                 for (Map.Entry<String, ClientHandler> client : clients.entrySet()) {
                     WebMessage message = new WebMessage();
                     message.setTag(ClientConfigActivity.MSG_WEB_INIT);
@@ -103,7 +90,8 @@ public class GameServerService extends GameService {
                 Message response = Message.obtain();
                 response.what = ServerConfigActivity.MSG_CONFIRM;
                 sendMessageToActivity(response);
-                stopLooking();
+                server.stopListening();
+                //cleanWifiP2P();
                 break;
             case MSG_SEND_CARD:
                 sendCardToPlayer(msg.getData().getString("Player"), msg.getData().getStringArrayList("Cards"));
@@ -133,9 +121,32 @@ public class GameServerService extends GameService {
         clients.get(player).sendMessageClient(message);
     }
 
+    private void disconnect() {
+        if (manager != null && channel != null) {
+            manager.requestGroupInfo(channel, new WifiP2pManager.GroupInfoListener() {
+                @Override
+                public void onGroupInfoAvailable(WifiP2pGroup group) {
+                    if (group != null && manager != null && channel != null
+                            && group.isGroupOwner()) {
+                        manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+                            @Override
+                            public void onSuccess() {
+                                Log.d(getTag(), "Grupo Removido");
+                            }
+
+                            @Override
+                            public void onFailure(int reason) {
+                                Log.d(getTag(), "Erro ao remover Grupo: " + reason);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
+
     @Override
     public void onDestroy() {
-        disconnect();
         for (Map.Entry<String, ClientHandler> entry: clients.entrySet()) {
             if (entry.getValue().isAlive()) {
                 entry.getValue().interrupt();
@@ -144,6 +155,7 @@ public class GameServerService extends GameService {
         if (server != null && server.isAlive()) {
             server.interrupt();
         }
+        disconnect();
         super.onDestroy();
     }
 
@@ -155,7 +167,7 @@ public class GameServerService extends GameService {
                 serverSocket = new ServerSocket(0);
             } catch (IOException e) {
                 Log.d(TAG, e.getMessage());
-                sendToastMessage("Falha na criação do Socket", ConfigActivity.MSG_TEXT);
+                sendToastMessage("Falha na criação do Socket", ConfigActivity.MSG_ERROR);
             }
         }
 
@@ -172,9 +184,8 @@ public class GameServerService extends GameService {
                     client.start();
                 }
             } catch (Exception e) {
-                Log.d(TAG, e.getMessage());
+                Log.d(TAG, e.getMessage() + " - Falhar na criação ClientHandler ou ServerSocket parando");
                 stopListening();
-                sendToastMessage("Falha na comunicação com Jogador.", ConfigActivity.MSG_TEXT);
             }
         }
 
@@ -185,7 +196,7 @@ public class GameServerService extends GameService {
                 }
             } catch (IOException e) {
                 Log.d(TAG, e.getMessage());
-                sendToastMessage("Falha ao fechar socket.", ConfigActivity.MSG_TEXT);
+                sendToastMessage("Falha ao fechar socket.", ConfigActivity.MSG_ERROR);
             }
         }
     }
@@ -268,7 +279,7 @@ public class GameServerService extends GameService {
                     clientSocket.close();
                 } catch (IOException e) {
                     Log.d(TAG, e.getMessage());
-                    sendToastMessage("Falha na comunicação com Jogador", ConfigActivity.MSG_TEXT);
+                    sendToastMessage("Falha na comunicação com Jogador", ConfigActivity.MSG_ERROR);
                 }
             }
         }
