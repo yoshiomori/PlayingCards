@@ -27,9 +27,8 @@ import tcc.ronaldoyoshio.playingcards.service.GameServerService;
 
 public class ClientConfigActivity extends ConfigActivity {
     private static final String TAG = "ClientConfigActivity";
-    public static final int MSG_CONNECT_OK = 5;
-    public static final int MSG_CONNECT_NOK = 6;
-    public static final int MSG_WEB_PLAYER = 7;
+    public static final int MSG_CONNECT_OK = 6;
+    public static final int MSG_CONNECT_NOK = 7;
     public static final int MSG_WEB_INIT = 8;
 
     private final Map<String, String> discoveredDevices = new HashMap<>();
@@ -70,6 +69,7 @@ public class ClientConfigActivity extends ConfigActivity {
         );
         intent.putExtra("nextActivity", HandActivity.class);
         clientConfig.startActivity(intent);
+        finish();
     }
 
     @Override
@@ -127,14 +127,8 @@ public class ClientConfigActivity extends ConfigActivity {
                 response.what = GamePlayerService.MSG_REQUEST_DEVICES;
                 sendMessageToService(response);
                 break;
-            case MSG_WIFI_DIRECT_OK:
-                ViewFlipper flipper = (ViewFlipper) findViewById(R.id.viewFlipperClient);
-                flipper.showNext();
-                break;
-            case MSG_WEB_PLAYER:
-                items.add(msg.getData().getString("Player"));
-                break;
             case MSG_WEB_INIT:
+                items.addAll(msg.getData().getStringArrayList("Players"));
                 startTouchActivity();
                 break;
             default:

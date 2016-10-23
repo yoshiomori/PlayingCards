@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
@@ -15,7 +16,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -30,28 +30,22 @@ import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 public abstract class GameService extends Service implements ConnectionInfoListener, Handler.Callback {
     public static final int MSG_CLIENT = 0;
     public static final int MSG_WIFI_DIRECT_SERVICE = 1;
-    public static final int MSG_SUCCESS = 2;
-    public static final int MSG_FAILED = 3;
+    public static final int MSG_SEND_CARD = 2;
     protected static final String SERVICE_REG_TYPE = "_presence._tcp";
-    protected static final String LISTEN_PORT = "4545";
-    public static final int MSG_SEND_CARD = 6;
-    protected String name;
-
-    protected WifiP2pManager manager;
-    protected final IntentFilter intentFilter = new IntentFilter();
-    protected Channel channel;
-    protected BroadcastReceiver receiver = null;
-    private boolean wifiDirectEnabled = false;
-    protected Messenger mActivity = null;
-    protected Map<String, WiFiP2pDiscoveredService> discoveredServices = new HashMap<>();
-    protected WifiP2pDnsSdServiceRequest serviceRequest;
-
-    private final Handler handler = new Handler(this);
+    protected final Handler handler = new Handler(this);
     protected final Messenger mMessenger = new Messenger(handler);
+    private final IntentFilter intentFilter = new IntentFilter();
 
-    public void setIsiWfiDirectEnabled(boolean b) {
-        this.wifiDirectEnabled = b;
-    }
+    private Messenger mActivity;
+    private boolean wifiDirectEnabled = false;
+
+    private BroadcastReceiver receiver;
+    protected WifiP2pDnsSdServiceRequest serviceRequest;
+    protected WifiP2pManager manager;
+    protected WifiP2pDnsSdServiceInfo service;
+    protected Channel channel;
+    protected String name;
+    protected Map<String, WiFiP2pDiscoveredService> discoveredServices = new HashMap<>();
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -59,30 +53,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         return Service.START_STICKY;
     }
 
-    protected abstract String getServiceInstance();
-
-    protected abstract String getTag();
-
-    protected void startRegistration() {
-        Map<String, String> record = new HashMap<String, String>();
-        record.put("LISTEN_PORT", String.valueOf(LISTEN_PORT));
-        record.put("NAME", name);
-
-        WifiP2pDnsSdServiceInfo service = WifiP2pDnsSdServiceInfo.newInstance(getServiceInstance(), SERVICE_REG_TYPE, record);
-        manager.addLocalService(channel, service, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                Log.d(getTag(), "Serviço Local Adicionado");
-            }
-
-            @Override
-            public void onFailure(int error) {
-                Log.d(getTag(), "Falha ao adicionar o serviço");
-            }
-        });
-    }
-
-    protected void wifiP2pInit() {
+    private void wifiP2pInit() {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
@@ -91,18 +62,22 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         channel = manager.initialize(this, getMainLooper(), null);
     }
 
-    protected void registerWiFiDirectBroadcastReceiver() {
+    private void registerWiFiDirectBroadcastReceiver() {
         receiver = new WiFiDirectBroadcastReceiver(manager, channel, this);
         registerReceiver(receiver, intentFilter);
     }
 
-    protected void startDiscoverService() {
+    private void startDiscoverService() {
         WifiP2pManager.DnsSdTxtRecordListener txtListener = new WifiP2pManager.DnsSdTxtRecordListener() {
             @Override
             public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> record, WifiP2pDevice device) {
                 Log.d(getTag(), fullDomainName);
                 Log.d(getTag(), device.deviceAddress);
-                discoveredServices.put(device.deviceAddress, new WiFiP2pDiscoveredService(record.get("NAME"), Integer.parseInt(record.get("LISTEN_PORT"))));
+                WiFiP2pDiscoveredService service = new WiFiP2pDiscoveredService(record.get("NAME"), device);
+                if (record.containsKey("LISTEN_PORT")) {
+                    service.setPort(Integer.parseInt(record.get("LISTEN_PORT")));
+                }
+                discoveredServices.put(device.deviceAddress, service);
             }
         };
 
@@ -111,11 +86,9 @@ public abstract class GameService extends Service implements ConnectionInfoListe
             public void onDnsSdServiceAvailable(String instanceName, String registrationType, WifiP2pDevice srcDevice) {
                 Log.d(getTag(), instanceName);
                 if (discoveredServices.containsKey(srcDevice.deviceAddress)) {
-                    WiFiP2pDiscoveredService serv = discoveredServices.get(srcDevice.deviceAddress);
-                    serv.setDevice(srcDevice);
-                    serv.setInstanceName(instanceName);
-                    serv.setServiceRegistrationType(registrationType);
-                    sendDiscoveredServiceMessage(serv);
+                    WiFiP2pDiscoveredService service = discoveredServices.get(srcDevice.deviceAddress);
+                    service.setInstanceName(instanceName);
+                    sendDiscoveredServiceMessage(service);
                 }
             }
         };
@@ -123,15 +96,15 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         serviceRequest = WifiP2pDnsSdServiceRequest.newInstance();
         manager.addServiceRequest(channel, serviceRequest,
                 new WifiP2pManager.ActionListener() {
-
                     @Override
                     public void onSuccess() {
                         Log.d(getTag(), "Requisição adicionado com sucesso");
                     }
 
                     @Override
-                    public void onFailure(int arg0) {
-                        Log.d(getTag(), "Requisição adicionado sem sucesso");
+                    public void onFailure(int reason) {
+                        Log.d(getTag(), "Requisição adicionado sem sucesso: " + reason);
+                        sendToastMessage("Erro na inicialização WifiDirect. Tente Novamente", ConfigActivity.MSG_ERROR);
                     }
                 });
         manager.discoverServices(channel, new WifiP2pManager.ActionListener() {
@@ -142,8 +115,9 @@ public abstract class GameService extends Service implements ConnectionInfoListe
             }
 
             @Override
-            public void onFailure(int arg0) {
-                Log.d(getTag(), "Falha na procura de serviços");
+            public void onFailure(int reason) {
+                Log.d(getTag(), "Falha na procura de serviços: " + reason);
+                sendToastMessage("Erro na inicialização WifiDirect. Tente Novamente", ConfigActivity.MSG_ERROR);
             }
         });
     }
@@ -152,12 +126,6 @@ public abstract class GameService extends Service implements ConnectionInfoListe
     public boolean handleMessage(Message msg) {
         Message response;
         switch (msg.what) {
-            case MSG_SUCCESS:
-                Log.d(getTag(), msg.getData().getString("Mensagem"));
-                break;
-            case MSG_FAILED:
-                Log.d(getTag(), msg.getData().getString("Mensagem"));
-                break;
             case MSG_CLIENT:
                 mActivity = msg.replyTo;
                 name = (msg.getData().getString("Name") != null) ? msg.getData().getString("Name") : name;
@@ -168,7 +136,6 @@ public abstract class GameService extends Service implements ConnectionInfoListe
                 if (msg.arg1 == 0) {
                     wifiP2pInit();
                     registerWiFiDirectBroadcastReceiver();
-                    break;
                 }
                 break;
             case MSG_WIFI_DIRECT_SERVICE:
@@ -196,7 +163,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         try {
             mActivity.send(msg);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            sendToastMessage("Erro ao enviar Mensagem. Tente Novamente", ConfigActivity.MSG_ERROR);
         }
     }
 
@@ -205,29 +172,116 @@ public abstract class GameService extends Service implements ConnectionInfoListe
             Message msg = Message.obtain();
             msg.what = ClientConfigActivity.MSG_NEW_DEVICE;
             Bundle bundle = new Bundle();
-            bundle.putParcelable("Device", (Parcelable) service);
+            bundle.putParcelable("Device", service);
             msg.setData(bundle);
             sendMessageToActivity(msg);
         }
     }
 
+
+    protected void cleanWifiP2P() {
+        if (manager != null && channel != null) {
+           /* manager.stopPeerDiscovery(channel, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Log.d(getTag(), "Finalizando a procura de dispositivos");
+                }
+
+                @Override
+                public void onFailure(int reason) {
+                    Log.d(getTag(), "Falha na finalizacao de procura de disposiivos: " + reason);
+                }
+            });
+
+            manager.clearLocalServices(channel, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Log.d(getTag(), "Limpando Servicos Locais");
+                }
+
+                @Override
+                public void onFailure(int reason) {
+                    Log.d(getTag(), "Falha na Limpeza de Servicos: " + reason);
+                }
+            });
+
+            manager.clearServiceRequests(channel, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Log.d(getTag(), "Limpando Requisições");
+                }
+
+                @Override
+                public void onFailure(int reason) {
+                    Log.d(getTag(), "Falha na Limpeza de Requisições: " + reason);
+                }
+            });
+
+            if (service != null) {
+                manager.removeLocalService(channel, service, new WifiP2pManager.ActionListener() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d(getTag(), "Limpando Requisições");
+                    }
+
+                    @Override
+                    public void onFailure(int reason) {
+                        Log.d(getTag(), "Falha na Limpeza de Requisições: " + reason);
+                    }
+                });
+            }*/
+
+            if (serviceRequest != null) {
+                manager.removeServiceRequest(channel, serviceRequest, new WifiP2pManager.ActionListener() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d(getTag(), "Service Request removido");
+                    }
+
+                    @Override
+                    public void onFailure(int reason) {
+                        Log.d(getTag(), "Falha ao remover serviceRequest: " + reason);
+                        sendToastMessage("Erro na Conexão com Servidor. Tente Novamente", ConfigActivity.MSG_ERROR);
+                    }
+                });
+            }
+        }
+    }
+
+    public void setIsiWfiDirectEnabled(boolean b) {
+        this.wifiDirectEnabled = b;
+    }
+
+    protected void sendToastMessage(String message, Integer error) {
+        Message msg = Message.obtain();
+        msg.what = ConfigActivity.MSG_TEXT;
+        msg.arg1 = error;
+        Bundle bundle = new Bundle();
+        bundle.putString("Mensagem", message);
+        msg.setData(bundle);
+        sendMessageToActivity(msg);
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        mActivity = null;
+        super.onUnbind(intent);
+        return false;
+    }
+
     @Override
     public void onDestroy() {
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+        }
+        cleanWifiP2P();
+        handler.removeCallbacks(null);
         super.onDestroy();
-        stopLooking();
-        unregisterReceiver(receiver);
     }
 
-    public void stopLooking() {
-        manager.stopPeerDiscovery(channel, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-            }
+    protected abstract String getServiceInstance();
 
-            @Override
-            public void onFailure(int reason) {
-            }
-        });
-    }
+    protected abstract String getTag();
 
+    protected abstract void startRegistration();
 }

@@ -7,14 +7,13 @@ import android.os.Parcelable;
 public class WiFiP2pDiscoveredService implements Parcelable {
 
     private WifiP2pDevice device;
-    private String instanceName = null;
-    private String serviceRegistrationType = null;
     private int port;
-    private String name = null;
+    private String name;
+    private String instanceName;
 
-    public WiFiP2pDiscoveredService(String name, int port) {
-        this.port = port;
-        this.name = name;
+    public WiFiP2pDiscoveredService(String name, WifiP2pDevice device) {
+        setDevice(device);
+        setName(name);
     }
 
     public WifiP2pDevice getDevice() {
@@ -23,22 +22,6 @@ public class WiFiP2pDiscoveredService implements Parcelable {
 
     public void setDevice(WifiP2pDevice device) {
         this.device = device;
-    }
-
-    public String getInstanceName() {
-        return instanceName;
-    }
-
-    public void setInstanceName(String instanceName) {
-        this.instanceName = instanceName;
-    }
-
-    public String getServiceRegistrationType() {
-        return serviceRegistrationType;
-    }
-
-    public void setServiceRegistrationType(String serviceRegistrationType) {
-        this.serviceRegistrationType = serviceRegistrationType;
     }
 
     public String getName() {
@@ -57,13 +40,19 @@ public class WiFiP2pDiscoveredService implements Parcelable {
         this.port = port;
     }
 
+    public String getInstanceName() {
+        return instanceName;
+    }
+
+    public void setInstanceName(String instanceName) {
+        this.instanceName = instanceName;
+    }
 
     protected WiFiP2pDiscoveredService(Parcel in) {
         device = (WifiP2pDevice) in.readValue(WifiP2pDevice.class.getClassLoader());
-        instanceName = in.readString();
-        serviceRegistrationType = in.readString();
         port = in.readInt();
         name = in.readString();
+        instanceName = in.readString();
     }
 
     @Override
@@ -74,10 +63,9 @@ public class WiFiP2pDiscoveredService implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(device);
-        dest.writeString(instanceName);
-        dest.writeString(serviceRegistrationType);
         dest.writeInt(port);
         dest.writeString(name);
+        dest.writeString(instanceName);
     }
 
     public static final Parcelable.Creator<WiFiP2pDiscoveredService> CREATOR = new Parcelable.Creator<WiFiP2pDiscoveredService>() {

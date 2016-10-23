@@ -100,4 +100,10 @@ public class TouchConfigActivity extends GLActivity{
 
         super.onCreate(savedInstanceState);
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }
