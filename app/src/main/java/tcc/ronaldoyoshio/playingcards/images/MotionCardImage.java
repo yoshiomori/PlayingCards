@@ -23,7 +23,7 @@ import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCardTouchEventHandle
 public class MotionCardImage extends CardImage {
     private MotionTouchEventHandler motionTouchEventHandler;
     private SendCardTouchEventHandler sendCardTouchEventHandler;
-    private List<GLObject> activeCards = Collections.synchronizedList(new ArrayList<GLObject>());
+    private final List<GLObject> activeCards = Collections.synchronizedList(new ArrayList<GLObject>());
     private List<Integer> activeCardsIndex = Collections.synchronizedList(new ArrayList<Integer>());
     private List<String> activeCardsNames = Collections.synchronizedList(new ArrayList<String>());
     @SuppressLint("UseSparseArrays")
@@ -169,10 +169,25 @@ public class MotionCardImage extends CardImage {
 
     public void removeCardsAtPointer(int pointerId) {
         if (getActiveCards().isEmpty()) {
-            removeCard(getPointerCards().get(pointerId));
+            GLObject card = getPointerCards().get(pointerId);
+            final List<GLObject> cards = getObjects();
+            if (cards.contains(card)) {
+                getCards().remove(cards.indexOf(card));
+                cards.remove(card);
+            }
         }
         else {
-            removeAllCards(getActiveCards());
+            synchronized (activeCards) {
+                final List<GLObject> objects = getObjects();
+
+                if (objects.containsAll(activeCards)) {
+                    objects.removeAll(activeCards);
+
+                    for (GLObject card : activeCards) {
+                        getCards().remove(objects.indexOf(card));
+                    }
+                }
+            }
         }
         getMotionTouchEventHandler().deactivateCards();
     }

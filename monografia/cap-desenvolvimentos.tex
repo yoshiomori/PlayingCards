@@ -22,7 +22,7 @@
 % celular
 
 % Introduzir aos conceitos básicos de imagens, perspectiva, visão e objetos em relação á conputação
-% gráfica, as tecnologias como biblioteca gráfica e bibliotecas do android para desenvolvimento de
+% gráfica, as tecnologias como biblioteca gráfica e bibliotecas do Android para desenvolvimento de
 % aplicativos
 
 % Explicar as decisões tomadas no desenvolvimento do GL(biblioteca gráfica no aplicativo). Explicar
@@ -31,7 +31,7 @@
 % Mostras testes de experimento de tempo durante o processo de otimização.
 
 Para desenhar imagens de cartas, fundo e botões na tela do celular, fizemos uso da interface de
-programação de aplicações do Android e do OpenGL.
+programação de aplicações (API) do Android e do OpenGL.
 
 O Android pode ser visto como uma camada de abstração da interface de manipulação da tela do celular e
 do sensor de toque da tela disponibilisados pelos fabricantes. Nosso aplicativo faz uso desses
@@ -104,14 +104,26 @@ Se \(w > h\) então \(T\left(x, y\right) = \left(\frac{hx}{w}, y\right)\) e temos
 \(T\left(x, y\right) = \left(x, \frac{wy}{h} \right)\) e temos
 \(-1 \leq \left(x, \frac{wy}{h}\right) \leq 1\).
 
-Aplicamos a transformação \(T\) nos vértices no vertex shader e obtemos uma imagem sem deformação e com
-todos os vértices que deviam ser mostrados na tela.
+Aplicamos a transformação \(T\) nos vértices no vertex shader e obtemos uma imagem sem deformação e
+com todos os vértices que deviam ser mostrados na tela.
 
+Para mover as cartas, o usuário deve tocar na carta e arrastá-la. A API do Android nos permite saber a
+posição do toque na tela, mas ainda precisamos saber se existe alguma carta nesta posição. Existem
+duas soluções para este problema.
 
-Para fazer que o aplicativo possa reconhecer o movimento para embaralha as cartas, fizemos uso do
-classificador de k-vizinhos mais próximos. O problema que um classificador resolve é: Dada uma amostra
-desconhecida, ele decide qual é a classe que ela representa. Em nosso exemplo de classificador de
-movimentos, temos 2 classes: é movimento para embaralhar e não é.
+A primeira solução consiste em gerar uma imagem em preto e branco para cada carta, onde a carta é
+desenhada em branco no fundo preto. Para verificar que a posição do toque contem uma carta, basta ler
+o pixel correspondente à posição do toque. Se o pixel for branco, então a carta foi tocada. Contudo, o
+acesso ao framebuffer para leitura do valor do pixel é restrito apenas para o sistema e não pudemos
+implementar esta solução.
 
-Existe uma variedade de classificadores que podem ser utilizados para resolver este problema.
-Escolhemos o classificador de k-visinhos mais próximos por ser 
+Assim, passamos para a segunda solução. Aplicaremos as transformações inversas das aplicadas nos
+vértices das cartas para que o sistema de coordenadas da posição do toque seja a mesma dos vértices.
+
+Seja \(\left\{e_1, e_2\right\}\) uma base de \(\mathbb{R}²\), dizemos que os vértices \(w, x, y, z\) é
+um retângulo se 
+
+Dado que uma carta está sendo arrastada 
+
+Para embaralhar as cartas, o usuário deve arrastar todas as cartas para cima e para baixo pelo menos 3
+vezes. A solução para este problema foi aplicar o classificador de k vizinhos próximos.
