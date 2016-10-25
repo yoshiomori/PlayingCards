@@ -91,7 +91,7 @@ public class GameServerService extends GameService {
                 response.what = ServerConfigActivity.MSG_CONFIRM;
                 sendMessageToActivity(response);
                 server.stopListening();
-                //cleanWifiP2P();
+                cleanWifiP2P();
                 break;
             case MSG_SEND_CARD:
                 sendCardToPlayer(msg.getData().getString("Player"), msg.getData().getStringArrayList("Cards"));
@@ -166,7 +166,8 @@ public class GameServerService extends GameService {
             try {
                 serverSocket = new ServerSocket(0);
             } catch (IOException e) {
-                Log.d(TAG, e.getMessage());
+                String message = (e.getMessage() != null) ? e.getMessage() : "";
+                Log.d(TAG, message);
                 sendToastMessage("Falha na criação do Socket", ConfigActivity.MSG_ERROR);
             }
         }
@@ -184,7 +185,8 @@ public class GameServerService extends GameService {
                     client.start();
                 }
             } catch (Exception e) {
-                Log.d(TAG, e.getMessage() + " - Falhar na criação ClientHandler ou ServerSocket parando");
+                String message = (e.getMessage() != null) ? e.getMessage() : "";
+                Log.d(TAG, message + " - Falhar na criação ClientHandler ou ServerSocket parando");
                 stopListening();
             }
         }
@@ -195,7 +197,8 @@ public class GameServerService extends GameService {
                     serverSocket.close();
                 }
             } catch (IOException e) {
-                Log.d(TAG, e.getMessage());
+                String message = (e.getMessage() != null) ? e.getMessage() : "";
+                Log.d(TAG, message);
                 sendToastMessage("Falha ao fechar socket.", ConfigActivity.MSG_ERROR);
             }
         }
@@ -268,7 +271,8 @@ public class GameServerService extends GameService {
             try {
                 output.writeObject(message);
             } catch (IOException e) {
-                Log.d(TAG, e.getMessage());
+                String eMessage = (e.getMessage() != null) ? e.getMessage() : "";
+                Log.d(TAG, eMessage);
                 finish();
             }
         }
@@ -278,7 +282,8 @@ public class GameServerService extends GameService {
                 try {
                     clientSocket.close();
                 } catch (IOException e) {
-                    Log.d(TAG, e.getMessage());
+                    String message = (e.getMessage() != null) ? e.getMessage() : "";
+                    Log.d(TAG, message);
                     sendToastMessage("Falha na comunicação com Jogador", ConfigActivity.MSG_ERROR);
                 }
             }

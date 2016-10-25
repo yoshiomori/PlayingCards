@@ -181,7 +181,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
 
     protected void cleanWifiP2P() {
         if (manager != null && channel != null) {
-           /* manager.stopPeerDiscovery(channel, new WifiP2pManager.ActionListener() {
+           manager.stopPeerDiscovery(channel, new WifiP2pManager.ActionListener() {
                 @Override
                 public void onSuccess() {
                     Log.d(getTag(), "Finalizando a procura de dispositivos");
@@ -229,7 +229,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
                         Log.d(getTag(), "Falha na Limpeza de Requisições: " + reason);
                     }
                 });
-            }*/
+            }
 
             if (serviceRequest != null) {
                 manager.removeServiceRequest(channel, serviceRequest, new WifiP2pManager.ActionListener() {
@@ -267,6 +267,10 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         mActivity = null;
         super.onUnbind(intent);
         return false;
+    }
+
+    public void onTaskRemoved (Intent rootIntent){
+        this.stopSelf();
     }
 
     @Override
