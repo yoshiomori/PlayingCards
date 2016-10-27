@@ -1,5 +1,6 @@
 package tcc.ronaldoyoshio.playingcards.images;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -14,11 +15,11 @@ import tcc.ronaldoyoshio.playingcards.model.Cards;
  * Created by mori on 30/07/16.
  */
 public class CardImage extends GLImage {
-    public int totalCards; /* Número total de cartas necessário para poder embaralhar */
+    private int totalCards; /* Número total de cartas necessário para poder embaralhar */
     public static final int SIDEBYSIDE = 1;
     public static final int CENTERED = 0;
-    protected CardData cardData = new CardData();
-    protected Cards cards = new Cards();
+    private CardData cardData = new CardData();
+    private final Cards cards = new Cards();
     private int mode;
     private float r_width;
     private float r_height;
@@ -125,7 +126,10 @@ public class CardImage extends GLImage {
     }
 
     public void setCards(Cards cards) {
-        this.cards = cards;
+        synchronized (this.cards) {
+            this.cards.clear();
+            this.cards.addAll(cards);
+        }
     }
 
     public void setMode(int mode) {
@@ -140,7 +144,7 @@ public class CardImage extends GLImage {
      * Define o modo como as cartas serão inicialmente posicionadas.
      * Pode ser todas as cartas no centro da tela ou todas as cartas lado a lado.
      */
-    protected void changeMode() {
+    private void changeMode() {
         List<GLObject> objects = getObjects();
         GLObject object;
         switch (mode) {
@@ -285,15 +289,15 @@ public class CardImage extends GLImage {
             cardImage.put("Kc", new float[] {4f, 12f});
         }
 
-        public float[] getArray() {
+        float[] getArray() {
             return array;
         }
 
-        public short[] getElementArray() {
+        short[] getElementArray() {
             return elementArray;
         }
 
-        public int getCount() {
+        int getCount() {
             return count;
         }
 
@@ -312,5 +316,19 @@ public class CardImage extends GLImage {
         object.set("card_coord", cardData.getCardCoord(cardName));
         object.set("blue_tone", 0);
         getObjects().add(object);
+    }
+
+    void removeAllCards(ArrayList<Integer> indexArray) {
+        synchronized (cards) {
+            for (int index : indexArray) {
+                removeCard(index);
+            }
+        }
+    }
+
+    void removeCard(int index) {
+        synchronized (cards) {
+            cards.remove(index);
+        }
     }
 }

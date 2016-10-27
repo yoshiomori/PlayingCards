@@ -29,6 +29,7 @@ public class MotionCardImage extends CardImage {
     @SuppressLint("UseSparseArrays")
     private HashMap<Integer, GLObject> pointerCards = new HashMap<>();
     private OnSendCard onSendCard;
+    private ArrayList<Integer> indexArray = new ArrayList<>();
 
     public MotionCardImage(final GLActivity glActivity) {
 
@@ -120,7 +121,7 @@ public class MotionCardImage extends CardImage {
                     if (cardHit()) {
                         activeCards.add(card);
                         activeCardsIndex.add(index);
-                        activeCardsNames.add(cards.get(index));
+                        activeCardsNames.add(getCards().get(index));
                         float[] position = card.getFloats("position");
                         System.arraycopy(lastCardPosition, 0, position, 0, position.length);
                         card.set("blue_tone", 0.2f);
@@ -168,25 +169,22 @@ public class MotionCardImage extends CardImage {
     }
 
     public void removeCardsAtPointer(int pointerId) {
+        final List<GLObject> glObjectCards = getObjects();
         if (getActiveCards().isEmpty()) {
-            GLObject card = getPointerCards().get(pointerId);
-            final List<GLObject> cards = getObjects();
-            if (cards.contains(card)) {
-                getCards().remove(cards.indexOf(card));
-                cards.remove(card);
+            GLObject glObjectCard = getPointerCards().get(pointerId);
+            if (glObjectCards.contains(glObjectCard)) {
+                removeCard(glObjectCards.indexOf(glObjectCard));
+                glObjectCards.remove(glObjectCard);
             }
         }
         else {
-            synchronized (activeCards) {
-                final List<GLObject> objects = getObjects();
-
-                if (objects.containsAll(activeCards)) {
-                    objects.removeAll(activeCards);
-
-                    for (GLObject card : activeCards) {
-                        getCards().remove(objects.indexOf(card));
-                    }
+            if (glObjectCards.containsAll(activeCards)) {
+                for (GLObject glObjectCard : activeCards) {
+                    int index = glObjectCards.indexOf(glObjectCard);
+                    indexArray.add(index);
                 }
+                removeAllCards(indexArray);
+                glObjectCards.removeAll(activeCards);
             }
         }
         getMotionTouchEventHandler().deactivateCards();
