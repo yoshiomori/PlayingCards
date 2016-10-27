@@ -163,7 +163,8 @@ public class GamePlayerService extends GameService {
                     handleMessage(message);
                 }
             } catch (Exception e) {
-                Log.d(TAG, e.getMessage());
+                String message = (e.getMessage() != null) ? e.getMessage() : "";
+                Log.d(TAG, message);
                 finish();
             }
         }
@@ -210,7 +211,8 @@ public class GamePlayerService extends GameService {
             try {
                 output.writeObject(message);
             } catch (IOException e) {
-                Log.d(TAG, e.getMessage());
+                String eMessage = (e.getMessage() != null) ? e.getMessage() : "";
+                Log.d(TAG, eMessage);
             }
         }
 
@@ -219,7 +221,8 @@ public class GamePlayerService extends GameService {
                 try {
                     socket.close();
                 } catch (IOException e) {
-                    Log.d(TAG, e.getMessage());
+                    String message = (e.getMessage() != null) ? e.getMessage() : "";
+                    Log.d(TAG, message);
                     sendToastMessage("Falha na comunicação com servidor", ConfigActivity.MSG_ERROR);
                 }
             }

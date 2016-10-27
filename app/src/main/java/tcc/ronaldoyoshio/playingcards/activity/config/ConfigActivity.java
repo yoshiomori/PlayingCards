@@ -102,8 +102,9 @@ public abstract class ConfigActivity extends ListActivity implements Handler.Cal
                 sendMessageToService(response);
                 break;
             case MSG_TEXT:
-                Log.d(getTag(), msg.getData().getString("Mensagem"));
-                Toast.makeText(getApplicationContext(), msg.getData().getString("Mensagem"),  Toast.LENGTH_SHORT).show();
+                String message = (msg.getData().getString("Mensagem") != null) ? msg.getData().getString("Mensagem") : "";
+                Log.d(getTag(), message);
+                Toast.makeText(getApplicationContext(), message,  Toast.LENGTH_SHORT).show();
                 if (msg.arg1 == MSG_ERROR) finish();
                 break;
             case MSG_WIFI_DIRECT_NOK:

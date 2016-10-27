@@ -168,7 +168,6 @@ public class DeckActivity extends GLActivity implements Handler.Callback {
     }
 
     private void onReceiveCard(ArrayList<String> cards) {
-        Log.d("Deck", String.valueOf(cards.size()));
         for (String card :
                 cards) {
             cardImage.addCard(card);
@@ -207,8 +206,9 @@ public class DeckActivity extends GLActivity implements Handler.Callback {
                 onReceiveCard(msg.getData().getStringArrayList("Cards"));
                 break;
             case MSG_TEXT:
-                Log.d(TAG, msg.getData().getString("Mensagem"));
-                Toast.makeText(getApplicationContext(), msg.getData().getString("Mensagem"), Toast.LENGTH_SHORT).show();
+                String message = (msg.getData().getString("Mensagem") != null) ? msg.getData().getString("Mensagem") : "";
+                Log.d(TAG, message);
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                 if (msg.arg1 == MSG_ERROR) finish();
                 break;
         }
@@ -232,7 +232,10 @@ public class DeckActivity extends GLActivity implements Handler.Callback {
 
     @Override
     public void onDestroy() {
-        unbindService(mConnection);
+        if (mBound) {
+            unbindService(mConnection);
+        }
+        PlayingCardsApplication.getInstance().stopServices();
         super.onDestroy();
     }
 }
