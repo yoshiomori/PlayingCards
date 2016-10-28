@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import tcc.ronaldoyoshio.playingcards.model.Cards;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
@@ -29,7 +30,7 @@ public class MotionCardImage extends CardImage {
     @SuppressLint("UseSparseArrays")
     private HashMap<Integer, GLObject> pointerCards = new HashMap<>();
     private OnSendCard onSendCard;
-    private ArrayList<Integer> indexArray = new ArrayList<>();
+    private Cards cards = new Cards(new ArrayList<String>());
 
     public MotionCardImage(final GLActivity glActivity) {
 
@@ -170,20 +171,24 @@ public class MotionCardImage extends CardImage {
 
     public void removeCardsAtPointer(int pointerId) {
         final List<GLObject> glObjectCards = getObjects();
+        Cards cards = getCards();
         if (getActiveCards().isEmpty()) {
             GLObject glObjectCard = getPointerCards().get(pointerId);
             if (glObjectCards.contains(glObjectCard)) {
-                removeCard(glObjectCards.indexOf(glObjectCard));
+                int index = glObjectCards.indexOf(glObjectCard);
+                cards.remove(index);
                 glObjectCards.remove(glObjectCard);
             }
         }
         else {
             if (glObjectCards.containsAll(activeCards)) {
+                this.cards.clear();
                 for (GLObject glObjectCard : activeCards) {
                     int index = glObjectCards.indexOf(glObjectCard);
-                    indexArray.add(index);
+                    String card = cards.get(index);
+                    this.cards.add(card);
                 }
-                removeAllCards(indexArray);
+                cards.removeAll(this.cards);
                 glObjectCards.removeAll(activeCards);
             }
         }

@@ -1,6 +1,5 @@
 package tcc.ronaldoyoshio.playingcards.images;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,7 +18,7 @@ public class CardImage extends GLImage {
     public static final int SIDEBYSIDE = 1;
     public static final int CENTERED = 0;
     private CardData cardData = new CardData();
-    private final Cards cards = new Cards();
+    private Cards cards = new Cards();
     private int mode;
     private float r_width;
     private float r_height;
@@ -126,10 +125,7 @@ public class CardImage extends GLImage {
     }
 
     public void setCards(Cards cards) {
-        synchronized (this.cards) {
-            this.cards.clear();
-            this.cards.addAll(cards);
-        }
+        this.cards = cards;
     }
 
     public void setMode(int mode) {
@@ -316,19 +312,5 @@ public class CardImage extends GLImage {
         object.set("card_coord", cardData.getCardCoord(cardName));
         object.set("blue_tone", 0);
         getObjects().add(object);
-    }
-
-    void removeAllCards(ArrayList<Integer> indexArray) {
-        synchronized (cards) {
-            for (int index : indexArray) {
-                removeCard(index);
-            }
-        }
-    }
-
-    void removeCard(int index) {
-        synchronized (cards) {
-            cards.remove(index);
-        }
     }
 }
