@@ -34,6 +34,7 @@ public class SelectButtonImage extends GLImage {
                             extras.getStringArrayList("playersName")
                     );
                     selectCardsActivity.startActivity(intent);
+                    selectCardsActivity.finish();
                 }
                 return super.onDown(pointerId, x, y);
             }

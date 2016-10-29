@@ -1,4 +1,4 @@
-package tcc.ronaldoyoshio.playingcards.activity.config.client;
+package tcc.ronaldoyoshio.playingcards.activity.config;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,14 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.ViewFlipper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import tcc.ronaldoyoshio.playingcards.R;
-import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.config.touch.TouchConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
@@ -33,7 +31,7 @@ public class ClientConfigActivity extends ConfigActivity {
 
     private final Map<String, String> discoveredDevices = new HashMap<>();
     private final ArrayList<View.OnClickListener> actions = new ArrayList<>();
-    private String serverAddress = null;
+    private String serverAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

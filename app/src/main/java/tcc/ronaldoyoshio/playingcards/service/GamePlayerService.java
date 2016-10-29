@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pInfo;
-import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
-import tcc.ronaldoyoshio.playingcards.activity.config.client.ClientConfigActivity;
+import tcc.ronaldoyoshio.playingcards.activity.config.ClientConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
 import tcc.ronaldoyoshio.playingcards.model.WebMessage;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
@@ -34,7 +34,6 @@ public class GamePlayerService extends GameService {
     private static final String TAG = "GamePlayerService";
     public static final String SERVICE_INSTANCE = "_gamePlayer";
 
-    protected boolean connectingToDevice = false;
     private PlayerSocketHandler playerHandler;
     private WiFiP2pDiscoveredService serviceServer;
 
@@ -48,7 +47,7 @@ public class GamePlayerService extends GameService {
         record.put("NAME", name);
 
         service = WifiP2pDnsSdServiceInfo.newInstance(getServiceInstance(), SERVICE_REG_TYPE, record);
-        manager.addLocalService(channel, service, new WifiP2pManager.ActionListener() {
+        manager.addLocalService(channel, service, new ActionListener() {
             @Override
             public void onSuccess() {
                 Log.d(getTag(), "Serviço Local Adicionado");
@@ -65,10 +64,9 @@ public class GamePlayerService extends GameService {
     public void connectP2p(WiFiP2pDiscoveredService service) {
         serviceServer = service;
         WifiP2pConfig config = new WifiP2pConfig();
+        config.groupOwnerIntent = 0;
         config.deviceAddress = service.getDevice().deviceAddress;
-        config.wps.setup = WpsInfo.PBC;
-        manager.connect(channel, config, new WifiP2pManager.ActionListener() {
-
+        manager.connect(channel, config, new ActionListener() {
             @Override
             public void onSuccess() {
                 Log.d(getTag(), "Conectando ao serviço");
@@ -93,9 +91,11 @@ public class GamePlayerService extends GameService {
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo p2pInfo) {
-        cleanWifiP2P();
-        playerHandler = new PlayerSocketHandler(p2pInfo.groupOwnerAddress, serviceServer.getPort());
-        playerHandler.start();
+        if (serviceServer != null && !p2pInfo.isGroupOwner) {
+            playerHandler = new PlayerSocketHandler(p2pInfo.groupOwnerAddress, serviceServer.getPort());
+            playerHandler.start();
+            cleanWifiP2P();
+        }
     }
 
     @Override
@@ -140,7 +140,7 @@ public class GamePlayerService extends GameService {
         return true;
     }
 
-    class PlayerSocketHandler extends Thread {
+    private class PlayerSocketHandler extends Thread {
         private Socket socket = null;
         private InetAddress serverAddress;
         private Integer serverPort;
@@ -163,9 +163,10 @@ public class GamePlayerService extends GameService {
                     handleMessage(message);
                 }
             } catch (Exception e) {
-                String message = (e.getMessage() != null) ? e.getMessage() : "";
+                String message = (e.getMessage() != null) ? e.getMessage() : "1";
                 Log.d(TAG, message);
                 finish();
+                sendToastMessage("Falha na comunicação com servidor", ConfigActivity.MSG_ERROR);
             }
         }
 
@@ -211,8 +212,10 @@ public class GamePlayerService extends GameService {
             try {
                 output.writeObject(message);
             } catch (IOException e) {
-                String eMessage = (e.getMessage() != null) ? e.getMessage() : "";
+                String eMessage = (e.getMessage() != null) ? e.getMessage() : "2";
                 Log.d(TAG, eMessage);
+                finish();
+                sendToastMessage("Falha na comunicação com servidor", ConfigActivity.MSG_ERROR);
             }
         }
 
@@ -221,7 +224,7 @@ public class GamePlayerService extends GameService {
                 try {
                     socket.close();
                 } catch (IOException e) {
-                    String message = (e.getMessage() != null) ? e.getMessage() : "";
+                    String message = (e.getMessage() != null) ? e.getMessage() : "3";
                     Log.d(TAG, message);
                     sendToastMessage("Falha na comunicação com servidor", ConfigActivity.MSG_ERROR);
                 }
@@ -232,6 +235,7 @@ public class GamePlayerService extends GameService {
     @Override
     public void onDestroy() {
         if (playerHandler != null && playerHandler.isAlive()) {
+            playerHandler.finish();
             playerHandler.interrupt();
         }
         super.onDestroy();

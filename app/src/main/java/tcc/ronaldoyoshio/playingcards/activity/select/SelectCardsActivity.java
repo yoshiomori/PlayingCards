@@ -33,4 +33,10 @@ public class SelectCardsActivity extends GLActivity {
         selectCardImage.setMode(CardImage.SIDEBYSIDE);
         getScreen().requestRender();
     }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
+    }
 }

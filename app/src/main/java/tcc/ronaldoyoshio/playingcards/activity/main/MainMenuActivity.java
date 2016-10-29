@@ -1,19 +1,13 @@
 package tcc.ronaldoyoshio.playingcards.activity.main;
 
-import android.app.ActivityManager;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 
 import tcc.ronaldoyoshio.playingcards.application.PlayingCardsApplication;
-import tcc.ronaldoyoshio.playingcards.images.BackGroundImage;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
-import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
-import tcc.ronaldoyoshio.playingcards.service.GameServerService;
+import tcc.ronaldoyoshio.playingcards.images.BackGroundImage;
 
 /**
  * Responsável por desenhar o menu principal e tratar dos eventos de toques na tela.
- * Created by mori on 21/07/16.
  */
 public class MainMenuActivity extends GLActivity {
     @Override

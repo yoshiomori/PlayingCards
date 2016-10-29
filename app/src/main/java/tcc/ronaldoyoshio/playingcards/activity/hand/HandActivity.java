@@ -25,9 +25,9 @@ import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCard;
 
 public class HandActivity extends GLActivity implements Handler.Callback {
     private static final String TAG = "HandActivity";
-    public static final int MSG_RECEIVE_CARD = 1 ;
-    public static final int MSG_TEXT = 2;
-    public static final int MSG_ERROR = 3;
+    public static final int MSG_TEXT = 3;
+    public static final int MSG_RECEIVE_CARD = 4;
+    public static final int MSG_ERROR = 5;
 
     private MotionCardImage motionCardImage;
     private boolean mBound = false;
@@ -133,6 +133,7 @@ public class HandActivity extends GLActivity implements Handler.Callback {
         if (mBound) {
             unbindService(mConnection);
         }
+        handler.removeCallbacks(null);
         PlayingCardsApplication.getInstance().stopServices();
         super.onDestroy();
     }

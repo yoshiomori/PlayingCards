@@ -30,9 +30,9 @@ import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 
 public class DeckActivity extends GLActivity implements Handler.Callback {
     private static final String TAG = "DeckActivity";
-    public static final int MSG_RECEIVE_CARD = 1 ;
-    public static final int MSG_TEXT = 2;
-    public static final int MSG_ERROR = 3;
+    public static final int MSG_TEXT = 3;
+    public static final int MSG_RECEIVE_CARD = 4;
+    public static final int MSG_ERROR = 5;
     private Cards cards;
     private ArrayList<String> playersName;
     private ArrayList<Integer> directions;
@@ -235,6 +235,7 @@ public class DeckActivity extends GLActivity implements Handler.Callback {
         if (mBound) {
             unbindService(mConnection);
         }
+        handler.removeCallbacks(null);
         PlayingCardsApplication.getInstance().stopServices();
         super.onDestroy();
     }

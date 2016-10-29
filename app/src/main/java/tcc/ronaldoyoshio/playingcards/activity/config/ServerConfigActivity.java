@@ -1,6 +1,5 @@
-package tcc.ronaldoyoshio.playingcards.activity.config.server;
+package tcc.ronaldoyoshio.playingcards.activity.config;
 
-import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -11,10 +10,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.ViewFlipper;
 
 import tcc.ronaldoyoshio.playingcards.R;
-import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.config.touch.TouchConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
 import tcc.ronaldoyoshio.playingcards.service.GameServerService;
@@ -40,19 +37,6 @@ public class ServerConfigActivity extends ConfigActivity {
         return TAG;
     }
 
-    public void waitPlayersConf (View view) {
-        Message msg = Message.obtain();
-        msg.what = GameServerService.MSG_STOP_SOCKET;
-        sendMessageToService(msg);
-
-        Button button = (Button) findViewById(R.id.buttonFinish);
-        button.setEnabled(false);
-        button.setVisibility(View.GONE);
-
-        TextView textView = (TextView) findViewById(R.id.wait);
-        textView.setText(R.string.waiting_confirm);
-    }
-
     @Override
     protected void startTouchActivity() {
         final ServerConfigActivity serverConfig = this;
@@ -71,6 +55,19 @@ public class ServerConfigActivity extends ConfigActivity {
         super.nextView(view);
         bindService(new Intent(this, GameServerService.class), mConnection,
                 Context.BIND_AUTO_CREATE);
+    }
+
+    public void waitPlayersConf (View view) {
+        Message msg = Message.obtain();
+        msg.what = GameServerService.MSG_STOP_SOCKET;
+        sendMessageToService(msg);
+
+        Button button = (Button) findViewById(R.id.buttonFinish);
+        button.setEnabled(false);
+        button.setVisibility(View.GONE);
+
+        TextView textView = (TextView) findViewById(R.id.wait);
+        textView.setText(R.string.waiting_confirm);
     }
 
     @Override

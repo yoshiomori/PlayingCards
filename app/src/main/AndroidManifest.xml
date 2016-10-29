@@ -35,8 +35,8 @@
         <activity android:name=".activity.deck.DeckActivity" />
         <activity android:name=".activity.select.SelectCardsActivity" />
         <activity android:name=".activity.hand.HandActivity" />
-        <activity android:name=".activity.config.server.ServerConfigActivity" />
-        <activity android:name=".activity.config.client.ClientConfigActivity" />
+        <activity android:name=".activity.config.ServerConfigActivity" />
+        <activity android:name=".activity.config.ClientConfigActivity" />
         <activity android:name=".activity.config.touch.TouchConfigActivity" android:noHistory="true"/>
 
         <service android:name=".service.GamePlayerService"

@@ -8,6 +8,10 @@ import android.content.IntentFilter;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.WifiP2pManager.GroupInfoListener;
+import android.net.wifi.p2p.WifiP2pManager.ActionListener;
+import android.net.wifi.p2p.WifiP2pManager.DnsSdServiceResponseListener;
+import android.net.wifi.p2p.WifiP2pManager.DnsSdTxtRecordListener;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
@@ -19,11 +23,12 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 import tcc.ronaldoyoshio.playingcards.activity.config.ConfigActivity;
-import tcc.ronaldoyoshio.playingcards.activity.config.client.ClientConfigActivity;
+import tcc.ronaldoyoshio.playingcards.activity.config.ClientConfigActivity;
 import tcc.ronaldoyoshio.playingcards.broadcastReceiver.WiFiDirectBroadcastReceiver;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
 
@@ -60,6 +65,9 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
         manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         channel = manager.initialize(this, getMainLooper(), null);
+        disconnect();
+        deletePersistentGroups();
+        cleanWifiP2P();
     }
 
     private void registerWiFiDirectBroadcastReceiver() {
@@ -67,8 +75,27 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         registerReceiver(receiver, intentFilter);
     }
 
-    private void startDiscoverService() {
-        WifiP2pManager.DnsSdTxtRecordListener txtListener = new WifiP2pManager.DnsSdTxtRecordListener() {
+    private void deletePersistentGroups(){
+        try {
+            Log.d(getTag(), "Destruindo Grupos");
+            Method[] methods = WifiP2pManager.class.getMethods();
+            for (int i = 0; i < methods.length; i++) {
+                if (methods[i].getName().equals("deletePersistentGroup")) {
+                    // Delete any persistent group
+                    for (int netid = 0; netid < 32; netid++) {
+                        methods[i].invoke(manager, channel, netid, null);
+                    }
+                }
+            }
+        } catch(Exception e) {
+            String message = (e.getMessage() != null) ? e.getMessage() : "";
+            Log.d(getTag(), message);
+            sendToastMessage("Não foi possível limpar grupos persisitidos. Tente Novamente", ConfigActivity.MSG_ERROR);
+        }
+    }
+
+    protected void startDiscoverService() {
+        DnsSdTxtRecordListener txtListener = new DnsSdTxtRecordListener() {
             @Override
             public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> record, WifiP2pDevice device) {
                 Log.d(getTag(), fullDomainName);
@@ -81,7 +108,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
             }
         };
 
-        WifiP2pManager.DnsSdServiceResponseListener servListener = new WifiP2pManager.DnsSdServiceResponseListener() {
+        DnsSdServiceResponseListener servListener = new DnsSdServiceResponseListener() {
             @Override
             public void onDnsSdServiceAvailable(String instanceName, String registrationType, WifiP2pDevice srcDevice) {
                 Log.d(getTag(), instanceName);
@@ -94,21 +121,20 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         };
         manager.setDnsSdResponseListeners(channel, servListener, txtListener);
         serviceRequest = WifiP2pDnsSdServiceRequest.newInstance();
-        manager.addServiceRequest(channel, serviceRequest,
-                new WifiP2pManager.ActionListener() {
-                    @Override
-                    public void onSuccess() {
-                        Log.d(getTag(), "Requisição adicionado com sucesso");
-                    }
+        manager.addServiceRequest(channel, serviceRequest, new ActionListener() {
+            @Override
+            public void onSuccess() {
+                Log.d(getTag(), "Requisição adicionado com sucesso");
+            }
 
-                    @Override
-                    public void onFailure(int reason) {
-                        Log.d(getTag(), "Requisição adicionado sem sucesso: " + reason);
-                        sendToastMessage("Erro na inicialização WifiDirect. Tente Novamente", ConfigActivity.MSG_ERROR);
-                    }
-                });
-        manager.discoverServices(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onFailure(int reason) {
+                Log.d(getTag(), "Requisição adicionado sem sucesso: " + reason);
+                sendToastMessage("Erro na inicialização WifiDirect. Tente Novamente", ConfigActivity.MSG_ERROR);
+            }
+        });
 
+        manager.discoverServices(channel, new ActionListener() {
             @Override
             public void onSuccess() {
                 Log.d(getTag(), "Iniciando procura de serviços");
@@ -178,10 +204,9 @@ public abstract class GameService extends Service implements ConnectionInfoListe
         }
     }
 
-
     protected void cleanWifiP2P() {
         if (manager != null && channel != null) {
-           manager.stopPeerDiscovery(channel, new WifiP2pManager.ActionListener() {
+           manager.stopPeerDiscovery(channel, new ActionListener() {
                 @Override
                 public void onSuccess() {
                     Log.d(getTag(), "Finalizando a procura de dispositivos");
@@ -193,7 +218,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
                 }
             });
 
-            manager.clearLocalServices(channel, new WifiP2pManager.ActionListener() {
+            manager.clearLocalServices(channel, new ActionListener() {
                 @Override
                 public void onSuccess() {
                     Log.d(getTag(), "Limpando Servicos Locais");
@@ -205,7 +230,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
                 }
             });
 
-            manager.clearServiceRequests(channel, new WifiP2pManager.ActionListener() {
+            manager.clearServiceRequests(channel, new ActionListener() {
                 @Override
                 public void onSuccess() {
                     Log.d(getTag(), "Limpando Requisições");
@@ -218,7 +243,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
             });
 
             if (service != null) {
-                manager.removeLocalService(channel, service, new WifiP2pManager.ActionListener() {
+                manager.removeLocalService(channel, service, new ActionListener() {
                     @Override
                     public void onSuccess() {
                         Log.d(getTag(), "Limpando Requisições");
@@ -232,7 +257,7 @@ public abstract class GameService extends Service implements ConnectionInfoListe
             }
 
             if (serviceRequest != null) {
-                manager.removeServiceRequest(channel, serviceRequest, new WifiP2pManager.ActionListener() {
+                manager.removeServiceRequest(channel, serviceRequest, new ActionListener() {
                     @Override
                     public void onSuccess() {
                         Log.d(getTag(), "Service Request removido");
@@ -279,8 +304,32 @@ public abstract class GameService extends Service implements ConnectionInfoListe
             unregisterReceiver(receiver);
         }
         cleanWifiP2P();
+        disconnect();
         handler.removeCallbacks(null);
         super.onDestroy();
+    }
+
+    protected void disconnect() {
+        if (manager != null && channel != null) {
+            manager.requestGroupInfo(channel, new GroupInfoListener() {
+                @Override
+                public void onGroupInfoAvailable(WifiP2pGroup group) {
+                    if (group != null && manager != null && channel != null && group.isGroupOwner()) {
+                        manager.removeGroup(channel, new ActionListener() {
+                            @Override
+                            public void onSuccess() {
+                                Log.d(getTag(), "Grupo Removido");
+                            }
+
+                            @Override
+                            public void onFailure(int reason) {
+                                Log.d(getTag(), "Erro ao remover Grupo: " + reason);
+                            }
+                        });
+                    }
+                }
+            });
+        }
     }
 
     protected abstract String getServiceInstance();

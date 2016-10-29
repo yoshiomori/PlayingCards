@@ -33,13 +33,13 @@ public abstract class ConfigActivity extends ListActivity implements Handler.Cal
     public static final int MSG_TEXT = 3;
     public static final int MSG_NEW_DEVICE = 4;
     public static final int MSG_ERROR = 5;
-
     private final Handler handler = new Handler(this);
     private final Messenger mMessenger = new Messenger(handler);
+
     private boolean mBound = false;
-    private Messenger mService = null;
-    protected ArrayAdapter adapter;
     protected ArrayList<String> items = new ArrayList<>();
+    private Messenger mService;
+    protected ArrayAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,19 +54,13 @@ public abstract class ConfigActivity extends ListActivity implements Handler.Cal
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
-    }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-    public void nextView(View view) {
-        EditText editText = (EditText) findViewById(R.id.editText);
-        Button button = (Button) findViewById(R.id.button);
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        editText.setFocusable(false);
-        button.setEnabled(false);
-        progressBar.setVisibility(View.VISIBLE);
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     protected ServiceConnection mConnection = new ServiceConnection() {
@@ -90,6 +84,15 @@ public abstract class ConfigActivity extends ListActivity implements Handler.Cal
             mBound = false;
         }
     };
+
+    public void nextView(View view) {
+        EditText editText = (EditText) findViewById(R.id.editText);
+        Button button = (Button) findViewById(R.id.button);
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        editText.setFocusable(false);
+        button.setEnabled(false);
+        progressBar.setVisibility(View.VISIBLE);
+    }
 
     @Override
     public boolean handleMessage(Message msg) {
