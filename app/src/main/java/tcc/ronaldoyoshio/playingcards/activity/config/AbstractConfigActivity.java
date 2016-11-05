@@ -23,10 +23,9 @@ import android.widget.ViewFlipper;
 import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.R;
-import tcc.ronaldoyoshio.playingcards.application.PlayingCardsApplication;
-import tcc.ronaldoyoshio.playingcards.service.GameService;
+import tcc.ronaldoyoshio.playingcards.service.wifidirect.AbstractWifiDirectGameService;
 
-public abstract class ConfigActivity extends ListActivity implements Handler.Callback {
+public abstract class AbstractConfigActivity extends ListActivity implements Handler.Callback {
     public static final int MSG_SERVICE_CONNECTED = 0;
     public static final int MSG_WIFI_DIRECT_NOK = 1;
     public static final int MSG_WIFI_DIRECT_OK = 2;
@@ -72,7 +71,7 @@ public abstract class ConfigActivity extends ListActivity implements Handler.Cal
             bundle.putString("Name", editText.getText().toString());
 
             Message msg = Message.obtain();
-            msg.what = GameService.MSG_CLIENT;
+            msg.what = AbstractWifiDirectGameService.MSG_CLIENT;
             msg.arg1 = 0;
             msg.replyTo = mMessenger;
             msg.setData(bundle);
@@ -101,7 +100,7 @@ public abstract class ConfigActivity extends ListActivity implements Handler.Cal
             case MSG_SERVICE_CONNECTED:
                 response = Message.obtain();
                 Log.d(getTag(), "Activity conectada");
-                response.what = GameService.MSG_WIFI_DIRECT_SERVICE;
+                response.what = AbstractWifiDirectGameService.MSG_WIFI_DIRECT_SERVICE;
                 sendMessageToService(response);
                 break;
             case MSG_TEXT:
@@ -112,7 +111,7 @@ public abstract class ConfigActivity extends ListActivity implements Handler.Cal
                 break;
             case MSG_WIFI_DIRECT_NOK:
                 response = Message.obtain();
-                response.what = GameService.MSG_WIFI_DIRECT_SERVICE;
+                response.what = AbstractWifiDirectGameService.MSG_WIFI_DIRECT_SERVICE;
                 sendMessageToService(response);
                 Log.d(getTag(), "WifiDirect NOK");
                 break;
@@ -124,7 +123,7 @@ public abstract class ConfigActivity extends ListActivity implements Handler.Cal
         return true;
     }
 
-    public void sendMessageToService(Message msg) {
+    protected synchronized void sendMessageToService(Message msg) {
         if (!mBound) return;
         try {
             mService.send(msg);
@@ -141,10 +140,8 @@ public abstract class ConfigActivity extends ListActivity implements Handler.Cal
 
     @Override
     public void onDestroy() {
-        if (mBound) {
-            unbindService(mConnection);
-        }
         handler.removeCallbacks(null);
+        if (mBound) unbindService(mConnection);
         super.onDestroy();
     }
 

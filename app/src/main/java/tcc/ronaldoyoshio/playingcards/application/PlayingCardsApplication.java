@@ -10,8 +10,8 @@ import android.util.Log;
 
 import java.io.File;
 
-import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
-import tcc.ronaldoyoshio.playingcards.service.GameServerService;
+import tcc.ronaldoyoshio.playingcards.service.wifidirect.WifiDirectGamePlayerService;
+import tcc.ronaldoyoshio.playingcards.service.wifidirect.WifiDirectGameServerService;
 
 
 // Referência: https://www.hrupin.com/2011/11/how-to-clear-user-data-in-your-android-application-programmatically
@@ -47,15 +47,15 @@ public class PlayingCardsApplication extends Application {
     public static boolean deleteDir(File dir) {
         if (dir != null && dir.isDirectory()) {
             String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                boolean success = deleteDir(new File(dir, children[i]));
+            for (String aChildren : children) {
+                boolean success = deleteDir(new File(dir, aChildren));
                 if (!success) {
                     return false;
                 }
             }
         }
 
-        return dir.delete();
+        return dir != null ? dir.delete() : false;
     }
 
     public boolean isMyServiceRunning(Class<?> serviceClass) {
@@ -69,19 +69,19 @@ public class PlayingCardsApplication extends Application {
     }
 
     public void stopServices() {
-        if (isMyServiceRunning(GamePlayerService.class)) {
-            Intent intent = new Intent(this, GamePlayerService.class);
+        if (isMyServiceRunning(WifiDirectGamePlayerService.class)) {
+            Intent intent = new Intent(this, WifiDirectGamePlayerService.class);
             stopService(intent);
             PackageManager pManager = this.getPackageManager();
-            pManager.setComponentEnabledSetting(new ComponentName(getApplicationContext(), GamePlayerService.class), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+            pManager.setComponentEnabledSetting(new ComponentName(getApplicationContext(), WifiDirectGamePlayerService.class), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 
         }
 
-        if (isMyServiceRunning(GameServerService.class)) {
-            Intent intent = new Intent(this, GameServerService.class);
+        if (isMyServiceRunning(WifiDirectGameServerService.class)) {
+            Intent intent = new Intent(this, WifiDirectGameServerService.class);
             stopService(intent);
             PackageManager pManager = this.getPackageManager();
-            pManager.setComponentEnabledSetting(new ComponentName(getApplicationContext(), GameServerService.class), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+            pManager.setComponentEnabledSetting(new ComponentName(getApplicationContext(), WifiDirectGameServerService.class), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 
         }
     }

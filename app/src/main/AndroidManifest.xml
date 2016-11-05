@@ -14,6 +14,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-feature android:name="android.hardware.wifi.direct" android:required="true"/>
 
     <application
@@ -39,10 +41,10 @@
         <activity android:name=".activity.config.ClientConfigActivity" />
         <activity android:name=".activity.config.touch.TouchConfigActivity" android:noHistory="true"/>
 
-        <service android:name=".service.GamePlayerService"
+        <service android:name=".service.wifidirect.WifiDirectGamePlayerService"
                  android:enabled="false"
                  android:process=":remotePlayerService" />
-        <service android:name=".service.GameServerService"
+        <service android:name=".service.wifidirect.WifiDirectGameServerService"
                  android:enabled="false"
                  android:process=":remoteServerService" />
     </application>

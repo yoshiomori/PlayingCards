@@ -14,9 +14,9 @@ import android.widget.TextView;
 import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.activity.config.touch.TouchConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.select.SelectCardsActivity;
-import tcc.ronaldoyoshio.playingcards.service.GameServerService;
+import tcc.ronaldoyoshio.playingcards.service.wifidirect.WifiDirectGameServerService;
 
-public class ServerConfigActivity extends ConfigActivity {
+public class ServerConfigActivity extends AbstractConfigActivity {
     private static final String TAG = "ServerConfigActivity";
     public static final int MSG_CONFIRM = 6;
 
@@ -27,8 +27,8 @@ public class ServerConfigActivity extends ConfigActivity {
         setListAdapter(adapter);
         super.onCreate(savedInstanceState);
         PackageManager pManager = this.getPackageManager();
-        pManager.setComponentEnabledSetting(new ComponentName(getApplicationContext(), GameServerService.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-        Intent intent = new Intent(this, GameServerService.class);
+        pManager.setComponentEnabledSetting(new ComponentName(getApplicationContext(), WifiDirectGameServerService.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+        Intent intent = new Intent(this, WifiDirectGameServerService.class);
         startService(intent);
     }
 
@@ -53,13 +53,13 @@ public class ServerConfigActivity extends ConfigActivity {
     @Override
     public void nextView(View view) {
         super.nextView(view);
-        bindService(new Intent(this, GameServerService.class), mConnection,
+        bindService(new Intent(this, WifiDirectGameServerService.class), mConnection,
                 Context.BIND_AUTO_CREATE);
     }
 
     public void waitPlayersConf (View view) {
         Message msg = Message.obtain();
-        msg.what = GameServerService.MSG_STOP_SOCKET;
+        msg.what = WifiDirectGameServerService.MSG_STOP_SOCKET;
         sendMessageToService(msg);
 
         Button button = (Button) findViewById(R.id.buttonFinish);

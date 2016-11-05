@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,11 +20,11 @@ import tcc.ronaldoyoshio.playingcards.R;
 import tcc.ronaldoyoshio.playingcards.activity.config.touch.TouchConfigActivity;
 import tcc.ronaldoyoshio.playingcards.activity.hand.HandActivity;
 import tcc.ronaldoyoshio.playingcards.model.web.WiFiP2pDiscoveredService;
-import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
-import tcc.ronaldoyoshio.playingcards.service.GameServerService;
+import tcc.ronaldoyoshio.playingcards.service.wifidirect.WifiDirectGamePlayerService;
+import tcc.ronaldoyoshio.playingcards.service.wifidirect.WifiDirectGameServerService;
 
 
-public class ClientConfigActivity extends ConfigActivity {
+public class ClientConfigActivity extends AbstractConfigActivity {
     private static final String TAG = "ClientConfigActivity";
     public static final int MSG_CONNECT_OK = 6;
     public static final int MSG_CONNECT_NOK = 7;
@@ -47,8 +48,8 @@ public class ClientConfigActivity extends ConfigActivity {
         setListAdapter(adapter);
         super.onCreate(savedInstanceState);
         PackageManager pManager = this.getPackageManager();
-        pManager.setComponentEnabledSetting(new ComponentName(getApplicationContext(), GamePlayerService.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-        Intent intent = new Intent(this, GamePlayerService.class);
+        pManager.setComponentEnabledSetting(new ComponentName(getApplicationContext(), WifiDirectGamePlayerService.class), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+        Intent intent = new Intent(this, WifiDirectGamePlayerService.class);
         startService(intent);
     }
 
@@ -73,7 +74,7 @@ public class ClientConfigActivity extends ConfigActivity {
     @Override
     public void nextView(View view) {
         super.nextView(view);
-        bindService(new Intent(this, GamePlayerService.class), mConnection,
+        bindService(new Intent(this, WifiDirectGamePlayerService.class), mConnection,
                 Context.BIND_AUTO_CREATE);
     }
 
@@ -90,14 +91,14 @@ public class ClientConfigActivity extends ConfigActivity {
                 msg.getData().setClassLoader(WiFiP2pDiscoveredService.class.getClassLoader());
                 WiFiP2pDiscoveredService service = msg.getData().getParcelable("Device");
                 final String address = (service != null) ? service.getDevice().deviceAddress : "";
-                if (!discoveredDevices.containsKey(address) && !(service == null || !GameServerService.SERVICE_INSTANCE.equals(service.getInstanceName()))) {
+                if (!discoveredDevices.containsKey(address) && !(service == null || !WifiDirectGameServerService.SERVICE_INSTANCE.equals(service.getInstanceName()))) {
                     String name = service.getName();
                     discoveredDevices.put(address, name);
                     putItem(name, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Message msg = Message.obtain();
-                            msg.what = GamePlayerService.MSG_CONNECT_TO_DEVICE;
+                            msg.what = WifiDirectGamePlayerService.MSG_CONNECT_TO_DEVICE;
                             Bundle bundle = new Bundle();
                             bundle.putString("Address", address);
                             msg.setData(bundle);
@@ -122,11 +123,11 @@ public class ClientConfigActivity extends ConfigActivity {
                 adapter.clear();
                 adapter.notifyDataSetChanged();
                 response = Message.obtain();
-                response.what = GamePlayerService.MSG_REQUEST_DEVICES;
+                response.what = WifiDirectGamePlayerService.MSG_REQUEST_DEVICES;
                 sendMessageToService(response);
                 break;
             case MSG_WEB_INIT:
-                items.addAll(msg.getData().getStringArrayList("Players"));
+                items.addAll(msg.getData().getStringArrayList("Players") != null ? msg.getData().getStringArrayList("Players") : new ArrayList<String>());
                 startTouchActivity();
                 break;
             default:
