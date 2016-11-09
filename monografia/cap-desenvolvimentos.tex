@@ -53,7 +53,7 @@ vértices definem um ponto, ponto final de uma aresta ou canto de um triângulo on
 encontram e são representados como um subconjunto de \(\mathbb{R}²\). Informações como coordenadas de
 posição, cores, normal, coordenadas de textura podem estar associados a um vértice. As primitivas
 formadas pelos vértices em \(\left\{\left(x, y\right) \in \mathbb{R}² | -1 \leq x, y \leq 1\right\}\)
-são enviados para serem mostrados na tela, chamaremos esses vértices de vértices visíveis.
+são enviados para serem mostrados na tela, chamaremos esses vértices de visíveis.
 
 Inicialmente haviamos escolhido um modelo com 312 vértices para desenhar 104 triângulos que juntas
 formam a imagem de carta. Fizemos um teste de desempenho usando o celular da lg modelo F240L, mas o
@@ -72,13 +72,13 @@ descrita por uma transformação \(V_{w, h}\) que leva elementos de \(\mathbb{R}²\
 tal que \(\left(x, y\right) \mapsto \left(\frac{wx}{2}, \frac{hy}{2}\right)\).
 
 Dizemos que \(D\) transformação que leva elementos de \(\mathbb{R}²\) para \(\mathbb{R}²\) é distorção
-se existe \(\left(x, y\right) \in \mathbb{R}\) tal que \(x = y\) e
-\(D\left(x, y\right) =  \left(x', y'\right) \to x' \neq y'\). Observe que se \( w \neq h \) então
-\(V_{w, h}\) é distorção.
+se existe \(\left(x, y\right),\left(x', y'\right) \in \mathbb{R}²\) tal que \(x = y\),
+\(D\left(x, y\right) =  \left(x', y'\right)\) e \(x' \neq y'\). Observe que se \( w \neq h \)
+então \(V_{w, h}\) é distorção.
 
 Dizemos que C transformação que leva elementos de \(\mathbb{R}²\) para \(\mathbb{R}²\) é correção da
-distorção D se para todo \(\left(x, y\right) \in \mathbb{R}²\) tal que \(x = y\), temos
-\(D \circ T \left(x, y\right) = \left(x', y'\right) \to x' = y'\).
+distorção D se para todo \(\left(x, y\right), \left(x', y'\right) \in \mathbb{R}²\) tal que \(x = y\)
+e \(D \circ T \left(x, y\right) = \left(x', y'\right)\), temos \(x' = y'\).
 
 Iremos mostrar que
 
@@ -99,7 +99,8 @@ Seja \(a \in \mathbb{R}\) e \(\left(x, y\right) \in \mathbb{R}²\) tal que \(x = 
 então \(V_{w, h} \circ T\left(x, y\right) = \left(\frac{ha}{2}, \frac{ha}{2}\right)\). Se
 \(w \leq h\), então \(V_{w, h} \circ T\left(x, y\right) = \left(\frac{wa}{2}, \frac{wa}{2}\right)\).
 
-Se \(w > h\) então \(T\left(x, y\right) = \left(\frac{hx}{w}, y\right)\) e temos
+Seja \(\left(x, y\right) \in \mathbb{R}²\) visível. Se \(w > h\) então
+\(T\left(x, y\right) = \left(\frac{hx}{w}, y\right)\) e temos
 \(-1 \leq \left(\frac{hx}{w}, y\right) \leq 1\). Se \(w \leq h\) então
 \(T\left(x, y\right) = \left(x, \frac{wy}{h} \right)\) e temos
 \(-1 \leq \left(x, \frac{wy}{h}\right) \leq 1\).
@@ -117,13 +118,19 @@ o pixel correspondente à posição do toque. Se o pixel for branco, então a carta 
 acesso ao framebuffer para leitura do valor do pixel é restrito apenas para o sistema e não pudemos
 implementar esta solução.
 
-Assim, passamos para a segunda solução. Aplicaremos as transformações inversas das aplicadas nos
-vértices das cartas para que o sistema de coordenadas da posição do toque seja a mesma dos vértices.
+Assim, passamos para a segunda solução. Aplicaremos a transformação inversar da
+\(V_{w, h} \circ T\left(x, y\right)\) nas coordenadas do toque para obtermos um ponto na mesma
+coordenada dos vértices que geram a imagem da carta. Dessa forma podemos verificar se o ponto está
+entre os vértices da carta.
 
-Seja \(\left\{e_1, e_2\right\}\) uma base de \(\mathbb{R}²\), dizemos que os vértices \(w, x, y, z\) é
-um retângulo se 
+Para embaralhar, o usuário deve selecionar todas as cartas arrastar para cima e para baixo pelo menos 
+3 vezes. Assim, temos duas classes de movimento, uma para embaralhar e outra só para movimentar. A
+solução para este problema foi aplicar o classificador de k vizinhos próximos que é um método para
+resolver problemas de aprendizagem supervisionada.
 
-Dado que uma carta está sendo arrastada 
+O classificador de k vizinhos mais próximos recebe \(X\) conjunto de entrada e \(Y\) conjunto de saída
+tais que a \(i\)-ésima observação de \(x_i\in X\) está associado ao \(i\)-ésimo elemento \(y_i\in Y\).
+chamaremos o conjunto de todas as associações entre \(X\) e \(Y\) de conjunto de treinamento.
 
-Para embaralhar as cartas, o usuário deve arrastar todas as cartas para cima e para baixo pelo menos 3
-vezes. A solução para este problema foi aplicar o classificador de k vizinhos próximos.
+Seja x 
+O método é fazer observações nos k elementos mais próximo à x nova entrada do conjunto de entrada.
