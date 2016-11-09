@@ -8,7 +8,7 @@ import android.os.RemoteException;
 import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
-import tcc.ronaldoyoshio.playingcards.service.GameService;
+import tcc.ronaldoyoshio.playingcards.service.wifidirect.AbstractWifiDirectGameService;
 
 /**
  * Classe que lida com o envio das cartas.
@@ -45,7 +45,7 @@ public class SendCard implements OnSendCard {
         );
 
         Message message = Message.obtain();
-        message.what = GameService.MSG_SEND_CARD;
+        message.what = AbstractWifiDirectGameService.MSG_SEND_CARD;
         Bundle bundle = new Bundle();
         bundle.putString("Player", targetPlayerName);
         bundle.putStringArrayList("Cards", cards);

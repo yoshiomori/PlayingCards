@@ -1,5 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.broadcastReceiver;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,16 +12,17 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.util.Log;
 
-import tcc.ronaldoyoshio.playingcards.service.GameService;
+import tcc.ronaldoyoshio.playingcards.application.PlayingCardsApplication;
+import tcc.ronaldoyoshio.playingcards.service.wifidirect.AbstractWifiDirectGameService;
 
 
-public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
+public class WebBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "WiFitReceiver";
     private final WifiP2pManager mManager;
     private final Channel mChannel;
-    private final GameService service;
+    private final AbstractWifiDirectGameService service;
 
-    public WiFiDirectBroadcastReceiver(WifiP2pManager manager, Channel channel, GameService service) {
+    public WebBroadcastReceiver(WifiP2pManager manager, Channel channel, AbstractWifiDirectGameService service) {
         super();
         this.turnOnWifi(service.getApplicationContext());
         this.mManager = manager;

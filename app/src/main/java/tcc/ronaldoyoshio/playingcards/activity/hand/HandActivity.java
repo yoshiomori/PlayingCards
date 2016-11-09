@@ -18,8 +18,8 @@ import tcc.ronaldoyoshio.playingcards.application.PlayingCardsApplication;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.images.BackGroundImage;
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
-import tcc.ronaldoyoshio.playingcards.service.GamePlayerService;
-import tcc.ronaldoyoshio.playingcards.service.GameService;
+import tcc.ronaldoyoshio.playingcards.service.wifidirect.WifiDirectGamePlayerService;
+import tcc.ronaldoyoshio.playingcards.service.wifidirect.AbstractWifiDirectGameService;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.OnSendCard;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCard;
 
@@ -62,7 +62,7 @@ public class HandActivity extends GLActivity implements Handler.Callback {
         }
 
         super.onCreate(savedInstanceState);
-        bindService(new Intent(this, GamePlayerService.class), mConnection, 0);
+        bindService(new Intent(this, WifiDirectGamePlayerService.class), mConnection, 0);
     }
 
     private void onReceiveCard(ArrayList<String> cards) {
@@ -73,13 +73,13 @@ public class HandActivity extends GLActivity implements Handler.Callback {
         getScreen().requestRender();
     }
 
-    private final ServiceConnection mConnection = new ServiceConnection() {
+    private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             mService = new Messenger(service);
             mBound = true;
             setServiceSendCard(mService, true);
             Message msg = Message.obtain();
-            msg.what = GameService.MSG_CLIENT;
+            msg.what = AbstractWifiDirectGameService.MSG_CLIENT;
             msg.arg1 = 1;
             msg.replyTo = mMessenger;
             sendMessageToService(msg);
@@ -113,7 +113,7 @@ public class HandActivity extends GLActivity implements Handler.Callback {
         return true;
     }
 
-    private void sendMessageToService(Message msg) {
+    private synchronized void sendMessageToService(Message msg) {
         if (!mBound) return;
         try {
             mService.send(msg);
@@ -130,11 +130,9 @@ public class HandActivity extends GLActivity implements Handler.Callback {
 
     @Override
     public void onDestroy() {
-        if (mBound) {
-            unbindService(mConnection);
-        }
         handler.removeCallbacks(null);
         PlayingCardsApplication.getInstance().stopServices();
+        unbindService(mConnection);
         super.onDestroy();
     }
 }
