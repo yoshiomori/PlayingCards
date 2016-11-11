@@ -55,12 +55,10 @@ posição, cores, normal, coordenadas de textura podem estar associados a um vérti
 formadas pelos vértices em \(\left\{\left(x, y\right) \in \mathbb{R}² | -1 \leq x, y \leq 1\right\}\)
 são enviados para serem mostrados na tela, chamaremos esses vértices de visíveis.
 
-Inicialmente haviamos escolhido um modelo com 312 vértices para desenhar 104 triângulos que juntas
-formam a imagem de carta. Fizemos um teste de desempenho usando o celular da lg modelo F240L, mas o
-aplicativo estava gerando 8 frames por segundo, observamos que o resultado não foi satisfatório.
-Decidimos usar um modelo com 6 vértices para desenhar 2 triângulos, como resultado o aplicativo
-passou a gerar 71 frames por segundo.
-
+Inicialmente haviamos escolhido um modelo 3d com 312 vértices para desenhar a imagem de carta. No
+teste de desempenho usando o celular da lg modelo F240L, o aplicativo estava gerando 8 frames por
+segundo. Decidimos usar um modelo 2d com 6 vértices, como resultado o aplicativo passou a gerar 71
+frames por segundo.
 
 Existem muitos tipos e modelos de aparelhos mobile e as dimenções da tela podem variar muito de modelo
 para modelo, o que causa uma distorção na imagem desenhada na tela. Queremos que nosso aplicativo seja
@@ -68,11 +66,11 @@ capaz de fazer essa correção automaticamente, de tal modo que todos os vértices 
 sendo visíveis após a correção.
 
 Sejam respectivamente \( w, h \) o comprimento e altura de uma tela, a transformação viewport pode ser
-descrita por uma transformação \(V_{w, h}\) que leva elementos de \(\mathbb{R}²\) para \(\mathbb{R}²\)
-tal que \(\left(x, y\right) \mapsto \left(\frac{wx}{2}, \frac{hy}{2}\right)\).
+descrita por uma transformação \(V_{w, h}\) que leva elementos de \(\mathbb{R}^2\) para
+\(\mathbb{R}^2\) tal que \(\left(x, y\right) \mapsto \left(\frac{wx}{2}, \frac{hy}{2}\right)\).
 
-Dizemos que \(D\) transformação que leva elementos de \(\mathbb{R}²\) para \(\mathbb{R}²\) é distorção
-se existe \(\left(x, y\right),\left(x', y'\right) \in \mathbb{R}²\) tal que \(x = y\),
+Dizemos que \(D\) transformação que leva elementos de \(\mathbb{R}^2\) para \(\mathbb{R}^2\) é
+distorção se existem \(\left(x, y\right),\left(x', y'\right) \in \mathbb{R}^2\) tal que \(x = y\),
 \(D\left(x, y\right) =  \left(x', y'\right)\) e \(x' \neq y'\). Observe que se \( w \neq h \)
 então \(V_{w, h}\) é distorção.
 
