@@ -10,7 +10,6 @@ import tcc.ronaldoyoshio.playingcards.gl.GLImage;
 
 /**
  * Responsável por desenhar texturas
- * Created by mori on 10/09/16.
  */
 public class NameImage extends GLImage {
     Bitmap texture;

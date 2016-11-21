@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 /**
  * Abstração de unidade de textura.
- * Created by mori on 12/07/16.
  */
 public class GLTextures {
     int[] textures;

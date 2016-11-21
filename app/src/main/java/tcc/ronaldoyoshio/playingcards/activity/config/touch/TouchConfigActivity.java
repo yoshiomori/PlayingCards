@@ -15,7 +15,6 @@ import tcc.ronaldoyoshio.playingcards.touchEventHandler.OnSendCard;
 
 /**
  * Configura para onde a carta será enviada.
- * Created by mori on 10/09/16.
  */
 public class TouchConfigActivity extends GLActivity{
     Class nextActivity;

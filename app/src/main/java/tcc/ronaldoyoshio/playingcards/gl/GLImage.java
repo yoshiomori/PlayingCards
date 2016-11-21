@@ -14,7 +14,6 @@ import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 
 /**
  * Abstração de dados usados para renderizar com a biblioteca gráfica.
- * Created by mori on 09/07/16.
  */
 public abstract class GLImage {
 

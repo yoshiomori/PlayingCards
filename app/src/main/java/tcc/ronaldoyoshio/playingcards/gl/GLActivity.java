@@ -9,7 +9,6 @@ import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 
 /**
  * Activity para uso com a biblioteca gráfica.
- * Created by mori on 30/07/16.
  */
 public abstract class GLActivity extends Activity{
     GLScreen screen;

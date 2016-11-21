@@ -2,7 +2,6 @@ package tcc.ronaldoyoshio.playingcards.gl;
 
 /**
  * Abstração de uniform.
- * Created by mori on 09/07/16.
  */
 public class GLUniform {
     private int xi = 0;

@@ -11,7 +11,6 @@ import tcc.ronaldoyoshio.playingcards.gl.GLScreen;
 
 /**
  * Classe trata de toque na tela.
- * Created by mori on 28/07/16.
  */
 public class TouchEventHandler {
     GLScreen screen;

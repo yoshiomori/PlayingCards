@@ -5,7 +5,6 @@ import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 
 /**
  * CardImage usado na seleção de cartas.
- * Created by mori on 30/07/16.
  */
 public class SelectCardImage extends CardImage {
     public SelectCardImage() {

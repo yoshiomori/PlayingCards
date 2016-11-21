@@ -15,7 +15,6 @@ import tcc.ronaldoyoshio.playingcards.gl.GLObject;
 
 /**
  * Dados para criar um botão usando opengl e tratar eventos de toque.
- * Created by mori on 21/07/16.
  */
 public class MainMenuButtonImage extends GLImage {
     private float ratio;

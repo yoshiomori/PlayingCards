@@ -10,7 +10,6 @@ import javax.microedition.khronos.opengles.GL10;
 
 /**
  * Menu principal do app.
- * Created by mori on 06/07/16.
  */
 public class GLRenderer implements GLSurfaceView.Renderer{
     private ArrayList<GLImage> images;

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 /**
  * Abstração de objeto buffer
- * Created by mori on 07/07/16.
  */
 public class GLBuffers {
     private int[] buffers;

@@ -4,7 +4,6 @@ import java.nio.Buffer;
 
 /**
  * Abstração de attribute.
- * Created by mori on 09/07/16.
  */
 public class GLAttribute {
     private int location = -1;

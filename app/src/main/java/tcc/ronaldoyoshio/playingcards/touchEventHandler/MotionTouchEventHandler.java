@@ -18,7 +18,6 @@ import static android.content.ContentValues.TAG;
 
 /**
  * Trata dos eventos de toque de movimento
- * Created by mori on 12/09/16.
  */
 public class MotionTouchEventHandler extends TouchEventHandler {
     private int[] neighborhoods = new int[3];

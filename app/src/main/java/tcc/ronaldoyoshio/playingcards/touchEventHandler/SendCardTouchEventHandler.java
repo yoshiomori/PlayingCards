@@ -9,7 +9,6 @@ import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
 
 /**
  * Classe que lida com o evento de toque para enviar carta para outros jogadores.
- * Created by mori on 13/09/16.
  */
 public class SendCardTouchEventHandler extends TouchEventHandler{
     private MotionCardImage motionCardImage;

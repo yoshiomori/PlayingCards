@@ -12,7 +12,6 @@ import tcc.ronaldoyoshio.playingcards.activity.deck.DeckActivity;
 
 /**
  * Botão de proseguir usado no SelectCardsActivity
- * Created by mori on 01/08/16.
  */
 public class SelectButtonImage extends GLImage {
 

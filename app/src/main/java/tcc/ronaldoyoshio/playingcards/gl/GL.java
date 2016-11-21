@@ -7,7 +7,6 @@ import java.nio.Buffer;
 
 /**
  * GLES20 com check error
- * Created by mori on 06/07/16.
  */
 public class GL{
     public static final int GL_POINTS = GLES20.GL_POINTS;

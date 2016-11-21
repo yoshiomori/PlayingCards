@@ -12,7 +12,6 @@ import tcc.ronaldoyoshio.playingcards.service.wifidirect.AbstractWifiDirectGameS
 
 /**
  * Classe que lida com o envio das cartas.
- * Created by mori on 13/09/16.
  */
 public class SendCard implements OnSendCard {
     private MotionCardImage cardImage;

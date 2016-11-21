@@ -19,7 +19,6 @@ import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCardTouchEventHandle
 
 /**
  * Abstração de carta que se move.
- * Created by mori on 11/09/16.
  */
 public class MotionCardImage extends CardImage {
     private MotionTouchEventHandler motionTouchEventHandler;

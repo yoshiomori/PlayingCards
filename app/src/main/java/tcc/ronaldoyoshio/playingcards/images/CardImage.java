@@ -11,7 +11,6 @@ import tcc.ronaldoyoshio.playingcards.model.Cards;
 
 /**
  * Imagem de carta sem o tratamento de eventos.
- * Created by mori on 30/07/16.
  */
 public class CardImage extends GLImage {
     private int totalCards; /* Número total de cartas necessário para poder embaralhar */
