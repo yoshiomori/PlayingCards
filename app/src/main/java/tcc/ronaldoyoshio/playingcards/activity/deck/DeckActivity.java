@@ -167,10 +167,9 @@ public class DeckActivity extends GLActivity implements Handler.Callback {
         return super.onKeyDown(keyCode, event);
     }
 
-    private void onReceiveCard(ArrayList<String> cards) {
-        for (String card :
-                cards) {
-            cardImage.addCard(card);
+    private void onReceiveCard(ArrayList<String> cards, boolean[] upsidedowns) {
+        for (int i = 0; i < cards.size(); i++) {
+            cardImage.addCard(cards.get(i), upsidedowns[i]);
         }
         getScreen().requestRender();
     }
@@ -203,7 +202,8 @@ public class DeckActivity extends GLActivity implements Handler.Callback {
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
             case MSG_RECEIVE_CARD:
-                onReceiveCard(msg.getData().getStringArrayList("Cards"));
+                onReceiveCard(msg.getData().getStringArrayList("Cards"),
+                        msg.getData().getBooleanArray("upsidedown"));
                 break;
             case MSG_TEXT:
                 String message = (msg.getData().getString("Mensagem") != null) ? msg.getData().getString("Mensagem") : "";

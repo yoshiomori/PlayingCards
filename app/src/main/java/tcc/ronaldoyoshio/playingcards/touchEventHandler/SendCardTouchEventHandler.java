@@ -1,6 +1,7 @@
 package tcc.ronaldoyoshio.playingcards.touchEventHandler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.gl.GLObject;
@@ -23,25 +24,32 @@ public class SendCardTouchEventHandler extends TouchEventHandler{
     public boolean onMove(int pointerId, float x, float y, float dx, float dy) {
         GLScreen screen = glActivity.getScreen();
         if(screen.getHeight() - y < 50 || y < 50 || screen.getWidth() - x < 50 || x < 50) {
-            /* Se a carta for empurrada rápido o suficiente para a borda, então a carta será enviada */
-            if (motionCardImage.getPointerCards().containsKey(pointerId)) {
+            /* Se a carta for empurrada rápido o suficiente para a borda, então a carta será
+             enviada */
+            HashMap<Integer, GLObject> pointerCards = motionCardImage.getPointerCards();
+            if (pointerCards.containsKey(pointerId)) {
                 if (motionCardImage.getOnSendCard() == null) {
                     throw new RuntimeException("onSendCard deve ser configurado com o método" +
                             " SetOnSendCard");
                 }
                 ArrayList<String> cards = new ArrayList<>();
+                ArrayList<Boolean> upsidedown = new ArrayList<>();
                 if (motionCardImage.getActiveCards().isEmpty()) {
                     cards.add(motionCardImage.getCards().get(motionCardImage.getObjects().indexOf(
-                            motionCardImage.getPointerCards().get(pointerId))));
+                            pointerCards.get(pointerId))));
+                    upsidedown.add(motionCardImage.getCardData().getCardCoord("Back")
+                            == pointerCards.get(pointerId).getFloats("card_coord"));
                 }
                 else {
                     for (GLObject object :
                             motionCardImage.getActiveCards()) {
                         cards.add(motionCardImage.getCards().get(
                                 motionCardImage.getObjects().indexOf(object)));
+                        upsidedown.add(motionCardImage.getCardData().getCardCoord("Back")
+                                == object.getFloats("card_coord"));
                     }
                 }
-                motionCardImage.getOnSendCard().onSendCard(pointerId, cards, (int)x, (int)y);
+                motionCardImage.getOnSendCard().onSendCard(pointerId, cards, (int)x, (int)y, upsidedown);
             }
         }
         return true;

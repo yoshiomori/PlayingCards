@@ -33,7 +33,7 @@ public class SendCard implements OnSendCard {
     }
 
     @Override
-    public void onSendCard(int pointerId, ArrayList<String> cards, int x, int y) {
+    public void onSendCard(int pointerId, ArrayList<String> cards, int x, int y, ArrayList<Boolean> upsidedown) {
         SendCardTouchEventHandler sendCardTouchEventHandler =
                 cardImage.getSendCardTouchEventHandler();
         String targetPlayerName = sendCardTouchEventHandler.computeNearestPlayerName(
@@ -48,6 +48,11 @@ public class SendCard implements OnSendCard {
         Bundle bundle = new Bundle();
         bundle.putString("Player", targetPlayerName);
         bundle.putStringArrayList("Cards", cards);
+        boolean[] array = new boolean[upsidedown.size()];
+        for (int i = 0; i < upsidedown.size(); i++) {
+            array[i] = upsidedown.get(i);
+        }
+        bundle.putBooleanArray("upsidedown", array);
         message.setData(bundle);
         sendMessageToService(message);
 

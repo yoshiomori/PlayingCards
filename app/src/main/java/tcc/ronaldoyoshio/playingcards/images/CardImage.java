@@ -304,11 +304,12 @@ public class CardImage extends GLImage {
         }
     }
 
-    public void addCard(String cardName) {
+    public void addCard(String cardName, boolean upsidedown) {
         cards.add(cardName);
         GLObject object = new GLObject();
         object.set("position", 0, 0);
-        object.set("card_coord", cardData.getCardCoord(cardName));
+        object.set("card_coord", upsidedown ? cardData.getCardCoord("Back")
+                : cardData.getCardCoord(cardName));
         object.set("blue_tone", 0);
         getObjects().add(object);
     }

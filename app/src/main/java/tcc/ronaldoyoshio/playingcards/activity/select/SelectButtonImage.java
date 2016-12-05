@@ -3,6 +3,10 @@ package tcc.ronaldoyoshio.playingcards.activity.select;
 import android.content.Intent;
 import android.os.Bundle;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
 import tcc.ronaldoyoshio.playingcards.gl.GL;
 import tcc.ronaldoyoshio.playingcards.gl.GLImage;
 import tcc.ronaldoyoshio.playingcards.R;
@@ -13,9 +17,9 @@ import tcc.ronaldoyoshio.playingcards.activity.deck.DeckActivity;
 /**
  * Botão de proseguir usado no SelectCardsActivity
  */
-public class SelectButtonImage extends GLImage {
+class SelectButtonImage extends GLImage {
 
-    public SelectButtonImage(final SelectCardsActivity selectCardsActivity, final Cards cards, final Bundle extras) {
+    SelectButtonImage(final SelectCardsActivity selectCardsActivity, final Cards cards, final Bundle extras) {
         addTouchEventHandler(new TouchEventHandler() {
             @Override
             public boolean onDown(int pointerId, float x, float y) {
@@ -24,14 +28,26 @@ public class SelectButtonImage extends GLImage {
                 if (-1 < glx && glx < 1 && -0.294 < gly && gly < 0.294) {
                     Intent intent = new Intent(selectCardsActivity, DeckActivity.class);
                     intent.putExtra("cards", cards);
-                    intent.putIntegerArrayListExtra(
-                            "directions",
-                            extras.getIntegerArrayList("directions")
-                    );
-                    intent.putStringArrayListExtra(
-                            "playersName",
-                            extras.getStringArrayList("playersName")
-                    );
+                    if (extras != null) {
+                        intent.putIntegerArrayListExtra(
+                                "directions",
+                                extras.getIntegerArrayList("directions")
+                        );
+                        intent.putStringArrayListExtra(
+                                "playersName",
+                                extras.getStringArrayList("playersName")
+                        );
+                    }
+                    else {
+                        intent.putIntegerArrayListExtra(
+                                "directions",
+                                new ArrayList<>(Arrays.asList(1, 2))
+                        );
+                        intent.putStringArrayListExtra(
+                                "playersName",
+                                new ArrayList<>(Collections.singletonList("teste"))
+                        );
+                    }
                     selectCardsActivity.startActivity(intent);
                     selectCardsActivity.finish();
                 }

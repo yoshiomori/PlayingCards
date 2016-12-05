@@ -61,7 +61,7 @@ public class TouchConfigActivity extends GLActivity{
                 final ArrayList<Integer> directions = new ArrayList<>();
                 motionCardImage.setOnSendCard(new OnSendCard(){
                     @Override
-                    public void onSendCard(int pointerId, ArrayList<String> cards, int x, int y) {
+                    public void onSendCard(int pointerId, ArrayList<String> cards, int x, int y, ArrayList<Boolean> upsidedown) {
                         if (directions.size() < playersName.size() * 2) {
                             directions.add(x);
                             directions.add(y);

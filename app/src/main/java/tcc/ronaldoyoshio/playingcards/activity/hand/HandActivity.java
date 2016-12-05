@@ -18,8 +18,8 @@ import tcc.ronaldoyoshio.playingcards.application.PlayingCardsApplication;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
 import tcc.ronaldoyoshio.playingcards.images.BackGroundImage;
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
-import tcc.ronaldoyoshio.playingcards.service.wifidirect.WifiDirectGamePlayerService;
 import tcc.ronaldoyoshio.playingcards.service.wifidirect.AbstractWifiDirectGameService;
+import tcc.ronaldoyoshio.playingcards.service.wifidirect.WifiDirectGamePlayerService;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.OnSendCard;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCard;
 
@@ -65,10 +65,9 @@ public class HandActivity extends GLActivity implements Handler.Callback {
         bindService(new Intent(this, WifiDirectGamePlayerService.class), mConnection, 0);
     }
 
-    private void onReceiveCard(ArrayList<String> cards) {
-        for (String card :
-                cards) {
-            motionCardImage.addCard(card);
+    private void onReceiveCard(ArrayList<String> cards, boolean[] upsidedowns) {
+        for (int i = 0; i < cards.size(); i++) {
+            motionCardImage.addCard(cards.get(i), upsidedowns[i]);
         }
         getScreen().requestRender();
     }
@@ -101,7 +100,8 @@ public class HandActivity extends GLActivity implements Handler.Callback {
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
             case MSG_RECEIVE_CARD:
-                onReceiveCard(msg.getData().getStringArrayList("Cards"));
+                onReceiveCard(msg.getData().getStringArrayList("Cards"),
+                        msg.getData().getBooleanArray("upsidedown"));
                 break;
             case MSG_TEXT:
                 String message = (msg.getData().getString("Mensagem") != null) ? msg.getData().getString("Mensagem") : "";
