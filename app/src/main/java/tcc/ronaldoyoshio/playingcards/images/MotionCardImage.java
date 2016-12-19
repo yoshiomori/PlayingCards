@@ -134,6 +134,64 @@ public class MotionCardImage extends CardImage {
         /* Tratamento de movimento */
         motionTouchEventHandler = new MotionTouchEventHandler(this, glActivity);
         addTouchEventHandler(motionTouchEventHandler);
+
+
+        /* Quando der duplo taps a carta vira */
+        addTouchEventHandler(new TouchEventHandler() {
+            long previousDownTime = Long.MIN_VALUE;
+            float previousX = Float.POSITIVE_INFINITY;
+            float previousY = Float.POSITIVE_INFINITY;
+            boolean doubleTap;
+            GLObject previousCard;
+            @Override
+            public boolean onDown(int pointerId, float x, float y) {
+                // Verificando se é double tap
+                long downTime = System.currentTimeMillis();
+                int index = findFirstCardIndexAt(
+                        x, getWidth(), y, getHeight(), getObjects());
+                if (index >= 0) {
+                    GLObject currentCard = getObjects().get(index);
+                    doubleTap = isDoubleTap(
+                            downTime - previousDownTime, x - previousX, y - previousY, currentCard);
+                    previousDownTime = downTime;
+                    previousX = x;
+                    previousY = y;
+                    previousCard = currentCard;
+
+                    if (doubleTap) {
+                        doubleTap = false;
+                        if (getActiveCards().isEmpty()) {
+                            flipCard(getObjects().get(index), index);
+                        } else {
+                            if (getActiveCards().contains(
+                                    getObjects().get(index))) {
+                                for (GLObject card :
+                                        getActiveCards()) {
+                                    flipCard(card, getObjects().indexOf(card));
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+                return false;
+            }
+
+            boolean isDoubleTap(long dt, float dx, float dy, GLObject card) {
+                return dx * dx + dy * dy <= 1000 && dt * dt <= 100000 && previousCard == card;
+            }
+
+            private void flipCard(GLObject card, int index) {
+                CardImage.CardData cardData = getCardData();
+                if (cardData.getCardCoord("Back") == card.getFloats("card_coord")) {
+                    card.set("card_coord", cardData.getCardCoord(getCards().get(index)));
+                }
+                else {
+                    card.set("card_coord", cardData.getCardCoord("Back"));
+                }
+            }
+        });
     }
 
     public void setOnSendCard(OnSendCard onSendCard) {

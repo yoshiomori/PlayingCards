@@ -17,16 +17,14 @@ import java.util.ArrayList;
 
 import tcc.ronaldoyoshio.playingcards.application.PlayingCardsApplication;
 import tcc.ronaldoyoshio.playingcards.gl.GLActivity;
-import tcc.ronaldoyoshio.playingcards.gl.GLObject;
 import tcc.ronaldoyoshio.playingcards.images.BackGroundImage;
 import tcc.ronaldoyoshio.playingcards.images.CardImage;
 import tcc.ronaldoyoshio.playingcards.images.MotionCardImage;
 import tcc.ronaldoyoshio.playingcards.model.Cards;
-import tcc.ronaldoyoshio.playingcards.service.wifidirect.WifiDirectGameServerService;
 import tcc.ronaldoyoshio.playingcards.service.wifidirect.AbstractWifiDirectGameService;
+import tcc.ronaldoyoshio.playingcards.service.wifidirect.WifiDirectGameServerService;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.OnSendCard;
 import tcc.ronaldoyoshio.playingcards.touchEventHandler.SendCard;
-import tcc.ronaldoyoshio.playingcards.touchEventHandler.TouchEventHandler;
 
 public class DeckActivity extends GLActivity implements Handler.Callback {
     private static final String TAG = "DeckActivity";
@@ -75,63 +73,6 @@ public class DeckActivity extends GLActivity implements Handler.Callback {
         }
 
         cardImage = new MotionCardImage(this);
-
-        /* Quando der duplo taps a carta vira */
-        cardImage.addTouchEventHandler(new TouchEventHandler() {
-            long previousDownTime = Long.MIN_VALUE;
-            float previousX = Float.POSITIVE_INFINITY;
-            float previousY = Float.POSITIVE_INFINITY;
-            boolean doubleTap;
-            GLObject previousCard;
-            @Override
-            public boolean onDown(int pointerId, float x, float y) {
-                // Verificando se é double tap
-                long downTime = System.currentTimeMillis();
-                int index = findFirstCardIndexAt(
-                        x, getWidth(), y, getHeight(), cardImage.getObjects());
-                if (index >= 0) {
-                    GLObject currentCard = cardImage.getObjects().get(index);
-                    doubleTap = isDoubleTap(
-                            downTime - previousDownTime, x - previousX, y - previousY, currentCard);
-                    previousDownTime = downTime;
-                    previousX = x;
-                    previousY = y;
-                    previousCard = currentCard;
-
-                    if (doubleTap) {
-                        doubleTap = false;
-                        if (cardImage.getActiveCards().isEmpty()) {
-                            flipCard(cardImage.getObjects().get(index), index);
-                        } else {
-                            if (cardImage.getActiveCards().contains(
-                                    cardImage.getObjects().get(index))) {
-                                for (GLObject card :
-                                        cardImage.getActiveCards()) {
-                                    flipCard(card, cardImage.getObjects().indexOf(card));
-                                }
-
-                            }
-                        }
-                    }
-                }
-
-                return false;
-            }
-
-            boolean isDoubleTap(long dt, float dx, float dy, GLObject card) {
-                return dx * dx + dy * dy <= 1000 && dt * dt <= 100000 && previousCard == card;
-            }
-
-            private void flipCard(GLObject card, int index) {
-                CardImage.CardData cardData = cardImage.getCardData();
-                if (cardData.getCardCoord("Back") == card.getFloats("card_coord")) {
-                    card.set("card_coord", cardData.getCardCoord(cards.get(index)));
-                }
-                else {
-                    card.set("card_coord", cardData.getCardCoord("Back"));
-                }
-            }
-        });
 
         sendCardEvent = new SendCard(cardImage, playersName, directions, mService);
         cardImage.setOnSendCard(sendCardEvent);
