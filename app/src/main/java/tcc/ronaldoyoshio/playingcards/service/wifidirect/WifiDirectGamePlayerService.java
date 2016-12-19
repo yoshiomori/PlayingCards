@@ -170,8 +170,10 @@ public class WifiDirectGamePlayerService extends AbstractWifiDirectGameService {
                 WebMessage message = new WebMessage();
                 message.setTag(MSG_SEND_CARD);
                 ArrayList<String> cards = msg.getData().getStringArrayList("Cards");
+                boolean[] upsidedown = msg.getData().getBooleanArray("upsidedown");
                 for (int i = 0; cards != null && i < cards.size(); i++) {
                     message.insertMessage("Card" + i, cards.get(i));
+                    message.insertMessage("upsidedown" + i, String.valueOf(upsidedown[i]));
                 }
                 message.insertMessage("Player", msg.getData().getString("Player"));
                 playerHandler.sendMessageServer(message);
@@ -297,12 +299,22 @@ public class WifiDirectGamePlayerService extends AbstractWifiDirectGameService {
                     break;
                 case HandActivity.MSG_RECEIVE_CARD:
                     ArrayList<String> cards = new ArrayList<>();
+                    ArrayList<Boolean> upsidedownList = new ArrayList<>();
                     for (int i = 0; true; i++) {
                         String card = message.getMessage("Card" + i);
+                        boolean bool = Boolean.parseBoolean(message.getMessage("upsidedown" + i));
                         if (card.equals("")) break;
-                        else cards.add(card);
+                        else {
+                            cards.add(card);
+                            upsidedownList.add(bool);
+                        }
+                    }
+                    boolean[] upsidedown = new boolean[upsidedownList.size()];
+                    for (int i = 0; i < upsidedownList.size(); i++) {
+                        upsidedown[i] = upsidedownList.get(i);
                     }
                     bundle.putStringArrayList("Cards", cards);
+                    bundle.putBooleanArray("upsidedown", upsidedown);
                     break;
                 default:
                     break;

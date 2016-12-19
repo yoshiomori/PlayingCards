@@ -102,7 +102,7 @@ public class WifiDirectGameServerService extends AbstractWifiDirectGameService {
                 cleanWifiP2P();
                 break;
             case MSG_SEND_CARD:
-                sendCardsToPlayer(msg.getData().getString("Player"), msg.getData().getStringArrayList("Cards"));
+                sendCardsToPlayer(msg.getData().getString("Player"), msg.getData().getStringArrayList("Cards"), msg.getData().getBooleanArray("upsidedown"));
                 break;
             default:
                 super.handleMessage(msg);
@@ -122,11 +122,12 @@ public class WifiDirectGameServerService extends AbstractWifiDirectGameService {
         }
     }
 
-    private void sendCardsToPlayer(String player, ArrayList<String> cards) {
+    private void sendCardsToPlayer(String player, ArrayList<String> cards, boolean[] upsidedowns) {
         WebMessage message = new WebMessage();
         message.setTag(HandActivity.MSG_RECEIVE_CARD);
         for (int i = 0; i < cards.size(); i++) {
             message.insertMessage("Card" + i, cards.get(i));
+            message.insertMessage("upsidedown" + i, String.valueOf(upsidedowns[i]));
         }
         clients.get(player).sendMessageClient(message);
     }
@@ -238,10 +239,20 @@ public class WifiDirectGameServerService extends AbstractWifiDirectGameService {
                 case MSG_SEND_CARD:
                     String player = message.getMessage("Player");
                     ArrayList<String> cards = new ArrayList<>();
+                    ArrayList<Boolean> upsidedownList = new ArrayList<>();
                     for (int i = 0; true; i++) {
                         String card = message.getMessage("Card" + i);
+                        boolean bool = Boolean.parseBoolean(message.getMessage("upsidedown" + i));
                         if (card.equals("")) break;
-                        else cards.add(card);
+                        else {
+                            cards.add(card);
+                            upsidedownList.add(bool);
+                        }
+                    }
+                    boolean[] upsidedown = new boolean[upsidedownList.size()];
+
+                    for (int i = 0; i < upsidedownList.size(); i++) {
+                        upsidedown[i] = upsidedownList.get(i);
                     }
 
                     if (player.equals(name)) {
@@ -249,11 +260,12 @@ public class WifiDirectGameServerService extends AbstractWifiDirectGameService {
                         response.what = DeckActivity.MSG_RECEIVE_CARD;
                         Bundle bundle = new Bundle();
                         bundle.putStringArrayList("Cards", cards);
+                        bundle.putBooleanArray("upsidedown", upsidedown);
                         response.setData(bundle);
                         sendMessageToActivity(response);
                     }
                     else {
-                        sendCardsToPlayer(player, cards);
+                        sendCardsToPlayer(player, cards, upsidedown);
                     }
                     String toastMessage = clientName + " enviou " + cards.size() + " carta(s) para " + player;
                     sendToastMessage(toastMessage, AbstractConfigActivity.MSG_TEXT);
